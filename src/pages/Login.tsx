@@ -5,15 +5,23 @@ import VideoBackground from "@/components/VideoBackground";
 
 const Login = () => {
   return (
-    <div className="flex flex-col min-h-screen relative">
-      <VideoBackground />
-      <div className="flex-1 max-w-sm mx-auto w-full p-4 flex items-center justify-center relative z-10 min-h-screen">
-        <LoginForm />
+    <div className="relative flex flex-col min-h-screen-safe overflow-hidden">
+      {/* Dynamic Background */}
+      <div className="absolute inset-0 bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900" />
+      
+      {/* Animated Background Elements */}
+      <div className="absolute inset-0">
+        <div className="absolute top-1/4 left-1/4 w-72 h-72 sm:w-96 sm:h-96 bg-purple-500/30 rounded-full mix-blend-multiply filter blur-xl animate-pulse" />
+        <div className="absolute top-1/3 right-1/4 w-72 h-72 sm:w-96 sm:h-96 bg-pink-500/30 rounded-full mix-blend-multiply filter blur-xl animate-pulse delay-1000" />
+        <div className="absolute bottom-1/4 left-1/3 w-72 h-72 sm:w-96 sm:h-96 bg-blue-500/30 rounded-full mix-blend-multiply filter blur-xl animate-pulse delay-500" />
       </div>
-      {/* Ensure navbar is above other elements with higher z-index */}
-      <div className="relative z-20">
-        <Navbar />
+      
+      <div className="relative flex-1 pb-20 px-safe mobile-scroll-container">
+        <div className="mx-auto max-w-xs sm:max-w-sm flex items-center min-h-full py-4">
+          <LoginForm />
+        </div>
       </div>
+      <Navbar />
     </div>
   );
 };
