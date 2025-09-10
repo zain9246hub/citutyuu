@@ -82,15 +82,17 @@ const ProfileHeader = ({ currentUser, isEditing, setIsEditing, onLogout }: Profi
   };
 
   return (
-    <div className="bg-white p-6 flex flex-col items-center border-b">
-      <div className="relative">
-        <Avatar className="h-20 w-20 mb-2">
+    <div className="bg-background p-6 flex flex-col items-center">
+      <div className="relative mb-4">
+        <Avatar className="h-24 w-24 border-4 border-white shadow-lg">
           <AvatarImage src={avatarUrl} alt={currentUser.name} />
-          <AvatarFallback>{currentUser.name.charAt(0)}</AvatarFallback>
+          <AvatarFallback className="text-xl font-semibold bg-gradient-to-br from-primary to-primary/80 text-primary-foreground">
+            {currentUser.name.charAt(0)}
+          </AvatarFallback>
         </Avatar>
         <button 
           onClick={changeAvatar}
-          className="absolute bottom-1 right-0 bg-blue-500 hover:bg-blue-600 text-white rounded-full p-1.5 shadow-md"
+          className="absolute -bottom-1 -right-1 bg-primary hover:bg-primary/90 text-primary-foreground rounded-full p-2 shadow-lg border-2 border-white transition-all duration-200 hover:scale-105"
           aria-label="Change profile photo"
         >
           <Camera className="h-4 w-4" />
@@ -105,17 +107,30 @@ const ProfileHeader = ({ currentUser, isEditing, setIsEditing, onLogout }: Profi
           className="hidden"
         />
       </div>
-      <h1 className="text-xl font-bold">{currentUser.name}</h1>
-      <p className="text-sm text-gray-500 mb-2">{currentUser.email}</p>
-      <span className="inline-block px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-xs font-medium mb-4">
+      
+      <h1 className="text-2xl font-bold text-foreground mb-1">{currentUser.name}</h1>
+      <p className="text-sm text-muted-foreground mb-3">{currentUser.email}</p>
+      
+      <span className="inline-flex items-center px-3 py-1.5 rounded-full text-xs font-medium bg-primary/10 text-primary border border-primary/20 mb-6">
         {currentUser.role === "business" ? "Business" : "Explorer"}
       </span>
-      <div className="flex gap-2">
-        <Button variant="outline" size="sm" onClick={() => setIsEditing(!isEditing)} className="flex items-center gap-2">
-          <UserPen className="h-4 w-4" /> {isEditing ? "Cancel Edit" : "Edit Profile"}
+      
+      <div className="flex gap-3 w-full max-w-xs">
+        <Button 
+          variant="outline" 
+          className="flex-1 h-11 font-medium" 
+          onClick={() => setIsEditing(!isEditing)}
+        >
+          <UserPen className="h-4 w-4 mr-2" />
+          {isEditing ? "Cancel" : "Edit Profile"}
         </Button>
-        <Button variant="outline" size="sm" onClick={onLogout} className="flex items-center gap-2">
-          <LogOut className="h-4 w-4" /> Logout
+        <Button 
+          variant="outline" 
+          className="flex-1 h-11 font-medium" 
+          onClick={onLogout}
+        >
+          <LogOut className="h-4 w-4 mr-2" />
+          Logout
         </Button>
       </div>
     </div>

@@ -35,8 +35,8 @@ const Profile = () => {
   }
 
   return (
-    <div className="flex flex-col min-h-screen bg-gray-50">
-      <div className="flex-1 max-w-md mx-auto w-full pb-20">
+    <div className="flex flex-col min-h-screen bg-background">
+      <div className="flex-1 max-w-md mx-auto w-full pb-20 safe-area-inset">
         <ProfileHeader
           currentUser={currentUser}
           isEditing={isEditing}
@@ -44,18 +44,20 @@ const Profile = () => {
           onLogout={handleLogout}
         />
 
-        <Tabs defaultValue="profile" className="w-full" value={activeTab} onValueChange={setActiveTab}>
-          {isEditing ? (
-            <ProfileEditForm onCancel={() => setIsEditing(false)} />
-          ) : (
-            <ProfileTabs
-              currentUser={currentUser}
-              activeTab={activeTab}
-              setActiveTab={setActiveTab}
-              isEditing={isEditing}
-            />
-          )}
-        </Tabs>
+        <div className="px-4">
+          <Tabs defaultValue="profile" className="w-full" value={activeTab} onValueChange={setActiveTab}>
+            {isEditing ? (
+              <ProfileEditForm onCancel={() => setIsEditing(false)} />
+            ) : (
+              <ProfileTabs
+                currentUser={currentUser}
+                activeTab={activeTab}
+                setActiveTab={setActiveTab}
+                isEditing={isEditing}
+              />
+            )}
+          </Tabs>
+        </div>
       </div>
       <Navbar />
     </div>

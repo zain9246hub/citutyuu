@@ -6,18 +6,18 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 const NotificationsTab = () => {
   return (
-    <div className="space-y-6">
+    <div className="w-full">
       <Tabs defaultValue="notifications" className="w-full">
         <TabsList className="grid w-full grid-cols-2">
-          <TabsTrigger value="notifications">Recent Notifications</TabsTrigger>
-          <TabsTrigger value="settings">Notification Settings</TabsTrigger>
+          <TabsTrigger value="notifications">Notifications</TabsTrigger>
+          <TabsTrigger value="settings">Settings</TabsTrigger>
         </TabsList>
         
-        <TabsContent value="notifications" className="mt-6">
+        <TabsContent value="notifications" className="mt-0">
           <NotificationList />
         </TabsContent>
         
-        <TabsContent value="settings" className="mt-6">
+        <TabsContent value="settings" className="mt-0 p-4 bg-background border rounded-b-lg">
           <NotificationSettings />
         </TabsContent>
       </Tabs>

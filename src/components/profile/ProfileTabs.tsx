@@ -112,23 +112,23 @@ const ProfileTabs = ({ currentUser, activeTab, setActiveTab, isEditing }: Profil
         <TabsTrigger value="notifications">Notifications</TabsTrigger>
       </TabsList>
 
-      <TabsContent value="profile" className="p-4 bg-white rounded-b-lg shadow-sm">
+      <TabsContent value="profile" className="p-4 bg-background rounded-lg border">
         {!isEditing && (
           <div className="space-y-4">
-            <div className="border rounded-lg p-4">
-              <h3 className="font-medium mb-2">Account Information</h3>
-              <div className="space-y-2 text-sm">
-                <div className="flex justify-between">
-                  <span className="text-gray-500">Name:</span>
-                  <span>{currentUser.name}</span>
+            <div className="rounded-lg p-4 bg-muted/30 border">
+              <h3 className="font-semibold mb-3 text-foreground">Account Information</h3>
+              <div className="space-y-3 text-sm">
+                <div className="flex justify-between items-center py-2 border-b border-border/50">
+                  <span className="text-muted-foreground font-medium">Name:</span>
+                  <span className="text-foreground font-medium">{currentUser.name}</span>
                 </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-500">Email:</span>
-                  <span>{currentUser.email}</span>
+                <div className="flex justify-between items-center py-2 border-b border-border/50">
+                  <span className="text-muted-foreground font-medium">Email:</span>
+                  <span className="text-foreground font-medium">{currentUser.email}</span>
                 </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-500">Account Type:</span>
-                  <span>{currentUser.role === "business" ? "Business" : "Explorer"}</span>
+                <div className="flex justify-between items-center py-2">
+                  <span className="text-muted-foreground font-medium">Account Type:</span>
+                  <span className="text-foreground font-medium">{currentUser.role === "business" ? "Business" : "Explorer"}</span>
                 </div>
               </div>
             </div>
@@ -138,18 +138,18 @@ const ProfileTabs = ({ currentUser, activeTab, setActiveTab, isEditing }: Profil
 
       {currentUser.role === "business" && (
         <>
-          <TabsContent value="analytics" className="p-4 bg-white rounded-b-lg shadow-sm">
+          <TabsContent value="analytics" className="p-4 bg-background rounded-lg border">
             <BusinessAnalytics businessId={currentUser.id} />
           </TabsContent>
           
-          <TabsContent value="manage" className="p-4 bg-white rounded-b-lg shadow-sm">
+          <TabsContent value="manage" className="p-4 bg-background rounded-lg border">
             {renderBusinessManagementContent()}
           </TabsContent>
         </>
       )}
 
       {currentUser.role === "explorer" && (
-        <TabsContent value="saved" className="p-4 bg-white rounded-b-lg shadow-sm">
+        <TabsContent value="saved" className="p-4 bg-background rounded-lg border">
           <div className="space-y-4">
             {savedDeals.length > 0 ? (
               savedDeals.map(deal => (
@@ -164,10 +164,10 @@ const ProfileTabs = ({ currentUser, activeTab, setActiveTab, isEditing }: Profil
                 />
               ))
             ) : (
-              <div className="border rounded-lg p-4 text-center py-8">
-                <List className="h-10 w-10 mx-auto text-gray-400 mb-2" />
-                <h3 className="font-medium mb-1">No Saved Deals Yet</h3>
-                <p className="text-sm text-gray-500 mb-4">
+              <div className="rounded-lg p-6 text-center py-12 bg-muted/30 border border-dashed">
+                <List className="h-12 w-12 mx-auto text-muted-foreground/50 mb-3" />
+                <h3 className="font-semibold mb-2 text-foreground">No Saved Deals Yet</h3>
+                <p className="text-sm text-muted-foreground mb-4">
                   Save deals and offers to view them here later
                 </p>
                 <Button size="sm" onClick={() => navigate("/explore")}>Browse Deals</Button>
@@ -177,7 +177,7 @@ const ProfileTabs = ({ currentUser, activeTab, setActiveTab, isEditing }: Profil
         </TabsContent>
       )}
 
-      <TabsContent value="notifications" className="p-4 bg-white rounded-b-lg shadow-sm">
+      <TabsContent value="notifications" className="bg-background">
         <NotificationsTab />
       </TabsContent>
     </Tabs>

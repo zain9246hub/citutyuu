@@ -52,90 +52,93 @@ const NotificationList = () => {
   };
 
   return (
-    <Card>
-      <CardHeader>
-        <div className="flex items-center justify-between">
-          <CardTitle className="flex items-center gap-2">
-            <Bell className="h-5 w-5" />
-            Notifications
-            {unreadCount > 0 && (
-              <Badge variant="destructive" className="h-5 px-2 text-xs">
-                {unreadCount}
-              </Badge>
-            )}
-          </CardTitle>
-          <div className="flex gap-2">
-            {unreadCount > 0 && (
-              <Button variant="outline" size="sm" onClick={markAllAsRead}>
-                <CheckCheck className="h-4 w-4 mr-1" />
-                Mark all read
-              </Button>
-            )}
-            {notifications.length > 0 && (
-              <Button variant="outline" size="sm" onClick={clearNotifications}>
-                <Trash2 className="h-4 w-4 mr-1" />
-                Clear all
-              </Button>
-            )}
-          </div>
+    <div className="w-full">
+      {/* Notification Header */}
+      <div className="flex items-center justify-between p-4 border-b bg-background">
+        <div className="flex items-center gap-3">
+          <Bell className="h-5 w-5 text-foreground" />
+          <h2 className="text-lg font-semibold text-foreground">Notifications</h2>
+          {unreadCount > 0 && (
+            <Badge variant="destructive" className="h-6 w-6 p-0 flex items-center justify-center rounded-full text-xs">
+              {unreadCount > 9 ? '9+' : unreadCount}
+            </Badge>
+          )}
         </div>
-      </CardHeader>
-      <CardContent className="max-h-96 overflow-y-auto">
+        
+        <div className="flex items-center gap-2">
+          {unreadCount > 0 && (
+            <Button variant="outline" size="sm" onClick={markAllAsRead} className="h-8 px-3 text-xs">
+              <CheckCheck className="h-3 w-3 mr-1" />
+              Mark all read
+            </Button>
+          )}
+          {notifications.length > 0 && (
+            <Button variant="outline" size="sm" onClick={clearNotifications} className="h-8 px-2">
+              <Trash2 className="h-3 w-3" />
+            </Button>
+          )}
+        </div>
+      </div>
+
+      {/* Notification Content */}
+      <div className="max-h-96 overflow-y-auto bg-background">
         {notifications.length === 0 ? (
-          <div className="text-center py-8 text-muted-foreground">
-            <Bell className="h-12 w-12 mx-auto mb-4 opacity-50" />
-            <p>No notifications yet</p>
-            <p className="text-sm">We'll notify you about new deals and updates</p>
+          <div className="text-center py-12 px-4">
+            <Bell className="h-16 w-16 mx-auto mb-4 text-muted-foreground/50" />
+            <h3 className="font-medium text-foreground mb-2">No notifications yet</h3>
+            <p className="text-sm text-muted-foreground">We'll notify you about new deals and updates</p>
           </div>
         ) : (
-          <div className="space-y-3">
+          <div className="divide-y divide-border">
             {notifications.map((notification) => (
               <div
                 key={notification.id}
-                className={`p-3 rounded-lg border cursor-pointer transition-colors hover:bg-gray-50 ${
-                  !notification.read ? 'bg-blue-50 border-blue-200' : 'bg-white'
+                className={`p-4 cursor-pointer transition-all duration-200 hover:bg-muted/50 ${
+                  !notification.read ? 'bg-primary/5 border-l-4 border-l-primary' : ''
                 }`}
                 onClick={() => handleNotificationClick(notification)}
               >
                 <div className="flex items-start gap-3">
-                  {getNotificationIcon(notification.type)}
+                  <div className="flex-shrink-0 mt-1">
+                    {getNotificationIcon(notification.type)}
+                  </div>
+                  
                   <div className="flex-1 min-w-0">
-                    <div className="flex items-center justify-between">
-                      <h4 className={`text-sm font-medium ${!notification.read ? 'text-blue-900' : 'text-gray-900'}`}>
+                    <div className="flex items-center justify-between mb-1">
+                      <h4 className={`text-sm font-medium ${!notification.read ? 'text-foreground' : 'text-muted-foreground'}`}>
                         {notification.title}
                       </h4>
                       {!notification.read && (
-                        <div className="h-2 w-2 bg-blue-600 rounded-full flex-shrink-0" />
+                        <div className="h-2 w-2 bg-primary rounded-full flex-shrink-0 ml-2" />
                       )}
                     </div>
                     
-                    {/* City location badge - prominently displayed */}
+                    {/* City location badge */}
                     {notification.city && (
-                      <div className="flex items-center gap-1 mt-1 mb-2">
+                      <div className="flex items-center gap-1 mb-2">
                         <MapPin className="h-3 w-3 text-orange-600" />
-                        <Badge variant="outline" className="text-xs px-2 py-1 bg-orange-50 text-orange-700 border-orange-200">
+                        <Badge variant="secondary" className="text-xs px-2 py-0.5 bg-orange-50 text-orange-700 border-orange-200">
                           📍 {notification.city}
                         </Badge>
                       </div>
                     )}
                     
-                    <p className="text-sm text-gray-600 mt-1">
+                    <p className="text-sm text-muted-foreground mb-3">
                       {notification.message}
                     </p>
                     
-                    {/* Shop Location and Phone Number - Clickable */}
+                    {/* Action Buttons */}
                     {(notification.shopLocation || notification.phoneNumber) && (
-                      <div className="flex flex-wrap gap-2 mt-3 pt-2 border-t border-gray-100">
+                      <div className="flex flex-wrap gap-2 mb-3">
                         {notification.shopLocation && (
                           <Button
                             variant="outline"
                             size="sm"
                             onClick={(e) => handleLocationClick(notification.shopLocation!, e)}
-                            className="h-7 px-2 text-xs bg-blue-50 hover:bg-blue-100 border-blue-200 text-blue-700"
+                            className="h-8 px-3 text-xs bg-blue-50 hover:bg-blue-100 border-blue-200 text-blue-700"
                           >
                             <MapPin className="h-3 w-3 mr-1" />
                             View Location
-                            <ExternalLink className="h-3 w-3 ml-1" />
                           </Button>
                         )}
                         {notification.phoneNumber && (
@@ -143,7 +146,7 @@ const NotificationList = () => {
                             variant="outline"
                             size="sm"
                             onClick={(e) => handlePhoneClick(notification.phoneNumber!, e)}
-                            className="h-7 px-2 text-xs bg-green-50 hover:bg-green-100 border-green-200 text-green-700"
+                            className="h-8 px-3 text-xs bg-green-50 hover:bg-green-100 border-green-200 text-green-700"
                           >
                             <Phone className="h-3 w-3 mr-1" />
                             {notification.phoneNumber}
@@ -152,12 +155,10 @@ const NotificationList = () => {
                       </div>
                     )}
                     
-                    <div className="flex items-center justify-between mt-2">
-                      <p className="text-xs text-gray-500">
-                        {formatDistanceToNow(notification.timestamp, { addSuffix: true })}
-                      </p>
+                    <div className="flex items-center justify-between text-xs text-muted-foreground">
+                      <span>{formatDistanceToNow(notification.timestamp, { addSuffix: true })}</span>
                       {notification.city && (
-                        <span className="text-xs text-orange-600 font-medium">
+                        <span className="text-orange-600 font-medium">
                           From {notification.city}
                         </span>
                       )}
@@ -168,8 +169,8 @@ const NotificationList = () => {
             ))}
           </div>
         )}
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 };
 
