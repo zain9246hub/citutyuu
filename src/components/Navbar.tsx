@@ -29,15 +29,15 @@ const Navbar = () => {
 
   return (
     <motion.div 
-      className="fixed bottom-0 w-full z-50 pb-safe"
+      className="fixed bottom-0 w-full z-50 safe-bottom"
       initial={{ y: "100%" }}
       animate={{ 
         y: isVisible ? 0 : "100%",
       }}
       transition={{ type: "spring", stiffness: 300, damping: 30 }}
     >
-      <div className="px-safe py-2 mx-auto backdrop-blur-md bg-background/95 border-t border-border/20 shadow-lg">
-        <div className="flex justify-between items-center max-w-md mx-auto touch-target">
+      <div className="px-4 py-2 mx-auto backdrop-blur-md bg-background/80 border-t border-border/20 shadow-lg">
+        <div className="flex justify-between items-center max-w-md mx-auto">
           {[
             { path: "/", icon: Home, label: "Home" },
             { path: "/explore", icon: Search, label: "Explore" },
@@ -49,27 +49,27 @@ const Navbar = () => {
             <Link
               key={path}
               to={path}
-              className="group relative flex flex-col items-center touch-target"
+              className="group relative flex flex-col items-center"
             >
               <motion.div
-                className={`p-2 rounded-xl transition-all duration-300 group-hover:bg-primary/5 touch-target ${
+                className={`p-2 rounded-xl transition-all duration-300 group-hover:bg-primary/5 ${
                   location.pathname === path 
                     ? 'bg-gradient-to-r from-red-500/10 via-yellow-500/10 via-green-500/10 via-blue-500/10 to-purple-500/10' 
                     : ''
                 }`}
-                whileHover={{ scale: 1.05 }}
+                whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.95 }}
                 transition={{ type: "spring", stiffness: 400, damping: 17 }}
               >
                 <Icon 
-                  className={`h-5 w-5 sm:h-6 sm:w-6 transition-all duration-300 ${
+                  className={`h-5 w-5 transition-all duration-300 ${
                     location.pathname === path
                       ? 'text-primary scale-110'
                       : 'text-muted-foreground group-hover:text-primary group-hover:scale-110'
                   }`}
                 />
                 <motion.div
-                  className={`absolute -bottom-3 left-1/2 -translate-x-1/2 text-[10px] sm:text-xs font-medium whitespace-nowrap ${
+                  className={`absolute -bottom-3 left-1/2 -translate-x-1/2 text-[10px] font-medium whitespace-nowrap ${
                     location.pathname === path
                       ? 'text-primary'
                       : 'text-muted-foreground group-hover:text-primary'
