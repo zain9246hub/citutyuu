@@ -143,23 +143,47 @@ const ProfileTabs = ({ currentUser, activeTab, setActiveTab, isEditing }: Profil
         <TabsTrigger value="notifications">Notifications</TabsTrigger>
       </TabsList>
 
-      <TabsContent value="profile" className="p-4 bg-background rounded-lg border">
+      <TabsContent value="profile" className="p-4 bg-gradient-to-b from-background to-muted/10 rounded-xl border border-border/50 shadow-sm">
         {!isEditing && (
-          <div className="space-y-4">
-            <div className="rounded-lg p-4 bg-muted/30 border">
-              <h3 className="font-semibold mb-3 text-foreground">Account Information</h3>
-              <div className="space-y-3 text-sm">
-                <div className="flex justify-between items-center py-2 border-b border-border/50">
-                  <span className="text-muted-foreground font-medium">Name:</span>
-                  <span className="text-foreground font-medium">{currentUser.name}</span>
+          <div className="space-y-6">
+            <div className="relative overflow-hidden bg-gradient-to-br from-background via-background to-muted/20 border border-border/30 rounded-2xl p-6 shadow-lg">
+              <div className="absolute top-0 right-0 w-32 h-32 opacity-5">
+                <div className="w-full h-full rounded-full bg-gradient-to-br from-primary to-primary/60 transform translate-x-16 -translate-y-16" />
+              </div>
+              
+              <div className="relative">
+                <div className="flex items-center space-x-3 mb-6">
+                  <div className="w-10 h-10 bg-gradient-to-br from-primary/20 to-primary/10 rounded-xl flex items-center justify-center">
+                    <div className="w-5 h-5 bg-gradient-to-br from-primary to-primary/80 rounded-md" />
+                  </div>
+                  <h3 className="text-xl font-semibold text-foreground">Account Information</h3>
                 </div>
-                <div className="flex justify-between items-center py-2 border-b border-border/50">
-                  <span className="text-muted-foreground font-medium">Email:</span>
-                  <span className="text-foreground font-medium">{currentUser.email}</span>
-                </div>
-                <div className="flex justify-between items-center py-2">
-                  <span className="text-muted-foreground font-medium">Account Type:</span>
-                  <span className="text-foreground font-medium">{currentUser.role === "business" ? "Business" : "Explorer"}</span>
+                
+                <div className="space-y-5">
+                  <div className="group p-4 rounded-xl bg-gradient-to-r from-muted/20 to-muted/5 border border-border/20 hover:shadow-md transition-all duration-200">
+                    <div className="flex justify-between items-center">
+                      <span className="text-muted-foreground font-medium group-hover:text-foreground transition-colors duration-200">Name:</span>
+                      <span className="text-foreground font-semibold">{currentUser.name}</span>
+                    </div>
+                  </div>
+                  
+                  <div className="group p-4 rounded-xl bg-gradient-to-r from-muted/20 to-muted/5 border border-border/20 hover:shadow-md transition-all duration-200">
+                    <div className="flex justify-between items-center">
+                      <span className="text-muted-foreground font-medium group-hover:text-foreground transition-colors duration-200">Email:</span>
+                      <span className="text-foreground font-semibold">{currentUser.email}</span>
+                    </div>
+                  </div>
+                  
+                  <div className="group p-4 rounded-xl bg-gradient-to-r from-muted/20 to-muted/5 border border-border/20 hover:shadow-md transition-all duration-200">
+                    <div className="flex justify-between items-center">
+                      <span className="text-muted-foreground font-medium group-hover:text-foreground transition-colors duration-200">Account Type:</span>
+                      <div className="flex items-center space-x-2">
+                        <span className="inline-flex items-center px-3 py-1.5 rounded-full text-xs font-semibold bg-gradient-to-r from-primary/10 to-primary/5 text-primary border border-primary/20">
+                          {currentUser.role === "business" ? "Business" : "Explorer"}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>

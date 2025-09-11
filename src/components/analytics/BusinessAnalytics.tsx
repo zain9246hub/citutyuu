@@ -1,116 +1,186 @@
-
-import { MousePointer, Eye, Star, TrendingUp, DollarSign, Users } from "lucide-react";
-import { AnalyticsCard } from "./AnalyticsCard";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { MousePointer, Eye, Phone, Star, TrendingUp, TrendingDown, BarChart3 } from "lucide-react";
 
 interface BusinessAnalyticsProps {
-  businessId?: string;
+  businessId: string;
 }
 
-export default function BusinessAnalytics({ businessId }: BusinessAnalyticsProps) {
-  // This would typically come from an API call using the businessId
-  // For now, we'll use mock data
-  const analyticsData = {
-    clicks: 238,
-    clicksChange: "+12% from last month",
-    clicksTrend: "up" as const,
-    views: 1024,
-    viewsChange: "+5% from last month",
-    viewsTrend: "up" as const,
-    calls: 45,
-    callsChange: "-3% from last month",
-    callsTrend: "down" as const,
-    ratings: 4.7,
-    saves: 72,
-    savesChange: "+15% from last month",
-    savesTrend: "up" as const,
-    revenue: 5200,
+interface DealMetric {
+  name: string;
+  views: number;
+  clicks: number;
+  conversionRate: string;
+}
+
+const BusinessAnalytics = ({ businessId }: BusinessAnalyticsProps) => {
+  // Mock data - in real app, fetch based on businessId
+  const metrics = {
+    totalClicks: 238,
+    clicksChange: "+12%",
+    profileViews: 1024,
+    viewsChange: "+5%",
+    phoneCalls: 45,
+    callsChange: "-3%",
+    savedDeals: 72,
+    savedChange: "+15%"
   };
 
-  const topDeals = [
-    { id: 1, name: "Summer Special Discount", clicks: 85, views: 340, conversion: "25%" },
-    { id: 2, name: "Weekend Flash Sale", clicks: 62, views: 210, conversion: "29%" },
-    { id: 3, name: "Holiday Package", clicks: 51, views: 180, conversion: "28%" },
-    { id: 4, name: "Loyalty Member Offer", clicks: 40, views: 294, conversion: "14%" },
+  const topDeals: DealMetric[] = [
+    { name: "Summer Special Discount", views: 340, clicks: 85, conversionRate: "25%" },
+    { name: "Weekend Flash Sale", views: 210, clicks: 62, conversionRate: "29%" },
+    { name: "Holiday Package", views: 180, clicks: 51, conversionRate: "28%" },
+    { name: "Loyalty Member Offer", views: 294, clicks: 40, conversionRate: "14%" }
   ];
 
-  return (
-    <div className="space-y-5">
-      <h3 className="text-lg font-semibold">Business Analytics</h3>
+  const MetricCard = ({ 
+    title, 
+    value, 
+    change, 
+    icon: Icon, 
+    positive = true,
+    gradient = "from-blue-500 to-blue-600"
+  }: {
+    title: string;
+    value: string | number;
+    change: string;
+    icon: any;
+    positive?: boolean;
+    gradient?: string;
+  }) => (
+    <Card className="relative overflow-hidden bg-gradient-to-br from-background via-background to-muted/20 border-border/50 shadow-lg hover:shadow-xl transition-all duration-300 group">
+      <div className="absolute top-0 right-0 w-24 h-24 opacity-10">
+        <div className={`w-full h-full rounded-full bg-gradient-to-br ${gradient} transform translate-x-8 -translate-y-8`} />
+      </div>
       
+      <CardContent className="p-5 relative">
+        <div className="flex items-center justify-between mb-4">
+          <CardTitle className="text-sm font-medium text-muted-foreground">
+            {title}
+          </CardTitle>
+          <div className={`w-10 h-10 rounded-xl bg-gradient-to-br ${gradient} flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-200`}>
+            <Icon className="h-5 w-5 text-white" />
+          </div>
+        </div>
+        <div className="space-y-2">
+          <div className="text-2xl font-bold text-foreground">{value}</div>
+          <div className={`flex items-center text-xs font-semibold ${
+            positive ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'
+          }`}>
+            {positive ? (
+              <TrendingUp className="h-3 w-3 mr-1" />
+            ) : (
+              <TrendingDown className="h-3 w-3 mr-1" />
+            )}
+            {change} from last month
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  );
+
+  return (
+    <div className="space-y-6 p-1">
+      <div className="flex items-center space-x-3 mb-6">
+        <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl flex items-center justify-center shadow-lg">
+          <BarChart3 className="h-5 w-5 text-white" />
+        </div>
+        <h1 className="text-2xl font-bold text-foreground">Business Analytics</h1>
+      </div>
+
       <div className="grid grid-cols-2 gap-4">
-        <AnalyticsCard 
-          title="Total Clicks" 
-          value={analyticsData.clicks}
-          change={analyticsData.clicksChange}
-          trend={analyticsData.clicksTrend}
-          icon={<MousePointer className="h-4 w-4" />}
+        <MetricCard
+          title="Total Clicks"
+          value={metrics.totalClicks}
+          change={metrics.clicksChange}
+          icon={MousePointer}
+          positive={true}
+          gradient="from-blue-500 to-blue-600"
         />
-        <AnalyticsCard 
-          title="Profile Views" 
-          value={analyticsData.views}
-          change={analyticsData.viewsChange}
-          trend={analyticsData.viewsTrend}
-          icon={<Eye className="h-4 w-4" />}
+        <MetricCard
+          title="Profile Views"
+          value={metrics.profileViews}
+          change={metrics.viewsChange}
+          icon={Eye}
+          positive={true}
+          gradient="from-emerald-500 to-emerald-600"
         />
-        <AnalyticsCard 
-          title="Phone Calls" 
-          value={analyticsData.calls}
-          change={analyticsData.callsChange}
-          trend={analyticsData.callsTrend} 
-          icon={<Users className="h-4 w-4" />}
+        <MetricCard
+          title="Phone Calls"
+          value={metrics.phoneCalls}
+          change={metrics.callsChange}
+          icon={Phone}
+          positive={false}
+          gradient="from-orange-500 to-orange-600"
         />
-        <AnalyticsCard 
-          title="Saved Deals" 
-          value={analyticsData.saves}
-          change={analyticsData.savesChange}
-          trend={analyticsData.savesTrend}
-          icon={<Star className="h-4 w-4" />}
+        <MetricCard
+          title="Saved Deals"
+          value={metrics.savedDeals}
+          change={metrics.savedChange}
+          icon={Star}
+          positive={true}
+          gradient="from-purple-500 to-purple-600"
         />
       </div>
 
-      <Tabs defaultValue="deals">
-        <TabsList className="grid w-full grid-cols-2">
-          <TabsTrigger value="deals">Top Deals</TabsTrigger>
-          <TabsTrigger value="revenue">Revenue</TabsTrigger>
+      <Tabs defaultValue="deals" className="w-full">
+        <TabsList className="grid w-full grid-cols-2 bg-muted/50 backdrop-blur-sm border border-border/50 shadow-sm">
+          <TabsTrigger 
+            value="deals" 
+            className="data-[state=active]:bg-background data-[state=active]:shadow-md data-[state=active]:text-foreground transition-all duration-200"
+          >
+            Top Deals
+          </TabsTrigger>
+          <TabsTrigger 
+            value="revenue" 
+            className="data-[state=active]:bg-background data-[state=active]:shadow-md data-[state=active]:text-foreground transition-all duration-200"
+          >
+            Revenue
+          </TabsTrigger>
         </TabsList>
         
-        <TabsContent value="deals" className="pt-4">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Deal Name</TableHead>
-                <TableHead className="text-right">Views</TableHead>
-                <TableHead className="text-right">Clicks</TableHead>
-                <TableHead className="text-right">Conv. Rate</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {topDeals.map(deal => (
-                <TableRow key={deal.id}>
-                  <TableCell>{deal.name}</TableCell>
-                  <TableCell className="text-right">{deal.views}</TableCell>
-                  <TableCell className="text-right">{deal.clicks}</TableCell>
-                  <TableCell className="text-right">{deal.conversion}</TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+        <TabsContent value="deals" className="space-y-4 mt-6">
+          <Card className="bg-gradient-to-br from-background via-background to-muted/20 border-border/50 shadow-lg">
+            <CardHeader className="pb-4">
+              <CardTitle className="text-lg font-semibold text-foreground">Deal Performance</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                <div className="grid grid-cols-4 gap-4 text-xs font-semibold text-muted-foreground border-b border-border/50 pb-3 uppercase tracking-wider">
+                  <div>Deal Name</div>
+                  <div className="text-center">Views</div>
+                  <div className="text-center">Clicks</div>
+                  <div className="text-center">Conv. Rate</div>
+                </div>
+                {topDeals.map((deal, index) => (
+                  <div key={index} className="grid grid-cols-4 gap-4 text-sm items-center py-3 rounded-lg hover:bg-muted/30 transition-colors duration-200 px-2 -mx-2">
+                    <div className="font-medium text-foreground truncate">{deal.name}</div>
+                    <div className="text-center text-muted-foreground font-medium">{deal.views}</div>
+                    <div className="text-center text-muted-foreground font-medium">{deal.clicks}</div>
+                    <div className="text-center font-semibold text-primary">{deal.conversionRate}</div>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
         </TabsContent>
         
-        <TabsContent value="revenue" className="pt-4">
-          <div className="flex flex-col items-center py-8">
-            <DollarSign className="h-12 w-12 text-primary mb-2" />
-            <h3 className="text-2xl font-bold">₹{analyticsData.revenue}</h3>
-            <p className="text-sm text-muted-foreground">Estimated monthly revenue</p>
-            <p className="text-xs text-muted-foreground mt-6 text-center">
-              This is based on featured deals, promotions, and estimated conversions.
-              <br />Actual revenue may vary.
-            </p>
-          </div>
+        <TabsContent value="revenue" className="space-y-4 mt-6">
+          <Card className="bg-gradient-to-br from-background via-background to-muted/20 border-border/50 shadow-lg">
+            <CardContent className="p-8">
+              <div className="text-center py-12">
+                <div className="w-16 h-16 bg-gradient-to-br from-muted-foreground/10 to-muted-foreground/5 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                  <BarChart3 className="h-8 w-8 text-muted-foreground/70" />
+                </div>
+                <h3 className="text-lg font-semibold text-foreground mb-2">Revenue Analytics</h3>
+                <p className="text-muted-foreground">Detailed revenue insights coming soon</p>
+              </div>
+            </CardContent>
+          </Card>
         </TabsContent>
       </Tabs>
     </div>
   );
-}
+};
+
+export default BusinessAnalytics;
