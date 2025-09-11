@@ -36,52 +36,87 @@ const ProfileTabs = ({ currentUser, activeTab, setActiveTab, isEditing }: Profil
   };
 
   const renderBusinessManagementContent = () => (
-    <div className="space-y-4">
-      <div className="grid grid-cols-1 gap-4">
-        <Button
-          variant="outline"
-          className="flex items-center justify-between p-4 h-auto border-dashed"
+    <div className="space-y-6 p-1">
+      <div className="grid grid-cols-1 gap-5">
+        <div
+          className="group relative bg-gradient-to-br from-blue-50 via-white to-blue-50/50 dark:from-blue-950/20 dark:via-background dark:to-blue-950/10 border border-blue-200/60 dark:border-blue-800/30 rounded-xl p-6 cursor-pointer transition-all duration-300 hover:shadow-xl hover:shadow-blue-500/10 hover:scale-[1.02] active:scale-[0.98]"
           onClick={() => navigate("/business-upload")}
         >
-          <div className="flex flex-col items-start">
-            <h3 className="font-medium">Add New Business</h3>
-            <p className="text-xs text-gray-500 text-left">Upload and manage your business listings</p>
+          <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-transparent rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+          <div className="relative flex items-center justify-between">
+            <div className="flex flex-col items-start space-y-2">
+              <h3 className="font-semibold text-lg text-gray-900 dark:text-gray-100 group-hover:text-blue-700 dark:group-hover:text-blue-300 transition-colors duration-200">
+                Add New Business
+              </h3>
+              <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
+                Upload and manage your business listings
+              </p>
+            </div>
+            <div className="flex-shrink-0 w-12 h-12 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center shadow-lg group-hover:shadow-blue-500/25 transition-all duration-300 group-hover:scale-110">
+              <Store className="h-6 w-6 text-white" />
+            </div>
           </div>
-          <Store className="h-5 w-5 text-blue-500" />
-        </Button>
-        <Button
-          variant="outline"
-          className="flex items-center justify-between p-4 h-auto border-dashed"
+        </div>
+
+        <div
+          className="group relative bg-gradient-to-br from-purple-50 via-white to-purple-50/50 dark:from-purple-950/20 dark:via-background dark:to-purple-950/10 border border-purple-200/60 dark:border-purple-800/30 rounded-xl p-6 cursor-pointer transition-all duration-300 hover:shadow-xl hover:shadow-purple-500/10 hover:scale-[1.02] active:scale-[0.98]"
           onClick={() => navigate("/all-banners")}
         >
-          <div className="flex flex-col items-start">
-            <h3 className="font-medium">Manage Ad Slots</h3>
-            <p className="text-xs text-gray-500 text-left">Book ad slots for your business</p>
+          <div className="absolute inset-0 bg-gradient-to-br from-purple-500/5 to-transparent rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+          <div className="relative flex items-center justify-between">
+            <div className="flex flex-col items-start space-y-2">
+              <h3 className="font-semibold text-lg text-gray-900 dark:text-gray-100 group-hover:text-purple-700 dark:group-hover:text-purple-300 transition-colors duration-200">
+                Manage Ad Slots
+              </h3>
+              <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
+                Book ad slots for your business
+              </p>
+            </div>
+            <div className="flex-shrink-0 w-12 h-12 bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl flex items-center justify-center shadow-lg group-hover:shadow-purple-500/25 transition-all duration-300 group-hover:scale-110">
+              <PlusCircle className="h-6 w-6 text-white" />
+            </div>
           </div>
-          <PlusCircle className="h-5 w-5 text-blue-500" />
-        </Button>
-        <Button
-          variant="outline"
-          className="flex items-center justify-between p-4 h-auto border-dashed"
+        </div>
+
+        <div
+          className="group relative bg-gradient-to-br from-emerald-50 via-white to-emerald-50/50 dark:from-emerald-950/20 dark:via-background dark:to-emerald-950/10 border border-emerald-200/60 dark:border-emerald-800/30 rounded-xl p-6 cursor-pointer transition-all duration-300 hover:shadow-xl hover:shadow-emerald-500/10 hover:scale-[1.02] active:scale-[0.98]"
           onClick={() => navigate("/reels")}
         >
-          <div className="flex flex-col items-start">
-            <h3 className="font-medium">Create Reels</h3>
-            <p className="text-xs text-gray-500 text-left">Upload and share video content</p>
+          <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/5 to-transparent rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+          <div className="relative flex items-center justify-between">
+            <div className="flex flex-col items-start space-y-2">
+              <h3 className="font-semibold text-lg text-gray-900 dark:text-gray-100 group-hover:text-emerald-700 dark:group-hover:text-emerald-300 transition-colors duration-200">
+                Create Reels
+              </h3>
+              <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
+                Upload and share video content
+              </p>
+            </div>
+            <div className="flex-shrink-0 w-12 h-12 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-xl flex items-center justify-center shadow-lg group-hover:shadow-emerald-500/25 transition-all duration-300 group-hover:scale-110">
+              <PlusCircle className="h-6 w-6 text-white" />
+            </div>
           </div>
-          <PlusCircle className="h-5 w-5 text-blue-500" />
-        </Button>
-        <Button
-          variant="outline"
-          className="flex items-center justify-between p-4 h-auto border-dashed"
+        </div>
+
+        <div
+          className="group relative bg-gradient-to-br from-orange-50 via-white to-orange-50/50 dark:from-orange-950/20 dark:via-background dark:to-orange-950/10 border border-orange-200/60 dark:border-orange-800/30 rounded-xl p-6 cursor-pointer transition-all duration-300 hover:shadow-xl hover:shadow-orange-500/10 hover:scale-[1.02] active:scale-[0.98]"
           onClick={() => navigate("/deal-upload")}
         >
-          <div className="flex flex-col items-start">
-            <h3 className="font-medium">Add Deals</h3>
-            <p className="text-xs text-gray-500 text-left">Create new special offers for customers</p>
+          <div className="absolute inset-0 bg-gradient-to-br from-orange-500/5 to-transparent rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+          <div className="relative flex items-center justify-between">
+            <div className="flex flex-col items-start space-y-2">
+              <h3 className="font-semibold text-lg text-gray-900 dark:text-gray-100 group-hover:text-orange-700 dark:group-hover:text-orange-300 transition-colors duration-200">
+                Add Deals
+              </h3>
+              <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
+                Create new special offers for customers
+              </p>
+            </div>
+            <div className="flex-shrink-0 w-12 h-12 bg-gradient-to-br from-orange-500 to-orange-600 rounded-xl flex items-center justify-center shadow-lg group-hover:shadow-orange-500/25 transition-all duration-300 group-hover:scale-110">
+              <PlusCircle className="h-6 w-6 text-white" />
+            </div>
           </div>
-          <PlusCircle className="h-5 w-5 text-blue-500" />
-        </Button>
+        </div>
       </div>
     </div>
   );
