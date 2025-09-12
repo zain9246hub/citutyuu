@@ -10,6 +10,7 @@ import { NotificationProvider } from "./contexts/NotificationContext";
 import { SubscriptionProvider } from "./contexts/SubscriptionContext";
 import { LocationProvider } from "./contexts/LocationContext";
 import { AdvertisementProvider } from "./contexts/AdvertisementContext";
+import { CityProvider } from "./contexts/CityContext";
 import ErrorBoundary from "./components/ErrorBoundary";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Index from "./pages/Index";
@@ -53,7 +54,8 @@ const App = () => {
                   <Sonner />
                   <BrowserRouter>
                     <LocationProvider>
-                  <Routes>
+                      <CityProvider>
+                   <Routes>
                     <Route path="/" element={<Index />} />
                     <Route path="/onboarding" element={<Onboarding />} />
                     {/* Remove ProtectedRoute from Reels to allow public access */}
@@ -93,7 +95,8 @@ const App = () => {
                     } />
                     {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                     <Route path="*" element={<NotFound />} />
-                  </Routes>
+                   </Routes>
+                      </CityProvider>
                     </LocationProvider>
                   </BrowserRouter>
                   </TooltipProvider>

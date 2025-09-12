@@ -3,9 +3,8 @@ import { useState, useCallback, useEffect, useRef, useMemo } from "react";
 import { FilterOptions } from "@/types/deal";
 import { throttle } from "@/utils/performanceUtils";
 
-export const useHomeSearch = (initialCity: string = "All Cities") => {
+export const useHomeSearch = () => {
   const [searchQuery, setSearchQuery] = useState("");
-  const [selectedCity, setSelectedCity] = useState<string>(initialCity);
   const [filterOpen, setFilterOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [filterOptions, setFilterOptions] = useState<FilterOptions>({
@@ -60,11 +59,6 @@ export const useHomeSearch = (initialCity: string = "All Cities") => {
     setIsLoading(true);
     setFilterOptions(newFilters);
     
-    // Update selected city if provided in filters
-    if (newFilters.selectedCity !== undefined) {
-      setSelectedCity(newFilters.selectedCity || "All Cities");
-    }
-    
     if (loadingTimeoutRef.current) {
       clearTimeout(loadingTimeoutRef.current);
     }
@@ -79,18 +73,13 @@ export const useHomeSearch = (initialCity: string = "All Cities") => {
     setFilterOpen(prev => !prev);
   }, []);
 
-  // Optimized city effect - prevent infinite re-renders
+  // Update filter options when needed
   useEffect(() => {
-    const newSelectedCity = selectedCity === "All Cities" ? null : selectedCity;
-    
-    // Only update if the value actually changed
-    if (filterOptions.selectedCity !== newSelectedCity) {
-      setFilterOptions(prev => ({
-        ...prev,
-        selectedCity: newSelectedCity
-      }));
-    }
-  }, [selectedCity]); // Remove filterOptions.selectedCity from dependencies
+    setFilterOptions(prev => ({
+      ...prev,
+      selectedCity: null
+    }));
+  }, []);
 
   // Cleanup on unmount
   useEffect(() => {
@@ -103,11 +92,9 @@ export const useHomeSearch = (initialCity: string = "All Cities") => {
 
   return {
     searchQuery,
-    selectedCity,
     filterOpen,
     isLoading,
     filterOptions,
-    setSelectedCity,
     handleSearchChange,
     handleFilterChange,
     handleFilterToggle,

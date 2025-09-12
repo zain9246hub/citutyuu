@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
+import { useCityContext } from "@/contexts/CityContext";
 import Navbar from "@/components/Navbar";
 import CityFilter from "@/components/CityFilter";
 import SearchFilterBar from "@/components/business/SearchFilterBar";
@@ -17,11 +18,9 @@ import { categoryOptions } from "@/components/filters/FilterOptions";
 const BusinessListing = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { selectedCity: globalCity, setSelectedCity: setGlobalCity } = useCityContext();
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
-  const [selectedCity, setSelectedCity] = useState<string | null>(() => 
-    localStorage.getItem('selectedCity') === 'All Cities' ? null : localStorage.getItem('selectedCity') || null
-  );
   const [showNearby, setShowNearby] = useState(false);
   const [filters, setFilters] = useState({
     categories: [],
@@ -70,23 +69,27 @@ const BusinessListing = () => {
     }
   }, [showNearby, toast]);
 
-  // Sync city selection with filters - single source of truth
+  // Sync city selection with global context
   const handleCitySelect = (city: string | null) => {
     console.log('[BusinessListing] City selected:', city);
-    setSelectedCity(city);
+    const normalizedCity = city === "All Cities" ? "All Cities" : city || "All Cities";
+    setGlobalCity(normalizedCity);
     setFilters(prevFilters => ({
       ...prevFilters,
       selectedCity: city
     }));
   };
 
+  // Convert global city to filter format
+  const selectedCityForFilter = globalCity === "All Cities" ? null : globalCity;
+  
   // Filter businesses based on all selected criteria
   const filteredBusinesses = filterBusinesses(
     businesses,
     {
       searchQuery,
       selectedCategory,
-      selectedCity: filters.selectedCity || selectedCity,
+      selectedCity: filters.selectedCity || selectedCityForFilter,
       categories: filters.categories,
       priceRange: filters.priceRange,
       showNearby,
@@ -112,9 +115,10 @@ const BusinessListing = () => {
     console.log('[BusinessListing] Filters changed:', newFilters);
     setFilters(newFilters);
     
-    // Update selectedCity if it changed in filters
-    if (newFilters.selectedCity !== selectedCity) {
-      setSelectedCity(newFilters.selectedCity);
+    // Update global city if it changed in filters
+    if (newFilters.selectedCity !== selectedCityForFilter) {
+      const normalizedCity = newFilters.selectedCity || "All Cities";
+      setGlobalCity(normalizedCity);
     }
   };
 
@@ -125,7 +129,7 @@ const BusinessListing = () => {
   const handleClearFilters = () => {
     setSearchQuery("");
     setSelectedCategory(null);
-    setSelectedCity(null);
+    setGlobalCity("All Cities");
     setShowNearby(false);
     setFilters({
       categories: [],
@@ -150,7 +154,7 @@ const BusinessListing = () => {
         
         {/* City filter */}
         <CityFilter 
-          selectedCity={selectedCity} 
+          selectedCity={selectedCityForFilter} 
           onSelectCity={handleCitySelect}
           autoPlay={true}
         />
@@ -169,7 +173,7 @@ const BusinessListing = () => {
           businesses={filteredBusinesses}
           showNearby={showNearby}
           userLocation={userLocation}
-          selectedCity={filters.selectedCity || selectedCity}
+          selectedCity={filters.selectedCity || selectedCityForFilter}
           onBusinessClick={handleBusinessClick}
           onClearFilters={handleClearFilters}
           sortBy={filters.sortBy}

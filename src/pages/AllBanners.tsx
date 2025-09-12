@@ -2,6 +2,7 @@
 import React, { useState } from "react";
 import TopNavbar from "@/components/TopNavbar";
 import CityFilter from "@/components/CityFilter";
+import { useCityContext } from "@/contexts/CityContext";
 import SlotCarousel from "@/components/SlotCarousel";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
@@ -14,9 +15,7 @@ import { generateMockSlotBanners } from "@/utils/slotUtils";
 const AllBanners = () => {
   const navigate = useNavigate();
   const { currentUser } = useAuth();
-  const [selectedCity, setSelectedCity] = useState<string | null>(() => 
-    localStorage.getItem('selectedCity') || null
-  );
+  const { selectedCity: globalCity, setSelectedCity: setGlobalCity } = useCityContext();
   const [filterOpen, setFilterOpen] = useState(false);
   const [bookingOpen, setBookingOpen] = useState(false);
   const [selectedSlot, setSelectedSlot] = useState<{ id: string; location: string } | null>(null);
@@ -87,11 +86,10 @@ const AllBanners = () => {
       
       <div className="px-4 py-2">
         <CityFilter 
-          selectedCity={selectedCity} 
+          selectedCity={globalCity === "All Cities" ? null : globalCity} 
           onSelectCity={(city) => {
-            const normalizedCity = city === "All Cities" ? null : city;
-            setSelectedCity(normalizedCity);
-            localStorage.setItem('selectedCity', normalizedCity || 'All Cities');
+            const normalizedCity = city === "All Cities" ? "All Cities" : city || "All Cities";
+            setGlobalCity(normalizedCity);
           }}
           autoPlay={true}
         />
@@ -114,7 +112,7 @@ const AllBanners = () => {
           paginationEnabled={currentUser.role === 'explorer'}
           itemsPerPage={20}
           autoPlay={currentUser.role === 'explorer'}
-          selectedCity={selectedCity}
+          selectedCity={globalCity === "All Cities" ? null : globalCity}
           maxVisible={currentUser.role === 'business' ? 1 : undefined}
           rotationIndex={rotationIndices[1]}
         />
@@ -132,7 +130,7 @@ const AllBanners = () => {
           showBookButton={currentUser.role === 'business'}
           onBook={(e) => handleBookSlot("2", "Standard Position")}
           onBookSuccess={handleBookingSuccess}
-          selectedCity={selectedCity}
+          selectedCity={globalCity === "All Cities" ? null : globalCity}
           maxVisible={currentUser.role === 'business' ? 1 : undefined}
           rotationIndex={rotationIndices[2]}
           autoPlay={currentUser.role === 'explorer'}

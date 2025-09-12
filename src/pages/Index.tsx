@@ -10,6 +10,7 @@ import DealsSection from "@/components/home/DealsSection";
 import { useHomeSearch } from "@/hooks/useHomeSearch";
 import { useDeals } from "@/hooks/useDeals";
 import { useDealNotifications } from "@/hooks/useDealNotifications";
+import { useCityContext } from "@/contexts/CityContext";
 import SlotSections from "@/components/home/SlotSections";
 import SearchSection from "@/components/home/SearchSection";
 import NotificationDemo from "@/components/notifications/NotificationDemo";
@@ -39,19 +40,17 @@ const Index = () => {
     };
   }, [currentUser?.role]);
   
-  const initialCity = useMemo(() => localStorage.getItem('selectedCity') || "All Cities", []);
+  const { selectedCity, setSelectedCity } = useCityContext();
   const {
     searchQuery,
-    selectedCity,
     filterOpen,
     isLoading,
     filterOptions,
-    setSelectedCity,
     handleSearchChange,
     handleFilterChange,
     handleFilterToggle,
     setFilterOpen
-  } = useHomeSearch(initialCity);
+  } = useHomeSearch();
   
   // Stable city filter for deals
   const cityFilterForDeals = useMemo(() => {
@@ -113,10 +112,7 @@ const Index = () => {
       
       <div className="flex-1 w-full pb-20 mx-auto max-w-md md:max-w-2xl lg:max-w-4xl">
         
-        <StateCitySelector
-          selectedCity={selectedCity}
-          onCityChange={setSelectedCity}
-        />
+        <StateCitySelector />
         
         <SlotSections 
           onViewAllBanners={handleViewAllBanners}

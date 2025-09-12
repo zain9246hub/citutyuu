@@ -15,17 +15,15 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { ComingSoonTag } from "@/components/ui/coming-soon-tag";
 import { useLocationContext } from "@/contexts/LocationContext";
+import { useCityContext } from "@/contexts/CityContext";
 
 interface StateCitySelectorProps {
-  selectedCity: string;
-  onCityChange: (city: string) => void;
+  // No props needed - using global context
 }
 
-const StateCitySelector: React.FC<StateCitySelectorProps> = ({
-  selectedCity,
-  onCityChange,
-}) => {
+const StateCitySelector: React.FC<StateCitySelectorProps> = () => {
   const { selectedState, setSelectedState, isLocationApproved, isCurrentLocationApproved } = useLocationContext();
+  const { selectedCity, setSelectedCity } = useCityContext();
   
   const [selectedStateLocal, setSelectedStateLocal] = useState<string>(selectedState);
 
@@ -41,10 +39,9 @@ const StateCitySelector: React.FC<StateCitySelectorProps> = ({
   // Ensure selectedCity remains valid when state changes
   useEffect(() => {
     if (!cityOptions.includes(selectedCity)) {
-      onCityChange("All Cities");
+      setSelectedCity("All Cities");
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedStateLocal]);
+  }, [selectedStateLocal, cityOptions, selectedCity, setSelectedCity]);
 
   // Show warning for non-approved locations
   const showLocationWarning = !isCurrentLocationApproved();
@@ -93,7 +90,7 @@ const StateCitySelector: React.FC<StateCitySelectorProps> = ({
         {/* City Select */}
         <Select
           value={selectedCity}
-          onValueChange={onCityChange}
+          onValueChange={setSelectedCity}
         >
           <SelectTrigger className="border-0 bg-transparent p-0 h-auto font-medium text-sm focus:ring-0 hover:text-primary transition-colors min-w-[140px]">
             <SelectValue placeholder="Select your city" />
