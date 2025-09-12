@@ -13,7 +13,7 @@ import BusinessImageUploader from "./BusinessImageUploader";
 import ProductServiceUploader from "./ProductServiceUploader";
 import { categoryOptions } from "@/components/filters/FilterOptions";
 import { MapPin } from "lucide-react";
-import { ALL_CITIES } from "@/utils/cityData";
+import { STATES_WITH_ALL, getCitiesForState } from "@/utils/indiaGeo";
 
 interface ProductService {
   id: string;
@@ -33,6 +33,7 @@ const BusinessUploadForm = () => {
     category: "",
     description: "",
     address: "",
+    state: "",
     city: "",
     pincode: "",
     phone: "",
@@ -54,7 +55,8 @@ const BusinessUploadForm = () => {
   const [debugMode, setDebugMode] = useState(false);
   const [submissionStep, setSubmissionStep] = useState("");
   
-  const cities = ALL_CITIES;
+  // Get cities based on selected state
+  const availableCities = getCitiesForState(businessData.state);
   
   const priceRanges = [
     { label: "₹ (Budget)", value: "₹" },
@@ -100,7 +102,14 @@ const BusinessUploadForm = () => {
 
   
   const handleSelectChange = (name: string, value: string) => {
-    setBusinessData((prev) => ({ ...prev, [name]: value }));
+    setBusinessData((prev) => {
+      const updated = { ...prev, [name]: value };
+      // Reset city when state changes
+      if (name === 'state') {
+        updated.city = '';
+      }
+      return updated;
+    });
   };
   
   const scrollToTop = () => {
@@ -136,6 +145,7 @@ const BusinessUploadForm = () => {
       if (!businessData.category) missingFields.push('Category');
       if (!businessData.description) missingFields.push('Description');
       if (!businessData.address) missingFields.push('Address');
+      if (!businessData.state) missingFields.push('State');
       if (!businessData.city) missingFields.push('City');
       if (!businessData.phone) missingFields.push('Phone');
       
@@ -184,8 +194,9 @@ const BusinessUploadForm = () => {
         rating: 4.0,
         reviewCount: 0,
         priceRange: businessData.priceRange || "₹₹",
-        location: `${businessData.address || "Test Address"}, ${businessData.city || "Mumbai"}`,
+        location: `${businessData.address || "Test Address"}, ${businessData.city || "Mumbai"}, ${businessData.state || "Maharashtra"}`,
         city: businessData.city || "Mumbai",
+        state: businessData.state || "Maharashtra",
         distance: "0.0 km",
         coordinates: { lat: 19.0760, lng: 72.8777 },
         image: images[0] || "/placeholder.svg",
@@ -472,16 +483,36 @@ const BusinessUploadForm = () => {
           </div>
           
           <div className="space-y-2">
+            <Label htmlFor="state">State <span className="text-red-500">*</span></Label>
+            <Select
+              value={businessData.state}
+              onValueChange={(value) => handleSelectChange("state", value)}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Select a state" />
+              </SelectTrigger>
+              <SelectContent className="max-h-[300px] z-50 bg-popover">
+                {STATES_WITH_ALL.filter(state => state !== "All States").map((state) => (
+                  <SelectItem key={state} value={state}>
+                    {state}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          
+          <div className="space-y-2">
             <Label htmlFor="city">City <span className="text-red-500">*</span></Label>
             <Select
               value={businessData.city}
               onValueChange={(value) => handleSelectChange("city", value)}
+              disabled={!businessData.state}
             >
               <SelectTrigger>
-                <SelectValue placeholder="Select a city" />
+                <SelectValue placeholder={businessData.state ? "Select a city" : "Select state first"} />
               </SelectTrigger>
-              <SelectContent>
-                {cities.map((city) => (
+              <SelectContent className="max-h-[300px] z-50 bg-popover">
+                {availableCities.map((city) => (
                   <SelectItem key={city} value={city}>
                     {city}
                   </SelectItem>
