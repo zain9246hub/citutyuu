@@ -36,7 +36,7 @@ const Profile = () => {
 
   return (
     <div className="flex flex-col min-h-screen bg-background">
-      <div className="flex-1 max-w-md mx-auto w-full pb-20 safe-area-inset">
+      <div className="flex-1 max-w-md mx-auto w-full pb-20">
         <ProfileHeader
           currentUser={currentUser}
           isEditing={isEditing}
@@ -44,7 +44,7 @@ const Profile = () => {
           onLogout={handleLogout}
         />
 
-        <div className="px-4">
+        <div className="px-4 pt-4">
           <Tabs defaultValue="profile" className="w-full" value={activeTab} onValueChange={setActiveTab}>
             {isEditing ? (
               <ProfileEditForm onCancel={() => setIsEditing(false)} />

@@ -141,9 +141,9 @@ const BusinessListing = () => {
   };
 
   return (
-    <div className="flex flex-col min-h-screen pb-24">
+    <div className="flex flex-col min-h-screen bg-background">
       {/* Header with search bar */}
-      <div className="fixed top-0 left-0 right-0 bg-background z-10 shadow-sm border-b border-border">
+      <div className="sticky top-0 z-40 bg-background shadow-sm border-b border-border">
         <SearchFilterBar
           searchQuery={searchQuery}
           onSearchChange={setSearchQuery}
@@ -168,7 +168,7 @@ const BusinessListing = () => {
       </div>
 
       {/* Business list */}
-      <div className="pt-48">
+      <div className="flex-1 pb-20">
         <BusinessList
           businesses={filteredBusinesses}
           showNearby={showNearby}

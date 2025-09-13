@@ -1,9 +1,10 @@
 
 import { useState } from "react";
 import Navbar from "../components/Navbar";
+import TopNavbar from "../components/TopNavbar";
 import FeaturedDeals from "../components/FeaturedDeals";
 import CityFilter from "../components/CityFilter";
-import { Search, Filter, X, Share2, ArrowLeft } from "lucide-react";
+import { Search, Filter, X, Share2 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -12,7 +13,6 @@ import FilterDialog from "@/components/FilterDialog";
 import { FilterOptions } from "@/types/deal";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
-import { useNavigate } from "react-router-dom";
 import { useDeals } from "@/hooks/useDeals";
 
 const Explore = () => {
@@ -30,7 +30,6 @@ const Explore = () => {
   
   const { currentUser } = useAuth();
   const { toast } = useToast();
-  const navigate = useNavigate();
   const isExplorer = currentUser?.role === 'explorer';
   const { sortedDeals } = useDeals(selectedCity, searchQuery, filterOptions);
   
@@ -70,40 +69,33 @@ const Explore = () => {
   };
   
   const hasActiveFilters = filterOptions.categories.length > 0 || filterOptions.priceRange;
+
+  const shareAction = isExplorer ? (
+    <Button 
+      variant="ghost" 
+      size="icon" 
+      onClick={handleShare}
+      className="text-foreground/70 hover:text-foreground"
+    >
+      <Share2 className="h-5 w-5" />
+    </Button>
+  ) : null;
   
   return (
-    <div className="flex flex-col min-h-screen bg-white">
+    <div className="flex flex-col min-h-screen bg-background">
+      <TopNavbar 
+        title={`Explore Deals ${sortedDeals ? `(${sortedDeals.length})` : ''}`} 
+        showBackButton={true}
+        actions={shareAction}
+      />
+      
       <div className="flex-1 max-w-md mx-auto w-full pb-20">
-        <div className="p-4 sticky top-0 bg-white z-10 border-b border-gray-100 shadow-sm">
-          <div className="flex justify-between items-center mb-4">
-            <div className="flex items-center gap-2">
-              <Button 
-                variant="ghost" 
-                size="icon" 
-                onClick={() => navigate(-1)}
-                className="mr-1"
-              >
-                <ArrowLeft className="h-5 w-5" />
-              </Button>
-              <h1 className="text-2xl font-bold">Explore Deals {sortedDeals && `(${sortedDeals.length})`}</h1>
-            </div>
-            {isExplorer && (
-              <Button 
-                variant="ghost" 
-                size="icon" 
-                onClick={handleShare}
-                className="text-gray-500 hover:text-gray-800"
-              >
-                <Share2 className="h-5 w-5" />
-              </Button>
-            )}
-          </div>
-          
+        <div className="p-4 sticky top-14 bg-background z-30 border-b border-border shadow-sm">
           <div className="relative flex items-center mb-4">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
             <Input
               placeholder="Search deals..."
-              className="pl-10 pr-12 py-2 w-full bg-gray-50 border border-gray-200 rounded-lg h-12 shadow-sm focus:shadow transition-shadow"
+              className="pl-10 pr-12 py-2 w-full bg-muted/50 border border-border rounded-lg h-12 shadow-sm focus:shadow transition-shadow"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
             />
