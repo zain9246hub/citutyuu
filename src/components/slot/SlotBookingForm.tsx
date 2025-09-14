@@ -35,6 +35,8 @@ const SlotBookingForm = ({ open, onClose, slotId, location, onSuccess }: SlotBoo
   const [formData, setFormData] = useState({
     title: "",
     description: "",
+    locationUrl: "",
+    phoneNumber: "",
   });
 
   // Get available cities based on selected state
@@ -148,7 +150,7 @@ const SlotBookingForm = ({ open, onClose, slotId, location, onSuccess }: SlotBoo
         setImages([]);
         setSelectedState("");
         setSelectedCity("");
-        setFormData({ title: "", description: "" });
+        setFormData({ title: "", description: "", locationUrl: "", phoneNumber: "" });
       }
     }, 500);
   };
@@ -261,6 +263,28 @@ const SlotBookingForm = ({ open, onClose, slotId, location, onSuccess }: SlotBoo
               placeholder="Describe your advertisement"
               value={formData.description}
               onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
+              required
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label>Location URL</Label>
+            <Input
+              type="url"
+              placeholder="https://your-business-website.com"
+              value={formData.locationUrl}
+              onChange={(e) => setFormData(prev => ({ ...prev, locationUrl: e.target.value }))}
+              required
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label>Phone Number</Label>
+            <Input
+              type="tel"
+              placeholder="+91 98765 43210"
+              value={formData.phoneNumber}
+              onChange={(e) => setFormData(prev => ({ ...prev, phoneNumber: e.target.value }))}
               required
             />
           </div>
