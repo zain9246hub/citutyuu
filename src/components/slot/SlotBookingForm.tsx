@@ -1,16 +1,18 @@
-import React, { useState } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { Progress } from "@/components/ui/progress";
-import { ImagePlus, VideoIcon, Loader2, X } from "lucide-react";
+import { ImagePlus, Loader2, X } from "lucide-react";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import GooglePayButton from "@/components/payment/GooglePayButton";
 import { useAdvertisements } from "@/contexts/AdvertisementContext";
 import { useAuth } from "@/contexts/AuthContext";
+import { ALL_STATES, getCitiesForState } from "@/utils/cityData";
 
 interface SlotBookingFormProps {
   open: boolean;
@@ -22,19 +24,35 @@ interface SlotBookingFormProps {
 
 const SlotBookingForm = ({ open, onClose, slotId, location, onSuccess }: SlotBookingFormProps) => {
   const [images, setImages] = useState<File[]>([]);
-  const [video, setVideo] = useState<File | null>(null);
-  const [videoPreview, setVideoPreview] = useState<string | null>(null);
   const [uploading, setUploading] = useState(false);
   const [progress, setProgress] = useState(0);
   const [showPayment, setShowPayment] = useState(false);
+  const [selectedState, setSelectedState] = useState<string>("");
+  const [selectedCity, setSelectedCity] = useState<string>("");
   const { toast } = useToast();
   const { addUploadedAd } = useAdvertisements();
   const { currentUser } = useAuth();
   const [formData, setFormData] = useState({
     title: "",
     description: "",
-    targetUrl: "",
   });
+
+  // Get available cities based on selected state
+  const availableCities = useMemo(() => {
+    if (!selectedState || selectedState === "All States") {
+      return [];
+    }
+    return getCitiesForState(selectedState);
+  }, [selectedState]);
+
+  // Reset city selection when state changes
+  useEffect(() => {
+    if (selectedState && selectedState !== "All States" && availableCities.length > 0) {
+      if (!availableCities.includes(selectedCity)) {
+        setSelectedCity("");
+      }
+    }
+  }, [selectedState, availableCities, selectedCity]);
 
   // Fixed slot pricing for all positions
   const slotPrice = 500;
@@ -52,37 +70,25 @@ const SlotBookingForm = ({ open, onClose, slotId, location, onSuccess }: SlotBoo
     setImages(files);
   };
 
-  const handleVideoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      if (file.size > 50 * 1024 * 1024) { // 50MB limit
-        toast({
-          title: "File too large",
-          description: "Please upload a video smaller than 50MB",
-          variant: "destructive",
-        });
-        return;
-      }
-      setVideo(file);
-      setVideoPreview(URL.createObjectURL(file));
-    }
-  };
-
   const removeImage = (index: number) => {
     setImages(prev => prev.filter((_, i) => i !== index));
   };
 
-  const removeVideo = () => {
-    setVideo(null);
-    setVideoPreview(null);
-  };
-
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (!images.length && !video) {
+    if (!images.length) {
       toast({
-        title: "Media required",
-        description: "Please upload at least one image or video",
+        title: "Images required",
+        description: "Please upload at least one image",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (!selectedState || !selectedCity) {
+      toast({
+        title: "Location required",
+        description: "Please select both state and city",
         variant: "destructive",
       });
       return;
@@ -114,7 +120,6 @@ const SlotBookingForm = ({ open, onClose, slotId, location, onSuccess }: SlotBoo
         
         // Convert uploaded files to data URLs for persistence
         const imageUrl = images.length > 0 ? await fileToDataURL(images[0]) : undefined;
-        const videoUrlToSave = video ? await fileToDataURL(video) : undefined;
         
         // Determine position based on slotId or location
         // If location mentions "Premium" it's position 1, otherwise position 2  
@@ -124,12 +129,10 @@ const SlotBookingForm = ({ open, onClose, slotId, location, onSuccess }: SlotBoo
         addUploadedAd({
           slotId,
           position,
-          location,
+          location: `${selectedCity}, ${selectedState}`,
           title: formData.title,
           description: formData.description,
-          targetUrl: formData.targetUrl,
           imageUrl,
-          videoUrl: videoUrlToSave,
           uploadedBy: currentUser?.name || 'Anonymous'
         });
         
@@ -143,9 +146,9 @@ const SlotBookingForm = ({ open, onClose, slotId, location, onSuccess }: SlotBoo
         
         // Reset form
         setImages([]);
-        setVideo(null);
-        setVideoPreview(null);
-        setFormData({ title: "", description: "", targetUrl: "" });
+        setSelectedState("");
+        setSelectedCity("");
+        setFormData({ title: "", description: "" });
       }
     }, 500);
   };
@@ -263,57 +266,44 @@ const SlotBookingForm = ({ open, onClose, slotId, location, onSuccess }: SlotBoo
           </div>
 
           <div className="space-y-2">
-            <Label>Target URL</Label>
-            <Input
-              placeholder="https://your-website.com"
-              type="url"
-              value={formData.targetUrl}
-              onChange={(e) => setFormData(prev => ({ ...prev, targetUrl: e.target.value }))}
-            />
+            <Label>State</Label>
+            <Select value={selectedState} onValueChange={setSelectedState} required>
+              <SelectTrigger>
+                <SelectValue placeholder="Select a state" />
+              </SelectTrigger>
+              <SelectContent>
+                {ALL_STATES.map((state) => (
+                  <SelectItem key={state} value={state}>
+                    {state}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
 
           <div className="space-y-2">
-            <Label>Upload Video (Optional, max 50MB)</Label>
-            <div className="flex items-center gap-2">
-              <Input
-                type="file"
-                accept="video/*"
-                onChange={handleVideoChange}
-                className="hidden"
-                id="video-upload"
-              />
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => document.getElementById("video-upload")?.click()}
-                className="w-full"
-                disabled={!!video}
-              >
-                <VideoIcon className="w-4 h-4 mr-2" />
-                Select Video
-              </Button>
-            </div>
-
-            {videoPreview && (
-              <div className="relative mt-2">
-                <video
-                  src={videoPreview}
-                  className="w-full h-48 object-cover rounded-md"
-                  controls
-                />
-                <button
-                  type="button"
-                  onClick={removeVideo}
-                  className="absolute top-2 right-2 p-1 bg-red-500 rounded-full"
-                >
-                  <X className="w-4 h-4 text-white" />
-                </button>
-              </div>
-            )}
+            <Label>City</Label>
+            <Select 
+              value={selectedCity} 
+              onValueChange={setSelectedCity}
+              disabled={!selectedState || selectedState === "All States"}
+              required
+            >
+              <SelectTrigger>
+                <SelectValue placeholder={selectedState ? "Select a city" : "Select state first"} />
+              </SelectTrigger>
+              <SelectContent>
+                {availableCities.map((city) => (
+                  <SelectItem key={city} value={city}>
+                    {city}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
 
           <div className="space-y-2">
-            <Label>Upload Images {video ? "(Disabled when video is uploaded)" : "(Max 5)"}</Label>
+            <Label>Upload Images (Max 5)</Label>
             <div className="flex items-center gap-2">
               <Input
                 type="file"
@@ -322,21 +312,20 @@ const SlotBookingForm = ({ open, onClose, slotId, location, onSuccess }: SlotBoo
                 onChange={handleImageChange}
                 className="hidden"
                 id="image-upload"
-                disabled={!!video}
               />
               <Button
                 type="button"
                 variant="outline"
                 onClick={() => document.getElementById("image-upload")?.click()}
                 className="w-full"
-                disabled={!!video}
+                
               >
                 <ImagePlus className="w-4 h-4 mr-2" />
                 Select Images
               </Button>
             </div>
 
-            {images.length > 0 && !video && (
+            {images.length > 0 && (
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 mt-2">
                 {images.map((image, index) => (
                   <div key={index} className="relative group">
