@@ -36,6 +36,7 @@ const SlotBookingForm = ({ open, onClose, slotId, location, onSuccess }: SlotBoo
     title: "",
     description: "",
     locationUrl: "",
+    websiteUrl: "",
     phoneNumber: "",
   });
 
@@ -135,6 +136,9 @@ const SlotBookingForm = ({ open, onClose, slotId, location, onSuccess }: SlotBoo
           title: formData.title,
           description: formData.description,
           imageUrl,
+          locationUrl: formData.locationUrl,
+          websiteUrl: formData.websiteUrl,
+          phoneNumber: formData.phoneNumber,
           uploadedBy: currentUser?.name || 'Anonymous'
         });
         
@@ -150,7 +154,7 @@ const SlotBookingForm = ({ open, onClose, slotId, location, onSuccess }: SlotBoo
         setImages([]);
         setSelectedState("");
         setSelectedCity("");
-        setFormData({ title: "", description: "", locationUrl: "", phoneNumber: "" });
+        setFormData({ title: "", description: "", locationUrl: "", websiteUrl: "", phoneNumber: "" });
       }
     }, 500);
   };
@@ -271,10 +275,20 @@ const SlotBookingForm = ({ open, onClose, slotId, location, onSuccess }: SlotBoo
             <Label>Location URL</Label>
             <Input
               type="url"
-              placeholder="https://your-business-website.com"
+              placeholder="https://maps.google.com/?q=your+business+address"
               value={formData.locationUrl}
               onChange={(e) => setFormData(prev => ({ ...prev, locationUrl: e.target.value }))}
               required
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label>Website URL</Label>
+            <Input
+              type="url"
+              placeholder="https://your-business-website.com"
+              value={formData.websiteUrl}
+              onChange={(e) => setFormData(prev => ({ ...prev, websiteUrl: e.target.value }))}
             />
           </div>
 

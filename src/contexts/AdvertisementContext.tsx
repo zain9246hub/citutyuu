@@ -7,7 +7,11 @@ export interface UploadedAd {
   location: string;
   title: string;
   description: string;
-  targetUrl?: string;
+  // Optional links and contact
+  targetUrl?: string; // legacy/general target URL
+  locationUrl?: string; // e.g., Google Maps link
+  websiteUrl?: string; // official website
+  phoneNumber?: string;
   imageUrl?: string;
   videoUrl?: string;
   uploadedBy: string;
