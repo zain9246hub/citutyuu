@@ -107,6 +107,10 @@ export const generateMockSlotBanners = (
     price: position === 1 ? 1000 : 750,
     isUploadedAd: true, // Mark as uploaded ad
     videoUrl: ad.videoUrl,
+    // Include contact information from uploaded ads
+    phoneNumber: ad.phoneNumber,
+    locationUrl: ad.locationUrl,
+    websiteUrl: ad.websiteUrl,
   }));
 
   // Create remaining mock slots

@@ -42,14 +42,20 @@ const FullBannerModal: React.FC<FullBannerModalProps> = ({
           }
           break;
         case 'website':
-          if (banner.targetUrl) {
+          if (banner.websiteUrl) {
+            window.open(banner.websiteUrl, '_blank', 'noopener,noreferrer');
+          } else if (banner.targetUrl) {
             window.open(banner.targetUrl, '_blank', 'noopener,noreferrer');
           } else {
             console.warn('[FullBannerModal] No website URL available');
           }
           break;
         case 'location':
-          if (banner.location) {
+          if (banner.locationUrl) {
+            // Use the specific location URL if available (e.g., Google Maps link)
+            window.open(banner.locationUrl, '_blank', 'noopener,noreferrer');
+          } else if (banner.location) {
+            // Fallback to generic Google Maps search
             const mapsUrl = `https://maps.google.com?q=${encodeURIComponent(banner.location)}`;
             window.open(mapsUrl, '_blank', 'noopener,noreferrer');
           } else {
@@ -181,7 +187,7 @@ const FullBannerModal: React.FC<FullBannerModalProps> = ({
                 View Location
               </Button>
               
-              {banner.targetUrl && (
+              {(banner.websiteUrl || banner.targetUrl) && (
                 <Button 
                   variant="outline" 
                   size="sm"
@@ -193,21 +199,25 @@ const FullBannerModal: React.FC<FullBannerModalProps> = ({
                 </Button>
               )}
               
-              <Button 
-                variant="outline" 
-                size="sm"
-                onClick={() => handleContactAction('phone', '+91-98765-43210')}
-                className="flex items-center gap-2"
-              >
-                <Phone className="h-4 w-4" />
-                Call Now
-              </Button>
+              {banner.phoneNumber && (
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  onClick={() => handleContactAction('phone', banner.phoneNumber)}
+                  className="flex items-center gap-2"
+                >
+                  <Phone className="h-4 w-4" />
+                  Call Now
+                </Button>
+              )}
               
               <Button 
                 variant="outline" 
                 size="sm"
                 onClick={() => handleContactAction('email', 'info@business.com')}
                 className="flex items-center gap-2"
+                disabled={!banner.isUploadedAd}
+                title={!banner.isUploadedAd ? "Email contact not available for demo ads" : "Send Email"}
               >
                 <Mail className="h-4 w-4" />
                 Send Email

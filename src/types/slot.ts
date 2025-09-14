@@ -15,6 +15,10 @@ export interface SlotBanner {
   isUploadedAd?: boolean;
   videoUrl?: string;
   businessId?: string;
+  // Contact information from uploaded ads
+  phoneNumber?: string;
+  locationUrl?: string;
+  websiteUrl?: string;
 }
 
 export interface SlotCarouselProps {
