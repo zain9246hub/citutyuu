@@ -15,8 +15,13 @@ export interface UploadedAd {
   imageUrl?: string;
   videoUrl?: string;
   uploadedBy: string;
-  uploadedAt: Date;
+  uploadedAt: string;
   isActive: boolean;
+  // Subscription tracking
+  subscriptionStartDate: string;
+  subscriptionEndDate: string;
+  monthlyPrice: number;
+  isRenewal?: boolean;
 }
 
 interface AdvertisementContextType {
@@ -24,6 +29,8 @@ interface AdvertisementContextType {
   addUploadedAd: (ad: Omit<UploadedAd, 'id' | 'uploadedAt' | 'isActive'>) => void;
   getAdsByPosition: (position: number, location?: string) => UploadedAd[];
   removeAd: (id: string) => void;
+  renewAd: (id: string) => void;
+  getExpiringSoonAds: () => UploadedAd[];
 }
 
 const AdvertisementContext = createContext<AdvertisementContextType | undefined>(undefined);
@@ -45,12 +52,7 @@ export const AdvertisementProvider: React.FC<{ children: React.ReactNode }> = ({
     if (savedAds) {
       try {
         const parsedAds = JSON.parse(savedAds);
-        // Convert uploadedAt back to Date objects
-        const adsWithDates = parsedAds.map((ad: any) => ({
-          ...ad,
-          uploadedAt: new Date(ad.uploadedAt)
-        }));
-        setUploadedAds(adsWithDates);
+        setUploadedAds(parsedAds);
       } catch (error) {
         console.error('Error loading uploaded ads:', error);
       }
@@ -66,11 +68,38 @@ export const AdvertisementProvider: React.FC<{ children: React.ReactNode }> = ({
     const newAd: UploadedAd = {
       ...ad,
       id: `ad_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
-      uploadedAt: new Date(),
+      uploadedAt: new Date().toISOString(),
       isActive: true
     };
     
     setUploadedAds(prev => [newAd, ...prev]);
+  };
+
+  const renewAd = (id: string) => {
+    setUploadedAds(prev => prev.map(ad => {
+      if (ad.id === id) {
+        const now = new Date();
+        const newEndDate = new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000);
+        return {
+          ...ad,
+          subscriptionStartDate: now.toISOString(),
+          subscriptionEndDate: newEndDate.toISOString(),
+          isRenewal: true,
+          isActive: true
+        };
+      }
+      return ad;
+    }));
+  };
+
+  const getExpiringSoonAds = () => {
+    const now = new Date();
+    const oneDayFromNow = new Date(now.getTime() + 24 * 60 * 60 * 1000);
+    
+    return uploadedAds.filter(ad => {
+      const endDate = new Date(ad.subscriptionEndDate);
+      return ad.isActive && endDate > now && endDate <= oneDayFromNow;
+    });
   };
 
   const getAdsByPosition = (position: number, location?: string) => {
@@ -85,12 +114,33 @@ export const AdvertisementProvider: React.FC<{ children: React.ReactNode }> = ({
     setUploadedAds(prev => prev.filter(ad => ad.id !== id));
   };
 
+  // Check for expired ads and deactivate them
+  React.useEffect(() => {
+    const checkExpiredAds = () => {
+      const now = new Date();
+      setUploadedAds(prev => prev.map(ad => {
+        const endDate = new Date(ad.subscriptionEndDate);
+        if (endDate < now && ad.isActive) {
+          return { ...ad, isActive: false };
+        }
+        return ad;
+      }));
+    };
+
+    // Check on mount and every hour
+    checkExpiredAds();
+    const interval = setInterval(checkExpiredAds, 60 * 60 * 1000);
+    return () => clearInterval(interval);
+  }, []);
+
   return (
-    <AdvertisementContext.Provider value={{
-      uploadedAds,
-      addUploadedAd,
+    <AdvertisementContext.Provider value={{ 
+      uploadedAds, 
+      addUploadedAd, 
       getAdsByPosition,
-      removeAd
+      removeAd,
+      renewAd,
+      getExpiringSoonAds
     }}>
       {children}
     </AdvertisementContext.Provider>

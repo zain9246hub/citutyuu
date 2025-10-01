@@ -20,9 +20,11 @@ interface SlotBookingFormProps {
   slotId: string;
   location: string;
   onSuccess?: () => void;
+  isRenewal?: boolean;
+  existingAdId?: string;
 }
 
-const SlotBookingForm = ({ open, onClose, slotId, location, onSuccess }: SlotBookingFormProps) => {
+const SlotBookingForm = ({ open, onClose, slotId, location, onSuccess, isRenewal = false, existingAdId }: SlotBookingFormProps) => {
   const [images, setImages] = useState<File[]>([]);
   const [uploading, setUploading] = useState(false);
   const [progress, setProgress] = useState(0);
@@ -30,7 +32,7 @@ const SlotBookingForm = ({ open, onClose, slotId, location, onSuccess }: SlotBoo
   const [selectedState, setSelectedState] = useState<string>("");
   const [selectedCity, setSelectedCity] = useState<string>("");
   const { toast } = useToast();
-  const { addUploadedAd } = useAdvertisements();
+  const { addUploadedAd, renewAd } = useAdvertisements();
   const { currentUser } = useAuth();
   const [formData, setFormData] = useState({
     title: "",
@@ -57,8 +59,8 @@ const SlotBookingForm = ({ open, onClose, slotId, location, onSuccess }: SlotBoo
     }
   }, [selectedState, availableCities, selectedCity]);
 
-  // Fixed slot pricing for all positions
-  const slotPrice = 500;
+  // Monthly subscription pricing
+  const slotPrice = 2999;
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []);
@@ -113,7 +115,23 @@ const SlotBookingForm = ({ open, onClose, slotId, location, onSuccess }: SlotBoo
     setUploading(true);
     setShowPayment(false);
     
-    // Simulate upload progress
+    // Handle renewal vs new booking
+    if (isRenewal && existingAdId) {
+      // Renew existing ad
+      setTimeout(() => {
+        renewAd(existingAdId);
+        setUploading(false);
+        toast({
+          title: "Subscription Renewed!",
+          description: "Your advertisement has been renewed for another 30 days.",
+        });
+        onSuccess?.();
+        onClose();
+      }, 1000);
+      return;
+    }
+    
+    // Simulate upload progress for new booking
     let progress = 0;
     const interval = setInterval(async () => {
       progress += 10;
@@ -125,8 +143,12 @@ const SlotBookingForm = ({ open, onClose, slotId, location, onSuccess }: SlotBoo
         const imageUrl = images.length > 0 ? await fileToDataURL(images[0]) : undefined;
         
         // Determine position based on slotId or location
-        // If location mentions "Premium" it's position 1, otherwise position 2  
-        const position = location.toLowerCase().includes('premium') ? 1 : 2;
+        // If location mentions "Limited" or "Timer" it's position 2, otherwise position 1  
+        const position = location.toLowerCase().includes('limited') || location.toLowerCase().includes('timer') ? 2 : 1;
+        
+        // Calculate subscription dates (30 days from now)
+        const startDate = new Date();
+        const endDate = new Date(startDate.getTime() + 30 * 24 * 60 * 60 * 1000);
         
         // Add the uploaded ad to context
         addUploadedAd({
@@ -139,13 +161,16 @@ const SlotBookingForm = ({ open, onClose, slotId, location, onSuccess }: SlotBoo
           locationUrl: formData.locationUrl,
           websiteUrl: formData.websiteUrl,
           phoneNumber: formData.phoneNumber,
-          uploadedBy: currentUser?.name || 'Anonymous'
+          uploadedBy: currentUser?.name || 'Anonymous',
+          subscriptionStartDate: startDate.toISOString(),
+          subscriptionEndDate: endDate.toISOString(),
+          monthlyPrice: 2999
         });
         
         setUploading(false);
         toast({
-          title: "Success",
-          description: "Your advertisement has been uploaded and is now live!",
+          title: "Success!",
+          description: "Your advertisement is now live for 30 days! You'll receive a renewal reminder 1 day before expiry.",
         });
         onSuccess?.();
         onClose();
@@ -185,17 +210,20 @@ const SlotBookingForm = ({ open, onClose, slotId, location, onSuccess }: SlotBoo
       <Dialog open={open} onOpenChange={onClose}>
         <DialogContent className="sm:max-w-[400px]">
           <DialogHeader>
-            <DialogTitle>Complete Payment</DialogTitle>
+            <DialogTitle>{isRenewal ? 'Renew Subscription' : 'Complete Payment'}</DialogTitle>
             <DialogDescription>
-              Pay for slot #{slotId} in {location}
+              {isRenewal ? 'Renew your advertisement for another 30 days' : `Monthly subscription for slot in ${location}`}
             </DialogDescription>
           </DialogHeader>
 
           <div className="space-y-4">
             <div className="bg-gray-50 p-4 rounded-md">
               <div className="flex justify-between items-center">
-                <span>Slot #{slotId} booking fee:</span>
+                <span>{isRenewal ? 'Monthly Renewal' : 'Monthly Subscription'}:</span>
                 <span className="font-medium">₹{slotPrice}</span>
+              </div>
+              <div className="text-xs text-muted-foreground mt-1">
+                Valid for 30 days • Auto-renewal reminder 1 day before expiry
               </div>
               <div className="border-t border-gray-200 mt-2 pt-2 flex justify-between items-center font-medium">
                 <span>Total:</span>
@@ -242,12 +270,15 @@ const SlotBookingForm = ({ open, onClose, slotId, location, onSuccess }: SlotBoo
   return (
     <Dialog open={open} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-[500px] max-h-[90vh] flex flex-col">
-        <DialogHeader className="flex-shrink-0">
-          <DialogTitle>Book Advertisement Slot</DialogTitle>
-          <DialogDescription>
-            Upload your advertisement content for slot #{slotId} in {location}
-          </DialogDescription>
-        </DialogHeader>
+          <DialogHeader className="flex-shrink-0">
+            <DialogTitle>{isRenewal ? 'Renew Advertisement' : 'Book Advertisement Slot'}</DialogTitle>
+            <DialogDescription>
+              {isRenewal 
+                ? 'Renew your existing advertisement for another 30 days at ₹2999/month'
+                : 'Upload your advertisement content - ₹2999/month (30 days)'
+              }
+            </DialogDescription>
+          </DialogHeader>
 
         <div className="flex-1 overflow-y-auto px-1">
           <form onSubmit={handleSubmit} className="space-y-4">
@@ -394,9 +425,18 @@ const SlotBookingForm = ({ open, onClose, slotId, location, onSuccess }: SlotBoo
             </div>
           )}
 
-          <div className="bg-blue-50 p-3 rounded-md">
-            <p className="text-sm text-blue-700">
-              Slot #{slotId} booking fee: ₹{slotPrice}
+          <div className="bg-blue-50 p-3 rounded-md space-y-1">
+            <p className="text-sm text-blue-700 font-medium">
+              Monthly Subscription: ₹{slotPrice}
+            </p>
+            <p className="text-xs text-blue-600">
+              • Valid for 30 days from payment
+            </p>
+            <p className="text-xs text-blue-600">
+              • Renewal reminder sent 1 day before expiry
+            </p>
+            <p className="text-xs text-blue-600">
+              • Easy one-click renewal option
             </p>
           </div>
 

@@ -4,6 +4,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import BusinessAnalytics from "@/components/analytics/BusinessAnalytics";
 import DealCard from "@/components/DealCard";
 import NotificationsTab from "@/components/profile/NotificationsTab";
+import SubscriptionManagement from "@/components/profile/SubscriptionManagement";
 import { Deal } from "@/types/deal";
 import { List, PlusCircle, Store } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -127,7 +128,7 @@ const ProfileTabs = ({ currentUser, activeTab, setActiveTab, isEditing }: Profil
       <TabsList 
         className="grid w-full" 
         style={{ 
-          gridTemplateColumns: currentUser.role === "business" ? "repeat(4, 1fr)" : "repeat(3, 1fr)" 
+          gridTemplateColumns: currentUser.role === "business" ? "repeat(5, 1fr)" : "repeat(3, 1fr)" 
         }}
       >
         <TabsTrigger value="profile">Profile</TabsTrigger>
@@ -135,6 +136,7 @@ const ProfileTabs = ({ currentUser, activeTab, setActiveTab, isEditing }: Profil
           <>
             <TabsTrigger value="analytics">Analytics</TabsTrigger>
             <TabsTrigger value="manage">Manage</TabsTrigger>
+            <TabsTrigger value="subscriptions">Subscriptions</TabsTrigger>
           </>
         )}
         {currentUser.role === "explorer" && (
@@ -199,6 +201,10 @@ const ProfileTabs = ({ currentUser, activeTab, setActiveTab, isEditing }: Profil
           
           <TabsContent value="manage" className="p-4 bg-background rounded-lg border">
             {renderBusinessManagementContent()}
+          </TabsContent>
+
+          <TabsContent value="subscriptions" className="p-4 bg-background rounded-lg border">
+            <SubscriptionManagement />
           </TabsContent>
         </>
       )}

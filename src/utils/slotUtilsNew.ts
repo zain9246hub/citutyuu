@@ -91,6 +91,9 @@ export const generateMockSlotBanners = (
     (!selectedCity || ad.location.toLowerCase().includes(selectedCity.toLowerCase()))
   );
 
+  // If there are uploaded ads, show them + only ONE available slot
+  const showOnlyOneAvailable = relevantUploadedAds.length > 0;
+
   // Convert uploaded ads to SlotBanner format
   const uploadedBannerSlots: SlotBanner[] = relevantUploadedAds.map(ad => ({
     id: ad.id,
@@ -113,9 +116,9 @@ export const generateMockSlotBanners = (
     websiteUrl: ad.websiteUrl,
   }));
 
-  // Create remaining mock slots
-  const slotsPerPosition = 6;
-  const remainingSlots = slotsPerPosition - uploadedBannerSlots.length;
+  // Create remaining mock slots - only ONE available slot if there are uploaded ads
+  const slotsPerPosition = showOnlyOneAvailable ? 1 : 6;
+  const remainingSlots = slotsPerPosition;
   const startIndex = rotationIndex % totalBanners.length;
   
   const mockSlots: SlotBanner[] = [];
@@ -124,23 +127,23 @@ export const generateMockSlotBanners = (
     const banner = totalBanners[bannerIndex];
     
     mockSlots.push({
-      id: `slot-${position}-${uploadedBannerSlots.length + i + 1}`,
+      id: `slot-${position}-available-${Date.now()}-${i}`,
       position,
       adContent: banner.title,
-      location: banner.location,
+      location: selectedCity || banner.location,
       backgroundColor: "bg-gradient-to-br from-gray-50 to-gray-100",
-      imageUrl: banner.imageUrl, // Always include image for demo
-      isBooked: Math.random() > 0.3, // 70% chance of being booked to show images
-      title: banner.title,
-      description: banner.description,
-      businessName: banner.businessName,
-      targetUrl: banner.targetUrl,
-      price: position === 1 ? 1000 : 750,
-      businessId: `business-${bannerIndex + 1}`, // Mock business ID for navigation
+      imageUrl: banner.imageUrl,
+      isBooked: false, // Always show as available
+      title: "Available Slot",
+      description: "Book this premium slot for your business - ₹2999/month",
+      businessName: "Available for Booking",
+      targetUrl: "",
+      price: 2999, // Monthly subscription price
+      businessId: undefined,
     });
   }
   
-  // Prioritize uploaded ads first, then mock slots
+  // Prioritize uploaded ads first, then available slots
   return [...uploadedBannerSlots, ...mockSlots];
 };
 

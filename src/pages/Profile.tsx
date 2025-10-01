@@ -8,6 +8,7 @@ import NotLoggedIn from "@/components/profile/NotLoggedIn";
 import ProfileHeader from "@/components/profile/ProfileHeader";
 import ProfileTabs from "@/components/profile/ProfileTabs";
 import { Tabs } from "@/components/ui/tabs";
+import { useAdExpiry } from "@/hooks/useAdExpiry";
 
 const Profile = () => {
   const navigate = useNavigate();
@@ -15,6 +16,9 @@ const Profile = () => {
   const { toast } = useToast();
   const [activeTab, setActiveTab] = useState("profile");
   const [isEditing, setIsEditing] = useState(false);
+  
+  // Track expiring ads and show notifications
+  useAdExpiry();
   
   const handleLogout = () => {
     logout();
