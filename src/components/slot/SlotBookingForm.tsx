@@ -142,9 +142,8 @@ const SlotBookingForm = ({ open, onClose, slotId, location, onSuccess, isRenewal
         // Convert uploaded files to data URLs for persistence
         const imageUrl = images.length > 0 ? await fileToDataURL(images[0]) : undefined;
         
-        // Determine position based on slotId or location
-        // If location mentions "Limited" or "Timer" it's position 2, otherwise position 1  
-        const position = location.toLowerCase().includes('limited') || location.toLowerCase().includes('timer') ? 2 : 1;
+        // Use slotId directly as position (slotId is "1" or "2")
+        const position = parseInt(slotId) || 1;
         
         // Calculate subscription dates (30 days from now)
         const startDate = new Date();
