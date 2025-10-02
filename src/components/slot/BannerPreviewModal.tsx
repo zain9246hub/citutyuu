@@ -130,7 +130,7 @@ const BannerPreviewModal: React.FC<BannerPreviewModalProps> = ({
                 Visit Business Profile
               </Button>
             </div>
-          ) : showBookButton && onBook ? (
+          ) : (showBookButton && onBook && !banner.isBooked) ? (
             <Button 
               onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
                 try {

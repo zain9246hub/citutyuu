@@ -117,7 +117,7 @@ export const generateMockSlotBanners = (
   }));
 
   // Create remaining mock slots - only ONE available slot if there are uploaded ads
-  const slotsPerPosition = showOnlyOneAvailable ? 1 : 6;
+  const slotsPerPosition = 1; // Always generate exactly one available slot
   const remainingSlots = slotsPerPosition;
   const startIndex = rotationIndex % totalBanners.length;
   
