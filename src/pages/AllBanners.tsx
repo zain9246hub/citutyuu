@@ -10,11 +10,13 @@ import { Filter } from "lucide-react";
 import FilterDialog from "@/components/FilterDialog";
 import { useNavigate } from "react-router-dom";
 import SlotBookingForm from "@/components/slot/SlotBookingForm";
-import { generateMockSlotBanners } from "@/utils/slotUtils";
+import { generateMockSlotBanners } from "@/utils/slotUtilsNew";
+import { useAdvertisements } from "@/contexts/AdvertisementContext";
 
 const AllBanners = () => {
   const navigate = useNavigate();
   const { currentUser } = useAuth();
+  const { uploadedAds } = useAdvertisements();
   const { selectedCity: globalCity, setSelectedCity: setGlobalCity } = useCityContext();
   const [filterOpen, setFilterOpen] = useState(false);
   const [bookingOpen, setBookingOpen] = useState(false);
@@ -28,9 +30,11 @@ const AllBanners = () => {
     showPopular: false
   });
 
-  // Get banner counts
-  const position1Count = generateMockSlotBanners(1, 0).length;
-  const position2Count = generateMockSlotBanners(2, 0).length;
+  const normalizedCity = globalCity === "All Cities" ? null : globalCity;
+
+  // Get banner counts (always exactly one available slot per position)
+  const position1Count = generateMockSlotBanners(1, 0, uploadedAds, normalizedCity).filter(b => !b.isBooked).length;
+  const position2Count = generateMockSlotBanners(2, 0, uploadedAds, normalizedCity).filter(b => !b.isBooked).length;
 
   // Allow both explorers and business users to view banners
   if (!currentUser || (currentUser.role !== 'explorer' && currentUser.role !== 'business')) {

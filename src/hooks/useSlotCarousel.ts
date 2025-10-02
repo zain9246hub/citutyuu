@@ -105,18 +105,26 @@ export const useSlotCarousel = ({
         console.warn('[SlotCarousel] Some slides filtered out due to missing data');
       }
       
+      // Reorder so available slots come first (business users see the fresh slot)
+      const orderedSlides = [...validSlides].sort((a, b) => {
+        const aBooked = !!a.isBooked;
+        const bBooked = !!b.isBooked;
+        if (aBooked === bBooked) return 0;
+        return aBooked ? 1 : -1; // unbooked first
+      });
+      
       // Apply maxVisible filter
-      if (maxVisible && maxVisible > 0 && validSlides.length > 0) {
-        const startIndex = rotationIndex % validSlides.length;
-        const endIndex = Math.min(startIndex + maxVisible, validSlides.length);
-        return validSlides.slice(startIndex, endIndex);
+      if (maxVisible && maxVisible > 0 && orderedSlides.length > 0) {
+        const startIndex = (maxVisible === 1) ? 0 : rotationIndex % orderedSlides.length;
+        const endIndex = Math.min(startIndex + maxVisible, orderedSlides.length);
+        return orderedSlides.slice(startIndex, endIndex);
       }
       
       // Cache for stability
-      slidesRef.current = validSlides;
+      slidesRef.current = orderedSlides;
       previousCityRef.current = selectedCity;
       
-      return validSlides;
+      return orderedSlides;
     } catch (error) {
       console.error('[SlotCarousel] Error generating slides:', error);
       setError('Failed to load banner content');
