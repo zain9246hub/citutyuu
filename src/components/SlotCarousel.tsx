@@ -174,13 +174,7 @@ const SlotCarousel: React.FC<SlotCarouselProps> = ({
               }
             }}
             banner={localSelectedBanner}
-            onBook={onBookSuccess ? (e: React.MouseEvent) => {
-              try {
-                onBookSuccess();
-              } catch (error) {
-                console.error('[SlotCarousel] Error in book success handler:', error);
-              }
-            } : onBook ? (e: React.MouseEvent) => {
+            onBook={onBook ? (e: React.MouseEvent) => {
               try {
                 onBook(e);
               } catch (error) {
