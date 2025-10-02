@@ -127,7 +127,7 @@ export const generateMockSlotBanners = (
     const banner = totalBanners[bannerIndex];
     
     mockSlots.push({
-      id: `slot-${position}-available-${Date.now()}-${i}`,
+      id: `slot-${position}-available-${i}`, // Stable ID without timestamp
       position,
       adContent: banner.title,
       location: selectedCity || banner.location,

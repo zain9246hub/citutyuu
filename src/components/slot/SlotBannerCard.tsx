@@ -14,7 +14,7 @@ const SlotBannerCard = memo(({
   const { currentUser } = useAuth();
   const isExplorer = currentUser?.role === 'explorer';
   
-  const shouldShowBookButton = showBookButton && !isExplorer;
+  const shouldShowBookButton = showBookButton && !isExplorer && !slide.isBooked;
   
   return (
     <div 
