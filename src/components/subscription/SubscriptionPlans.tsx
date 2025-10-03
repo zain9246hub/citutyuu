@@ -90,16 +90,12 @@ const SubscriptionPlans: React.FC = () => {
 
                 {/* Price */}
                 <div className="text-6xl font-bold">
-                  ₹{plan.price}<span className="text-2xl">/month</span>
+                  ₹{plan.price}
                 </div>
 
                 {/* Description */}
                 <p className="text-lg opacity-90 max-w-md leading-relaxed">
                   {plan.description}
-                </p>
-                
-                <p className="text-sm opacity-75 italic">
-                  Valid for 1 month • Renew to continue
                 </p>
 
                 {/* Button */}
