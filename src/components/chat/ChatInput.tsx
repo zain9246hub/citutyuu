@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { useSubscription } from "@/contexts/SubscriptionContext";
-import SubscriptionDialog from "@/components/subscription/SubscriptionDialog";
+
 
 interface ChatInputProps {
   onSend: (content: string, contentType: "text" | "voice") => void;
@@ -24,7 +24,6 @@ const ChatInput: React.FC<ChatInputProps> = ({
 }) => {
   const [message, setMessage] = useState("");
   const [showAttachOptions, setShowAttachOptions] = useState(false);
-  const [showSubscriptionDialog, setShowSubscriptionDialog] = useState(false);
   const { toast } = useToast();
   const { canShareImages } = useSubscription();
 
@@ -73,14 +72,19 @@ const ChatInput: React.FC<ChatInputProps> = ({
 
   const handleImageShare = () => {
     if (!canShareImages) {
-      setShowSubscriptionDialog(true);
+      toast({
+        title: "Premium Feature",
+        description: "Subscribe to City Chat (₹69/month) to share images. Go to Profile > Subscription.",
+        variant: "destructive"
+      });
+      setShowAttachOptions(false);
       return;
     }
-    // Demo: Image sharing functionality for subscribers
     toast({
-      title: "Image sharing",
-      description: "Demo: Image sharing is available for subscribers!",
+      title: "Image Sharing",
+      description: "Image upload feature coming soon!",
     });
+    setShowAttachOptions(false);
   };
 
   return (
@@ -182,11 +186,6 @@ const ChatInput: React.FC<ChatInputProps> = ({
           </div>
         </div>
       )}
-      
-      <SubscriptionDialog 
-        open={showSubscriptionDialog} 
-        onOpenChange={setShowSubscriptionDialog} 
-      />
     </div>
   );
 };

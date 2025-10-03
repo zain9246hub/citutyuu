@@ -1,15 +1,17 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 
+export type SubscriptionType = 'notifications' | 'cityChat' | 'voiceMessages' | null;
+
 interface SubscriptionContextType {
-  isSubscribed: boolean;
+  activeSubscriptions: Set<SubscriptionType>;
+  hasSubscription: (type: SubscriptionType) => boolean;
   dailyNotificationsUsed: number;
   maxDailyNotifications: number;
   canReceiveNotification: boolean;
   canShareImages: boolean;
-  subscriptionPrice: number;
-  currency: string;
-  subscribe: () => void;
-  unsubscribe: () => void;
+  canUseVoiceMessages: boolean;
+  subscribe: (type: SubscriptionType) => void;
+  unsubscribe: (type: SubscriptionType) => void;
   useNotification: () => void;
   resetDailyLimit: () => void;
 }
@@ -25,20 +27,18 @@ export const useSubscription = () => {
 };
 
 export const SubscriptionProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [isSubscribed, setIsSubscribed] = useState<boolean>(false);
+  const [activeSubscriptions, setActiveSubscriptions] = useState<Set<SubscriptionType>>(new Set());
   const [dailyNotificationsUsed, setDailyNotificationsUsed] = useState<number>(0);
   const maxDailyNotifications = 2; // Free users get 2 notifications per day
-  const subscriptionPrice = 99; // INR per month
-  const currency = "INR";
 
   // Load subscription status from localStorage
   useEffect(() => {
-    const savedSubscription = localStorage.getItem('demoSubscription');
+    const savedSubscriptions = localStorage.getItem('activeSubscriptions');
     const savedNotifications = localStorage.getItem('dailyNotificationsUsed');
     const lastResetDate = localStorage.getItem('lastNotificationReset');
     
-    if (savedSubscription) {
-      setIsSubscribed(JSON.parse(savedSubscription));
+    if (savedSubscriptions) {
+      setActiveSubscriptions(new Set(JSON.parse(savedSubscriptions)));
     }
     
     // Reset daily notifications if it's a new day
@@ -54,30 +54,40 @@ export const SubscriptionProvider: React.FC<{ children: React.ReactNode }> = ({ 
 
   // Save subscription status to localStorage
   useEffect(() => {
-    localStorage.setItem('demoSubscription', JSON.stringify(isSubscribed));
-  }, [isSubscribed]);
+    localStorage.setItem('activeSubscriptions', JSON.stringify([...activeSubscriptions]));
+  }, [activeSubscriptions]);
 
   // Save daily notifications count to localStorage
   useEffect(() => {
     localStorage.setItem('dailyNotificationsUsed', dailyNotificationsUsed.toString());
   }, [dailyNotificationsUsed]);
 
-  const canReceiveNotification = isSubscribed || dailyNotificationsUsed < maxDailyNotifications;
-  const canShareImages = isSubscribed; // Only subscribers can share images
-
-  const subscribe = () => {
-    setIsSubscribed(true);
-    // In real implementation, this would trigger Stripe checkout
-    console.log('Demo: User subscribed for ₹99/month');
+  const hasSubscription = (type: SubscriptionType) => {
+    return activeSubscriptions.has(type);
   };
 
-  const unsubscribe = () => {
-    setIsSubscribed(false);
-    console.log('Demo: User unsubscribed');
+  const canReceiveNotification = hasSubscription('notifications') || dailyNotificationsUsed < maxDailyNotifications;
+  const canShareImages = hasSubscription('cityChat');
+  const canUseVoiceMessages = hasSubscription('voiceMessages');
+
+  const subscribe = (type: SubscriptionType) => {
+    if (!type) return;
+    setActiveSubscriptions(prev => new Set([...prev, type]));
+    console.log(`Demo: User subscribed to ${type}`);
+  };
+
+  const unsubscribe = (type: SubscriptionType) => {
+    if (!type) return;
+    setActiveSubscriptions(prev => {
+      const newSet = new Set(prev);
+      newSet.delete(type);
+      return newSet;
+    });
+    console.log(`Demo: User unsubscribed from ${type}`);
   };
 
   const useNotification = () => {
-    if (!isSubscribed && dailyNotificationsUsed < maxDailyNotifications) {
+    if (!hasSubscription('notifications') && dailyNotificationsUsed < maxDailyNotifications) {
       setDailyNotificationsUsed(prev => prev + 1);
     }
   };
@@ -88,13 +98,13 @@ export const SubscriptionProvider: React.FC<{ children: React.ReactNode }> = ({ 
   };
 
   const value = {
-    isSubscribed,
+    activeSubscriptions,
+    hasSubscription,
     dailyNotificationsUsed,
     maxDailyNotifications,
     canReceiveNotification,
     canShareImages,
-    subscriptionPrice,
-    currency,
+    canUseVoiceMessages,
     subscribe,
     unsubscribe,
     useNotification,
