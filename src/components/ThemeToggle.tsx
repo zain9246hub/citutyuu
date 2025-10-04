@@ -1,5 +1,5 @@
 
-import { Sun } from "lucide-react";
+import { Sun, Moon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useTheme } from "@/contexts/ThemeContext";
 import { Toggle } from "@/components/ui/toggle";
@@ -9,20 +9,22 @@ interface ThemeToggleProps {
   className?: string;
 }
 
-// This component is now a placeholder that always shows the light mode icon
-// It's kept for compatibility with existing code
 const ThemeToggle = ({ variant = "button", className = "" }: ThemeToggleProps) => {
-  const { toggleTheme } = useTheme();
+  const { theme, toggleTheme } = useTheme();
   
   if (variant === "toggle") {
     return (
       <Toggle 
-        pressed={false}
+        pressed={theme === "dark"}
         onPressedChange={toggleTheme}
         className={`p-2 ${className}`}
-        aria-label="Theme"
+        aria-label="Toggle theme"
       >
-        <Sun className="h-4 w-4" />
+        {theme === "light" ? (
+          <Sun className="h-4 w-4" />
+        ) : (
+          <Moon className="h-4 w-4" />
+        )}
       </Toggle>
     );
   }
@@ -33,9 +35,13 @@ const ThemeToggle = ({ variant = "button", className = "" }: ThemeToggleProps) =
       size="icon"
       onClick={toggleTheme}
       className={className}
-      aria-label="Theme"
+      aria-label="Toggle theme"
     >
-      <Sun className="h-5 w-5" />
+      {theme === "light" ? (
+        <Sun className="h-5 w-5 transition-transform duration-200" />
+      ) : (
+        <Moon className="h-5 w-5 transition-transform duration-200" />
+      )}
     </Button>
   );
 };

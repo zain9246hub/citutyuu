@@ -6,6 +6,7 @@ import DealCard from "@/components/DealCard";
 import NotificationsTab from "@/components/profile/NotificationsTab";
 import SubscriptionManagement from "@/components/profile/SubscriptionManagement";
 import SubscriptionPlans from '@/components/subscription/SubscriptionPlans';
+import ThemeSelector from "@/components/profile/ThemeSelector";
 import { Deal } from "@/types/deal";
 import { List, PlusCircle, Store } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -188,6 +189,23 @@ const ProfileTabs = ({ currentUser, activeTab, setActiveTab, isEditing }: Profil
                     </div>
                   </div>
                 </div>
+              </div>
+            </div>
+
+            <div className="relative overflow-hidden bg-gradient-to-br from-background via-background to-muted/20 border border-border/30 rounded-2xl p-6 shadow-lg">
+              <div className="absolute top-0 right-0 w-32 h-32 opacity-5">
+                <div className="w-full h-full rounded-full bg-gradient-to-br from-primary to-primary/60 transform translate-x-16 -translate-y-16" />
+              </div>
+              
+              <div className="relative">
+                <div className="flex items-center space-x-3 mb-6">
+                  <div className="w-10 h-10 bg-gradient-to-br from-primary/20 to-primary/10 rounded-xl flex items-center justify-center">
+                    <div className="w-5 h-5 bg-gradient-to-br from-primary to-primary/80 rounded-md" />
+                  </div>
+                  <h3 className="text-xl font-semibold text-foreground">Appearance</h3>
+                </div>
+                
+                <ThemeSelector />
               </div>
             </div>
           </div>

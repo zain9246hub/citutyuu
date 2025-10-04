@@ -1,26 +1,38 @@
 
-import React, { createContext, useContext } from "react";
+import React, { createContext, useContext, useEffect, useState } from "react";
 
-// We create a simple context just to maintain compatibility with existing code
 interface ThemeContextType {
-  theme: "light";
-  toggleTheme: () => void; // This function won't do anything now
+  theme: "light" | "dark";
+  toggleTheme: () => void;
+  setTheme: (theme: "light" | "dark") => void;
 }
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 export const ThemeProvider = ({ children }: { children: React.ReactNode }) => {
-  // Always light theme
-  const theme = "light";
+  const [theme, setThemeState] = useState<"light" | "dark">(() => {
+    const stored = localStorage.getItem("theme");
+    if (stored === "dark" || stored === "light") return stored;
+    return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+  });
 
-  // This function is kept for compatibility but doesn't do anything
+  useEffect(() => {
+    const root = document.documentElement;
+    root.classList.remove("light", "dark");
+    root.classList.add(theme);
+    localStorage.setItem("theme", theme);
+  }, [theme]);
+
   const toggleTheme = () => {
-    // No-op function since we're removing dark mode
-    console.log("Dark mode has been removed from the application");
+    setThemeState(prev => prev === "light" ? "dark" : "light");
+  };
+
+  const setTheme = (newTheme: "light" | "dark") => {
+    setThemeState(newTheme);
   };
 
   return (
-    <ThemeContext.Provider value={{ theme, toggleTheme }}>
+    <ThemeContext.Provider value={{ theme, toggleTheme, setTheme }}>
       {children}
     </ThemeContext.Provider>
   );
