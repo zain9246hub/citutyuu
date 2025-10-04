@@ -1,18 +1,11 @@
+
 import React from "react";
 import ChatComponent from "@/components/chat/ChatComponent";
 import { useAuth } from "@/contexts/AuthContext";
-import { useSubscription } from "@/contexts/SubscriptionContext";
-import SubscriptionPlans from "@/components/subscription/SubscriptionPlans";
 
 const Chat = () => {
   // Both business and explorer roles can access chat functionality
   const { currentUser } = useAuth();
-  const { hasSubscription } = useSubscription();
-  
-  // If not subscribed to cityChat, show subscription plans
-  if (!hasSubscription('cityChat')) {
-    return <SubscriptionPlans />;
-  }
   
   return (
     <div className="flex flex-col h-screen bg-gradient-to-br from-slate-950 via-purple-900 to-indigo-900 safe-area-view relative overflow-hidden">

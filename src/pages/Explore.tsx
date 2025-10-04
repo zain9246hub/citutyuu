@@ -3,7 +3,7 @@ import { useState } from "react";
 import Navbar from "../components/Navbar";
 import FeaturedDeals from "../components/FeaturedDeals";
 import CityFilter from "../components/CityFilter";
-import { Search, Filter, X, Share2, ArrowLeft, Crown } from "lucide-react";
+import { Search, Filter, X, Share2, ArrowLeft } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -14,9 +14,6 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
 import { useNavigate } from "react-router-dom";
 import { useDeals } from "@/hooks/useDeals";
-import { useSubscription } from "@/contexts/SubscriptionContext";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
-import SubscriptionPlans from "@/components/subscription/SubscriptionPlans";
 
 const Explore = () => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -24,7 +21,6 @@ const Explore = () => {
     localStorage.getItem('selectedCity') === 'All Cities' ? null : localStorage.getItem('selectedCity') || null
   );
   const [filterOpen, setFilterOpen] = useState(false);
-  const [subscriptionOpen, setSubscriptionOpen] = useState(false);
   const [filterOptions, setFilterOptions] = useState<FilterOptions>({
     categories: [],
     priceRange: null,
@@ -35,7 +31,6 @@ const Explore = () => {
   const { currentUser } = useAuth();
   const { toast } = useToast();
   const navigate = useNavigate();
-  const { hasSubscription } = useSubscription();
   const isExplorer = currentUser?.role === 'explorer';
   const { sortedDeals } = useDeals(selectedCity, searchQuery, filterOptions);
   
@@ -92,34 +87,16 @@ const Explore = () => {
               </Button>
               <h1 className="text-2xl font-bold">Explore Deals {sortedDeals && `(${sortedDeals.length})`}</h1>
             </div>
-            <div className="flex items-center gap-2">
+            {isExplorer && (
               <Button 
                 variant="ghost" 
                 size="icon" 
-                onClick={() => setSubscriptionOpen(true)}
-                className={cn(
-                  "relative",
-                  hasSubscription('cityChat') || hasSubscription('notifications') || hasSubscription('voiceMessages') 
-                    ? "text-yellow-500 hover:text-yellow-600" 
-                    : "text-gray-500 hover:text-gray-800"
-                )}
+                onClick={handleShare}
+                className="text-gray-500 hover:text-gray-800"
               >
-                <Crown className="h-5 w-5" />
-                {(hasSubscription('cityChat') || hasSubscription('notifications') || hasSubscription('voiceMessages')) && (
-                  <span className="absolute -top-1 -right-1 w-2 h-2 bg-green-500 rounded-full" />
-                )}
+                <Share2 className="h-5 w-5" />
               </Button>
-              {isExplorer && (
-                <Button 
-                  variant="ghost" 
-                  size="icon" 
-                  onClick={handleShare}
-                  className="text-gray-500 hover:text-gray-800"
-                >
-                  <Share2 className="h-5 w-5" />
-                </Button>
-              )}
-            </div>
+            )}
           </div>
           
           <div className="relative flex items-center mb-4">
@@ -201,12 +178,6 @@ const Explore = () => {
           />
         </div>
       </div>
-      
-      <Dialog open={subscriptionOpen} onOpenChange={setSubscriptionOpen}>
-        <DialogContent className="p-0 max-w-2xl max-h-[90vh] overflow-y-auto">
-          <SubscriptionPlans />
-        </DialogContent>
-      </Dialog>
       
       <Navbar />
     </div>
