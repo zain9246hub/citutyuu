@@ -1,10 +1,11 @@
 
 import React, { useState } from "react";
-import { Mic, Send, StopCircle, Image, Paperclip, Smile, Crown } from "lucide-react";
+import { Mic, Send, StopCircle, Image, Paperclip, Smile } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { useSubscription } from "@/contexts/SubscriptionContext";
+import SubscriptionDialog from "@/components/subscription/SubscriptionDialog";
 
 
 interface ChatInputProps {
@@ -24,13 +25,24 @@ const ChatInput: React.FC<ChatInputProps> = ({
 }) => {
   const [message, setMessage] = useState("");
   const [showAttachOptions, setShowAttachOptions] = useState(false);
+  const [showSubscriptionDialog, setShowSubscriptionDialog] = useState(false);
   const { toast } = useToast();
-  const { canShareImages } = useSubscription();
+  const { canShareImages, canUseVoiceMessages, canSendMessage, monthlyMessagesUsed, maxMonthlyMessages, useMessage } = useSubscription();
 
   const handleSend = () => {
     if (message.trim()) {
+      if (!canSendMessage) {
+        toast({
+          title: "Message Limit Reached",
+          description: `Free users get ${maxMonthlyMessages} messages/month. Subscribe to City Chat for unlimited messages.`,
+          variant: "destructive"
+        });
+        setShowSubscriptionDialog(true);
+        return;
+      }
       onSend(message, "text");
       setMessage("");
+      useMessage();
     }
   };
 
@@ -42,6 +54,11 @@ const ChatInput: React.FC<ChatInputProps> = ({
   };
 
   const handleVoiceRecord = () => {
+    if (!canUseVoiceMessages && !isRecording) {
+      setShowSubscriptionDialog(true);
+      return;
+    }
+    
     if (isRecording) {
       stopRecording();
       toast({
@@ -72,11 +89,7 @@ const ChatInput: React.FC<ChatInputProps> = ({
 
   const handleImageShare = () => {
     if (!canShareImages) {
-      toast({
-        title: "Premium Feature",
-        description: "Subscribe to City Chat (₹69/month) to share images. Go to Profile > Subscription.",
-        variant: "destructive"
-      });
+      setShowSubscriptionDialog(true);
       setShowAttachOptions(false);
       return;
     }
@@ -88,19 +101,28 @@ const ChatInput: React.FC<ChatInputProps> = ({
   };
 
   return (
-    <div className="border-t border-white/10 p-4 bg-white/5 backdrop-blur-sm sticky bottom-0 z-10 pb-8 safe-bottom">
-      {showAttachOptions && (
+    <>
+      <SubscriptionDialog open={showSubscriptionDialog} onOpenChange={setShowSubscriptionDialog} />
+      
+      <div className="border-t border-white/10 p-4 bg-white/5 backdrop-blur-sm sticky bottom-0 z-10 pb-8 safe-bottom">
+        {!canSendMessage && (
+          <div className="mb-3 p-3 bg-orange-500/20 backdrop-blur-sm border border-orange-500/30 rounded-xl">
+            <p className="text-sm text-orange-200 text-center">
+              {monthlyMessagesUsed}/{maxMonthlyMessages} free messages used this month
+            </p>
+          </div>
+        )}
+        
+        {showAttachOptions && (
         <div className="flex items-center gap-3 mb-4 p-4 bg-white/5 backdrop-blur-sm rounded-2xl border border-white/10 shadow-lg">
           <Button 
             variant="outline" 
             size="icon" 
             onClick={handleImageShare}
-            className={`h-10 w-10 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 hover:bg-white/20 text-white hover:text-white transition-all duration-300 transform hover:scale-110 ${!canShareImages ? 'opacity-60' : ''}`} 
+            className="h-10 w-10 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 hover:bg-white/20 text-white hover:text-white transition-all duration-300 transform hover:scale-110" 
             disabled={disabled || isRecording}
-            title={canShareImages ? "Share image" : "Premium feature - Subscribe to share images"}
           >
             <Image className="h-5 w-5" />
-            {!canShareImages && <Crown className="h-3 w-3 absolute -top-1 -right-1 text-primary" />}
           </Button>
           <Button 
             variant="outline" 
@@ -186,7 +208,8 @@ const ChatInput: React.FC<ChatInputProps> = ({
           </div>
         </div>
       )}
-    </div>
+      </div>
+    </>
   );
 };
 
