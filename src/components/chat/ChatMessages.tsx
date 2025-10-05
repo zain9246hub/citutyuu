@@ -90,7 +90,16 @@ const ChatMessages: React.FC<ChatMessagesProps> = ({ messages }) => {
                             <audio 
                               src={message.audioUrl} 
                               controls 
-                              className="max-w-[150px] sm:max-w-[200px] md:max-w-[250px] h-8 rounded-lg opacity-80 hover:opacity-100 transition-opacity" 
+                              preload="metadata"
+                              className="max-w-[150px] sm:max-w-[200px] md:max-w-[250px] h-8 rounded-lg opacity-80 hover:opacity-100 transition-opacity"
+                              onError={(e) => {
+                                console.error('Audio playback error:', e);
+                                toast({
+                                  title: "Audio Error",
+                                  description: "Failed to load voice message",
+                                  variant: "destructive"
+                                });
+                              }}
                             />
                           ) : (
                             <p className="text-sm text-red-400">Voice message unavailable</p>
