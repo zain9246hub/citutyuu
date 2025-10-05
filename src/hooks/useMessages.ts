@@ -16,19 +16,88 @@ const CITIES = [
   "Ludhiana", "Rajkot", "Faridabad", "Gurgaon", "Noida",
 ];
 
+const MESSAGES_STORAGE_KEY = 'city_chat_messages';
+const MESSAGES_EXPIRY_HOURS = 24;
+
 export const useMessages = () => {
+  // Load messages from localStorage and filter out expired ones
+  const loadMessages = useCallback(() => {
+    try {
+      const stored = localStorage.getItem(MESSAGES_STORAGE_KEY);
+      if (!stored) {
+        const initialMessages: Record<string, Message[]> = {};
+        CITIES.forEach(city => {
+          initialMessages[city] = [];
+        });
+        return initialMessages;
+      }
+      
+      const parsed = JSON.parse(stored);
+      const now = new Date().getTime();
+      const expiryTime = MESSAGES_EXPIRY_HOURS * 60 * 60 * 1000;
+      
+      // Filter out messages older than 24 hours and revive Date objects
+      const filteredMessages: Record<string, Message[]> = {};
+      Object.keys(parsed).forEach(city => {
+        filteredMessages[city] = parsed[city]
+          .map((msg: any) => ({
+            ...msg,
+            timestamp: new Date(msg.timestamp)
+          }))
+          .filter((msg: Message) => {
+            const messageAge = now - msg.timestamp.getTime();
+            return messageAge < expiryTime;
+          });
+      });
+      
+      return filteredMessages;
+    } catch (error) {
+      console.error('Error loading messages:', error);
+      const initialMessages: Record<string, Message[]> = {};
+      CITIES.forEach(city => {
+        initialMessages[city] = [];
+      });
+      return initialMessages;
+    }
+  }, []);
+
   // Initialize messages with city-based chat rooms
-  const [messages, setMessages] = useState<Record<string, Message[]>>(() => {
-    const initialMessages: Record<string, Message[]> = {};
-    CITIES.forEach(city => {
-      initialMessages[city] = [];
-    });
-    return initialMessages;
-  });
+  const [messages, setMessages] = useState<Record<string, Message[]>>(loadMessages);
   
   const [activeChat, setActiveChat] = useState<string | null>("All Cities");
   
   const chats = CITIES;
+
+  // Save messages to localStorage whenever they change
+  useEffect(() => {
+    try {
+      localStorage.setItem(MESSAGES_STORAGE_KEY, JSON.stringify(messages));
+    } catch (error) {
+      console.error('Error saving messages:', error);
+    }
+  }, [messages]);
+
+  // Clean up expired messages periodically (every 5 minutes)
+  useEffect(() => {
+    const cleanupInterval = setInterval(() => {
+      setMessages(prevMessages => {
+        const now = new Date().getTime();
+        const expiryTime = MESSAGES_EXPIRY_HOURS * 60 * 60 * 1000;
+        const cleaned: Record<string, Message[]> = {};
+        
+        Object.keys(prevMessages).forEach(city => {
+          cleaned[city] = prevMessages[city].filter(msg => {
+            const messageAge = now - msg.timestamp.getTime();
+            return messageAge < expiryTime;
+          });
+        });
+        
+        return cleaned;
+      });
+    }, 5 * 60 * 1000); // Run every 5 minutes
+
+    return () => clearInterval(cleanupInterval);
+  }, []);
 
   // Function to send a message
   const sendMessage = useCallback(
@@ -74,6 +143,37 @@ export const useMessages = () => {
         status: "sent",
         seenBy: [],
         audioUrl,
+      };
+
+      setMessages((prev) => ({
+        ...prev,
+        [chatId]: [...(prev[chatId] || []), newMessage],
+      }));
+      
+      // Simulate receiving messages to mimic a real chat
+      if (Math.random() > 0.3) {
+        setTimeout(() => {
+          simulateReply(chatId);
+        }, 1000 + Math.random() * 2000);
+      }
+    },
+    []
+  );
+
+  // Add image message function
+  const addImageMessage = useCallback(
+    (chatId: string, imageUrl: string) => {
+      if (!chatId) return;
+      
+      const newMessage: Message = {
+        id: uuidv4(),
+        sender: "You",
+        content: "Image",
+        contentType: "image",
+        timestamp: new Date(),
+        status: "sent",
+        seenBy: [],
+        imageUrl,
       };
 
       setMessages((prev) => ({
@@ -213,6 +313,7 @@ export const useMessages = () => {
     setActiveChat,
     chats,
     simulateReply,
-    addVoiceMessage
+    addVoiceMessage,
+    addImageMessage
   };
 };

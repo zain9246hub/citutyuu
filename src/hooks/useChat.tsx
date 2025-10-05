@@ -23,7 +23,8 @@ export const useChat = () => {
     activeChat,
     setActiveChat,
     chats,
-    addVoiceMessage
+    addVoiceMessage,
+    addImageMessage
   } = useMessages();
 
   // Auto-switch to selected city chat when city changes
@@ -56,5 +57,6 @@ export const useChat = () => {
     startRecording,
     stopRecording,
     isRecording,
+    addImageMessage
   };
 };

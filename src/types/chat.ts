@@ -5,11 +5,12 @@ export interface Message {
   id: string;
   sender: string;
   content: string;
-  contentType: "text" | "voice";
+  contentType: "text" | "voice" | "image";
   timestamp: Date;
   status: MessageStatus;
   seenBy: string[];
   audioUrl?: string;
+  imageUrl?: string;
 }
 
 // Mock users for demo purposes

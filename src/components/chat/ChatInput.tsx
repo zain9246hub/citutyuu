@@ -14,6 +14,7 @@ interface ChatInputProps {
   stopRecording: () => void;
   isRecording: boolean;
   disabled?: boolean;
+  onImageUpload?: (imageUrl: string) => void;
 }
 
 const ChatInput: React.FC<ChatInputProps> = ({
@@ -22,12 +23,14 @@ const ChatInput: React.FC<ChatInputProps> = ({
   stopRecording,
   isRecording,
   disabled = false,
+  onImageUpload,
 }) => {
   const [message, setMessage] = useState("");
   const [showAttachOptions, setShowAttachOptions] = useState(false);
   const [showSubscriptionDialog, setShowSubscriptionDialog] = useState(false);
   const { toast } = useToast();
   const { canShareImages, canUseVoiceMessages, canSendMessage, monthlyMessagesUsed, maxMonthlyMessages, useMessage } = useSubscription();
+  const fileInputRef = React.useRef<HTMLInputElement>(null);
 
   const handleSend = () => {
     if (message.trim()) {
@@ -93,16 +96,61 @@ const ChatInput: React.FC<ChatInputProps> = ({
       setShowAttachOptions(false);
       return;
     }
-    toast({
-      title: "Image Sharing",
-      description: "Image upload feature coming soon!",
-    });
+    fileInputRef.current?.click();
     setShowAttachOptions(false);
+  };
+
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (!file.type.startsWith('image/')) {
+      toast({
+        title: "Invalid file",
+        description: "Please select an image file.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+      toast({
+        title: "File too large",
+        description: "Please select an image under 5MB.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const imageUrl = event.target?.result as string;
+      if (imageUrl && onImageUpload) {
+        onImageUpload(imageUrl);
+        toast({
+          title: "Image shared",
+          description: "Your image has been sent.",
+        });
+      }
+    };
+    reader.readAsDataURL(file);
+
+    // Reset file input
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
   };
 
   return (
     <>
       <SubscriptionDialog open={showSubscriptionDialog} onOpenChange={setShowSubscriptionDialog} />
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept="image/*"
+        onChange={handleFileSelect}
+        className="hidden"
+      />
       
       <div className="border-t border-white/10 p-4 bg-white/5 backdrop-blur-sm sticky bottom-0 z-10 pb-8 safe-bottom">
         {!canSendMessage && (

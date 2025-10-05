@@ -15,6 +15,7 @@ const ChatComponent: React.FC = () => {
     startRecording,
     stopRecording,
     isRecording,
+    addImageMessage,
   } = useChat();
   
   return (
@@ -34,6 +35,7 @@ const ChatComponent: React.FC = () => {
           stopRecording={stopRecording}
           isRecording={isRecording}
           disabled={!activeChat}
+          onImageUpload={(imageUrl) => activeChat && addImageMessage(activeChat, imageUrl)}
         />
       </div>
     </div>

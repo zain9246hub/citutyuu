@@ -70,6 +70,19 @@ const ChatMessages: React.FC<ChatMessagesProps> = ({ messages }) => {
                     <div className="relative z-10">
                       {message.contentType === "text" ? (
                         <p className="text-sm break-words leading-relaxed">{message.content}</p>
+                      ) : message.contentType === "image" ? (
+                        <div className="flex flex-col gap-2">
+                          {message.imageUrl ? (
+                            <img 
+                              src={message.imageUrl} 
+                              alt="Shared image" 
+                              className="max-w-full h-auto rounded-lg shadow-lg hover:scale-[1.02] transition-transform cursor-pointer"
+                              onClick={() => window.open(message.imageUrl, '_blank')}
+                            />
+                          ) : (
+                            <p className="text-sm text-red-400">Image unavailable</p>
+                          )}
+                        </div>
                       ) : (
                         <div className="flex items-center gap-2">
                           <div className="w-2 h-2 bg-emerald-400 rounded-full animate-pulse" />

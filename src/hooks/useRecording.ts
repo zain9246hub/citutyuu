@@ -9,11 +9,12 @@ export const useRecording = () => {
   // Initialize media recorder
   useEffect(() => {
     let stream: MediaStream | null = null;
+    let recorder: MediaRecorder | null = null;
     
     const initMediaRecorder = async () => {
       try {
         stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-        const recorder = new MediaRecorder(stream);
+        recorder = new MediaRecorder(stream);
         
         recorder.addEventListener("dataavailable", (event) => {
           if (event.data.size > 0) {
@@ -30,8 +31,9 @@ export const useRecording = () => {
     initMediaRecorder();
 
     return () => {
-      if (mediaRecorder && mediaRecorder.state === "recording") {
-        mediaRecorder.stop();
+      // Use local recorder variable instead of state
+      if (recorder && recorder.state === "recording") {
+        recorder.stop();
       }
       // Clean up any active media streams
       if (stream) {
