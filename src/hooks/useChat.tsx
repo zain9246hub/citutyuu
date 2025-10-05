@@ -14,7 +14,8 @@ export const useChat = () => {
     audioChunks,
     startRecording,
     stopRecording,
-    setAudioChunks
+    setAudioChunks,
+    recordingTime
   } = useRecording();
 
   const {
@@ -37,27 +38,17 @@ export const useChat = () => {
   // Listen for audioChunks changes to create and send voice message
   useEffect(() => {
     if (!isRecording && audioChunks.length > 0 && activeChat) {
-      console.log('Creating audio from chunks:', audioChunks.length);
+      console.log('Creating audio from chunks:', audioChunks.length, 'chunks');
       
-      // Try multiple MIME types for better compatibility
-      const mimeTypes = ['audio/webm', 'audio/webm;codecs=opus', 'audio/ogg', 'audio/mp4'];
-      let audioBlob: Blob | null = null;
+      // Use the first chunk's type as it contains the correct MIME type from MediaRecorder
+      const mimeType = audioChunks[0]?.type || 'audio/webm';
+      console.log('Using MIME type:', mimeType);
       
-      for (const mimeType of mimeTypes) {
-        try {
-          const testBlob = new Blob(audioChunks, { type: mimeType });
-          if (testBlob.size > 0) {
-            audioBlob = testBlob;
-            console.log('Using MIME type:', mimeType, 'Size:', testBlob.size);
-            break;
-          }
-        } catch (e) {
-          console.log('MIME type not supported:', mimeType);
-        }
-      }
+      const audioBlob = new Blob(audioChunks, { type: mimeType });
+      console.log('Audio blob created:', audioBlob.size, 'bytes, type:', audioBlob.type);
       
-      if (!audioBlob || audioBlob.size === 0) {
-        console.error('Failed to create audio blob');
+      if (audioBlob.size === 0) {
+        console.error('Audio blob is empty!');
         return;
       }
       
@@ -81,6 +72,7 @@ export const useChat = () => {
     startRecording,
     stopRecording,
     isRecording,
-    addImageMessage
+    addImageMessage,
+    recordingTime
   };
 };

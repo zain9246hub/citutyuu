@@ -15,6 +15,7 @@ interface ChatInputProps {
   isRecording: boolean;
   disabled?: boolean;
   onImageUpload?: (imageUrl: string) => void;
+  recordingTime?: number;
 }
 
 const ChatInput: React.FC<ChatInputProps> = ({
@@ -24,6 +25,7 @@ const ChatInput: React.FC<ChatInputProps> = ({
   isRecording,
   disabled = false,
   onImageUpload,
+  recordingTime = 0,
 }) => {
   const [message, setMessage] = useState("");
   const [showAttachOptions, setShowAttachOptions] = useState(false);
@@ -64,16 +66,17 @@ const ChatInput: React.FC<ChatInputProps> = ({
     
     if (isRecording) {
       stopRecording();
+      const duration = recordingTime >= 60 ? "60 seconds (max)" : `${recordingTime} seconds`;
       toast({
         title: "Voice message recorded",
-        description: "Your voice message has been sent.",
+        description: `Recording duration: ${duration}`,
       });
     } else {
       try {
         startRecording();
         toast({
           title: "Recording started",
-          description: "Speak now. Click the stop button when finished.",
+          description: "Speak now. Maximum 60 seconds.",
         });
       } catch (error) {
         console.error("Error starting recording:", error);
@@ -245,14 +248,40 @@ const ChatInput: React.FC<ChatInputProps> = ({
       
       {isRecording && (
         <div className="mt-4 text-center animate-fade-in">
-          <div className="inline-flex items-center gap-3 px-4 py-2 bg-red-500/20 backdrop-blur-sm border border-red-500/30 rounded-2xl">
-            <div className="w-2 h-2 bg-red-400 rounded-full animate-pulse" />
-            <span className="text-sm text-red-300">Recording... Click stop when finished</span>
-            <div className="flex gap-1">
-              <div className="w-1 h-3 bg-red-400 rounded-full animate-pulse" />
-              <div className="w-1 h-4 bg-red-400 rounded-full animate-pulse" style={{animationDelay: '0.2s'}} />
-              <div className="w-1 h-2 bg-red-400 rounded-full animate-pulse" style={{animationDelay: '0.4s'}} />
+          <div className="inline-flex items-center gap-4 px-6 py-3 bg-gradient-to-r from-red-500/20 to-pink-500/20 backdrop-blur-sm border border-red-500/30 rounded-2xl shadow-lg">
+            {/* Animated recording indicator */}
+            <div className="relative">
+              <div className="w-3 h-3 bg-red-400 rounded-full animate-pulse" />
+              <div className="absolute inset-0 w-3 h-3 bg-red-400 rounded-full animate-ping" />
             </div>
+            
+            {/* Timer display */}
+            <div className="flex items-center gap-2">
+              <span className="text-lg font-bold text-white tabular-nums animate-scale-in">
+                {Math.floor(recordingTime / 60)}:{(recordingTime % 60).toString().padStart(2, '0')}
+              </span>
+              <span className="text-xs text-red-200">/ 1:00</span>
+            </div>
+            
+            {/* Animated waveform */}
+            <div className="flex gap-1 items-center">
+              <div className="w-1 h-3 bg-red-400 rounded-full animate-pulse" />
+              <div className="w-1 h-5 bg-red-400 rounded-full animate-pulse" style={{animationDelay: '0.1s'}} />
+              <div className="w-1 h-4 bg-red-400 rounded-full animate-pulse" style={{animationDelay: '0.2s'}} />
+              <div className="w-1 h-6 bg-red-400 rounded-full animate-pulse" style={{animationDelay: '0.3s'}} />
+              <div className="w-1 h-3 bg-red-400 rounded-full animate-pulse" style={{animationDelay: '0.4s'}} />
+            </div>
+            
+            {/* Recording text */}
+            <span className="text-sm text-red-200 font-medium">Recording</span>
+          </div>
+          
+          {/* Progress bar */}
+          <div className="mt-3 w-full max-w-xs mx-auto h-1 bg-white/10 rounded-full overflow-hidden">
+            <div 
+              className="h-full bg-gradient-to-r from-red-400 to-pink-400 rounded-full transition-all duration-1000 ease-linear animate-pulse"
+              style={{ width: `${(recordingTime / 60) * 100}%` }}
+            />
           </div>
         </div>
       )}

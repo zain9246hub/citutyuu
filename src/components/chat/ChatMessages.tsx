@@ -91,15 +91,27 @@ const ChatMessages: React.FC<ChatMessagesProps> = ({ messages }) => {
                               src={message.audioUrl} 
                               controls 
                               preload="metadata"
+                              controlsList="nodownload"
                               className="max-w-[150px] sm:max-w-[200px] md:max-w-[250px] h-8 rounded-lg opacity-80 hover:opacity-100 transition-opacity"
+                              onLoadedMetadata={(e) => {
+                                console.log('Audio loaded successfully:', e.currentTarget.duration, 'seconds');
+                              }}
                               onError={(e) => {
                                 console.error('Audio playback error:', e);
+                                const audioElement = e.currentTarget;
+                                console.error('Audio error details:', {
+                                  error: audioElement.error,
+                                  networkState: audioElement.networkState,
+                                  readyState: audioElement.readyState,
+                                  src: audioElement.src
+                                });
                                 toast({
                                   title: "Audio Error",
                                   description: "Failed to load voice message",
                                   variant: "destructive"
                                 });
                               }}
+                              onPlay={() => console.log('Audio started playing')}
                             />
                           ) : (
                             <p className="text-sm text-red-400">Voice message unavailable</p>

@@ -5,6 +5,8 @@ export const useRecording = () => {
   const [mediaRecorder, setMediaRecorder] = useState<MediaRecorder | null>(null);
   const [isRecording, setIsRecording] = useState(false);
   const [audioChunks, setAudioChunks] = useState<Blob[]>([]);
+  const [recordingTime, setRecordingTime] = useState(0);
+  const [recordingTimer, setRecordingTimer] = useState<NodeJS.Timeout | null>(null);
 
   // Initialize media recorder
   useEffect(() => {
@@ -81,8 +83,27 @@ export const useRecording = () => {
   const startRecording = useCallback(() => {
     if (mediaRecorder && mediaRecorder.state !== "recording") {
       setAudioChunks([]);
-      mediaRecorder.start();
+      setRecordingTime(0);
+      mediaRecorder.start(100); // Collect data every 100ms for smoother recording
       setIsRecording(true);
+      
+      // Start timer
+      const timer = setInterval(() => {
+        setRecordingTime(prev => {
+          const newTime = prev + 1;
+          // Auto-stop at 60 seconds
+          if (newTime >= 60) {
+            if (mediaRecorder && mediaRecorder.state === "recording") {
+              mediaRecorder.stop();
+              setIsRecording(false);
+            }
+            return 60;
+          }
+          return newTime;
+        });
+      }, 1000);
+      
+      setRecordingTimer(timer);
     }
   }, [mediaRecorder]);
 
@@ -91,14 +112,31 @@ export const useRecording = () => {
     if (mediaRecorder && mediaRecorder.state === "recording") {
       mediaRecorder.stop();
       setIsRecording(false);
+      
+      // Clear timer
+      if (recordingTimer) {
+        clearInterval(recordingTimer);
+        setRecordingTimer(null);
+      }
+      setRecordingTime(0);
     }
-  }, [mediaRecorder]);
+  }, [mediaRecorder, recordingTimer]);
+
+  // Cleanup timer on unmount
+  useEffect(() => {
+    return () => {
+      if (recordingTimer) {
+        clearInterval(recordingTimer);
+      }
+    };
+  }, [recordingTimer]);
 
   return {
     isRecording,
     audioChunks,
     startRecording,
     stopRecording,
-    setAudioChunks
+    setAudioChunks,
+    recordingTime
   };
 };
