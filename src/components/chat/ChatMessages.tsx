@@ -92,6 +92,7 @@ const ChatMessages: React.FC<ChatMessagesProps> = ({ messages }) => {
                               src={message.audioUrl} 
                               controls 
                               preload="auto"
+                              playsInline
                               controlsList="nodownload"
                               className="max-w-[150px] sm:max-w-[200px] md:max-w-[250px] h-8 rounded-lg opacity-80 hover:opacity-100 transition-opacity"
                               onLoadedMetadata={(e) => {
