@@ -88,6 +88,7 @@ const ChatMessages: React.FC<ChatMessagesProps> = ({ messages }) => {
                           <div className="w-2 h-2 bg-emerald-400 rounded-full animate-pulse" />
                           {message.audioUrl ? (
                             <audio 
+                              key={message.id}
                               src={message.audioUrl} 
                               controls 
                               preload="auto"
@@ -95,32 +96,37 @@ const ChatMessages: React.FC<ChatMessagesProps> = ({ messages }) => {
                               className="max-w-[150px] sm:max-w-[200px] md:max-w-[250px] h-8 rounded-lg opacity-80 hover:opacity-100 transition-opacity"
                               onLoadedMetadata={(e) => {
                                 console.log('Audio loaded successfully:', {
+                                  messageId: message.id,
                                   duration: e.currentTarget.duration,
-                                  readyState: e.currentTarget.readyState,
-                                  src: e.currentTarget.src.substring(0, 50) + '...'
+                                  readyState: e.currentTarget.readyState
                                 });
                               }}
                               onCanPlay={() => {
-                                console.log('Audio can play');
+                                console.log('Audio can play for message:', message.id);
                               }}
                               onError={(e) => {
-                                console.error('Audio playback error:', e);
                                 const audioElement = e.currentTarget;
-                                const errorDetails = {
-                                  error: audioElement.error?.code,
-                                  errorMessage: audioElement.error?.message,
-                                  networkState: audioElement.networkState,
-                                  readyState: audioElement.readyState,
-                                  src: audioElement.src.substring(0, 100)
+                                const errorCode = audioElement.error?.code;
+                                const errorMessages = {
+                                  1: 'MEDIA_ERR_ABORTED',
+                                  2: 'MEDIA_ERR_NETWORK', 
+                                  3: 'MEDIA_ERR_DECODE',
+                                  4: 'MEDIA_ERR_SRC_NOT_SUPPORTED'
                                 };
-                                console.error('Audio error details:', errorDetails);
+                                console.error('Audio error for message:', message.id, {
+                                  error: errorCode,
+                                  errorType: errorMessages[errorCode as keyof typeof errorMessages] || 'UNKNOWN',
+                                  srcLength: audioElement.src.length,
+                                  srcPreview: audioElement.src.substring(0, 100)
+                                });
+                                
                                 toast({
                                   title: "Audio Error",
-                                  description: `Failed to load voice message (Error code: ${audioElement.error?.code || 'unknown'})`,
+                                  description: "Failed to load voice message",
                                   variant: "destructive"
                                 });
                               }}
-                              onPlay={() => console.log('Audio started playing')}
+                              onPlay={() => console.log('Playing audio for message:', message.id)}
                             />
                           ) : (
                             <p className="text-sm text-red-400">Voice message unavailable</p>

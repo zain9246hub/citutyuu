@@ -54,6 +54,7 @@ export const useChat = () => {
       
       if (audioBlob.size === 0) {
         console.error('Audio blob is empty!');
+        setAudioChunks([]);
         return;
       }
       
@@ -61,20 +62,21 @@ export const useChat = () => {
       const reader = new FileReader();
       reader.onloadend = () => {
         const base64Audio = reader.result as string;
-        console.log('Audio converted to base64, length:', base64Audio.length);
+        console.log('Audio converted to base64, format:', base64Audio.substring(0, 50));
         
-        // Create and send the voice message with base64 data
+        // Create and send the voice message with base64 data URL
         addVoiceMessage(activeChat, base64Audio);
-        
-        // Reset audio chunks
-        setAudioChunks([]);
       };
       reader.onerror = (error) => {
         console.error('Error converting audio to base64:', error);
+        setAudioChunks([]);
       };
       reader.readAsDataURL(audioBlob);
+      
+      // Reset audio chunks immediately to prevent duplicate processing
+      setAudioChunks([]);
     }
-  }, [isRecording, audioChunks, activeChat, addVoiceMessage, setAudioChunks]);
+  }, [isRecording, audioChunks.length, activeChat, addVoiceMessage, setAudioChunks]);
 
   return {
     messages,
