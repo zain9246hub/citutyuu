@@ -40,26 +40,39 @@ export const useChat = () => {
     if (!isRecording && audioChunks.length > 0 && activeChat) {
       console.log('Creating audio from chunks:', audioChunks.length, 'chunks');
       
-      // Use the first chunk's type as it contains the correct MIME type from MediaRecorder
-      const mimeType = audioChunks[0]?.type || 'audio/webm';
-      console.log('Using MIME type:', mimeType);
+      // Get MIME type from first chunk
+      const recordedMimeType = audioChunks[0]?.type || 'audio/webm;codecs=opus';
+      console.log('Recorded MIME type:', recordedMimeType);
       
-      const audioBlob = new Blob(audioChunks, { type: mimeType });
-      console.log('Audio blob created:', audioBlob.size, 'bytes, type:', audioBlob.type);
+      // Create blob with the recorded MIME type
+      const audioBlob = new Blob(audioChunks, { type: recordedMimeType });
+      console.log('Audio blob created:', {
+        size: audioBlob.size,
+        type: audioBlob.type,
+        chunks: audioChunks.length
+      });
       
       if (audioBlob.size === 0) {
         console.error('Audio blob is empty!');
         return;
       }
       
-      const audioUrl = URL.createObjectURL(audioBlob);
-      console.log('Created audio URL:', audioUrl);
-      
-      // Create and send the voice message
-      addVoiceMessage(activeChat, audioUrl);
-      
-      // Reset audio chunks
-      setAudioChunks([]);
+      // Convert blob to base64 for better persistence
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        const base64Audio = reader.result as string;
+        console.log('Audio converted to base64, length:', base64Audio.length);
+        
+        // Create and send the voice message with base64 data
+        addVoiceMessage(activeChat, base64Audio);
+        
+        // Reset audio chunks
+        setAudioChunks([]);
+      };
+      reader.onerror = (error) => {
+        console.error('Error converting audio to base64:', error);
+      };
+      reader.readAsDataURL(audioBlob);
     }
   }, [isRecording, audioChunks, activeChat, addVoiceMessage, setAudioChunks]);
 

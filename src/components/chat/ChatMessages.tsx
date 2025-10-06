@@ -90,24 +90,33 @@ const ChatMessages: React.FC<ChatMessagesProps> = ({ messages }) => {
                             <audio 
                               src={message.audioUrl} 
                               controls 
-                              preload="metadata"
+                              preload="auto"
                               controlsList="nodownload"
                               className="max-w-[150px] sm:max-w-[200px] md:max-w-[250px] h-8 rounded-lg opacity-80 hover:opacity-100 transition-opacity"
                               onLoadedMetadata={(e) => {
-                                console.log('Audio loaded successfully:', e.currentTarget.duration, 'seconds');
+                                console.log('Audio loaded successfully:', {
+                                  duration: e.currentTarget.duration,
+                                  readyState: e.currentTarget.readyState,
+                                  src: e.currentTarget.src.substring(0, 50) + '...'
+                                });
+                              }}
+                              onCanPlay={() => {
+                                console.log('Audio can play');
                               }}
                               onError={(e) => {
                                 console.error('Audio playback error:', e);
                                 const audioElement = e.currentTarget;
-                                console.error('Audio error details:', {
-                                  error: audioElement.error,
+                                const errorDetails = {
+                                  error: audioElement.error?.code,
+                                  errorMessage: audioElement.error?.message,
                                   networkState: audioElement.networkState,
                                   readyState: audioElement.readyState,
-                                  src: audioElement.src
-                                });
+                                  src: audioElement.src.substring(0, 100)
+                                };
+                                console.error('Audio error details:', errorDetails);
                                 toast({
                                   title: "Audio Error",
-                                  description: "Failed to load voice message",
+                                  description: `Failed to load voice message (Error code: ${audioElement.error?.code || 'unknown'})`,
                                   variant: "destructive"
                                 });
                               }}
