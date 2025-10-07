@@ -1,25 +1,20 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { useNavigate } from "react-router-dom";
 import BusinessImageUploader from "../business/BusinessImageUploader";
 import confetti from 'canvas-confetti';
 import { addDeal } from "@/utils/dealData";
-import { Deal } from "@/types/deal";
+import { Deal, DealTier } from "@/types/deal";
 import DealInformation from "./form-sections/DealInformation";
 import PricingSection from "./form-sections/PricingSection";
 import LocationContact from "./form-sections/LocationContact";
-import TagsFeatures from "./form-sections/TagsFeatures";
-import DurationPromotion from "./form-sections/DurationPromotion";
-import PaymentDialog from "./form-sections/PaymentDialog";
+import DealTierSelection from "./form-sections/DealTierSelection";
+import ZipCodeSelector from "./form-sections/ZipCodeSelector";
 import { ALL_CITIES } from "@/utils/cityData";
-
-const durationOptions = [
-  { days: 3, label: "3 days", baseCost: 120, featuredCost: 200 },
-  { days: 7, label: "7 days", baseCost: 120, featuredCost: 200 },
-  { days: 15, label: "15 days", baseCost: 200, featuredCost: 300 },
-  { days: 30, label: "30 days", baseCost: 350, featuredCost: 450 }
-];
+import { getPricingForCity, isMetroCity, MAX_IMAGES, IMAGE_CHANGE_POLICY, ZIP_CODE_LIMITS } from "@/utils/metroCities";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { AlertCircle } from "lucide-react";
 
 const cities = ALL_CITIES;
 
@@ -40,15 +35,20 @@ const DealUploadForm = () => {
     phone: "",
     expiryDate: "",
     tags: [] as string[],
-    isFeatured: false,
-    duration: 7,
+    tier: 'standard' as DealTier,
   });
   
   const [images, setImages] = useState<string[]>([]);
+  const [zipCodes, setZipCodes] = useState<string[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [tagInput, setTagInput] = useState("");
   const [showPaymentDialog, setShowPaymentDialog] = useState(false);
   const [isProcessingPayment, setIsProcessingPayment] = useState(false);
+  const [imagesLocked, setImagesLocked] = useState(false);
+
+  // Calculate pricing based on selected city
+  const currentPricing = dealData.city ? getPricingForCity(dealData.city) : getPricingForCity('');
+  const isMetro = dealData.city ? isMetroCity(dealData.city) : false;
   
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -110,21 +110,20 @@ const DealUploadForm = () => {
     }
   };
 
-  const calculatePrice = () => {
-    const selectedDuration = durationOptions.find(option => option.days === dealData.duration);
-    if (!selectedDuration) return dealData.isFeatured ? 320 : 120;
-    
-    return dealData.isFeatured 
-      ? selectedDuration.baseCost + selectedDuration.featuredCost 
-      : selectedDuration.baseCost;
-  };
-
-  const handleDurationChange = (duration: number) => {
-    setDealData(prev => ({ ...prev, duration }));
+  const handleTierChange = (tier: DealTier) => {
+    setDealData(prev => ({ ...prev, tier }));
+    // Clear zip codes if switching to city-wide
+    if (tier === 'citywide') {
+      setZipCodes([]);
+    }
   };
 
   const handleDiscountChange = (discountValue: number) => {
     setDealData(prev => ({ ...prev, discount: discountValue }));
+  };
+
+  const calculatePrice = () => {
+    return currentPricing[dealData.tier];
   };
 
   const scrollToTop = () => {
@@ -150,6 +149,18 @@ const DealUploadForm = () => {
       toast({
         title: "Image Required",
         description: "Please upload at least one image for your deal",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // Validate zip codes based on tier
+    const zipLimits = ZIP_CODE_LIMITS[dealData.tier];
+    if (dealData.tier !== 'citywide' && zipCodes.length < zipLimits.min) {
+      scrollToTop();
+      toast({
+        title: "Zip Codes Required",
+        description: `Please add at least ${zipLimits.min} zip code${zipLimits.min > 1 ? 's' : ''} for this tier`,
         variant: "destructive",
       });
       return;
@@ -180,13 +191,16 @@ const DealUploadForm = () => {
         discount: dealData.discount || undefined,
         location: dealData.location,
         city: dealData.city,
+        zipCodes: dealData.tier !== 'citywide' ? zipCodes : undefined,
         phone: dealData.phone || undefined,
         expiryDate: dealData.expiryDate || undefined,
         tags: dealData.tags,
         image: images[0],
+        images: images,
         rating: 0,
-        featured: dealData.isFeatured,
-        duration: dealData.duration,
+        featured: dealData.tier === 'highlight' || dealData.tier === 'citywide',
+        tier: dealData.tier,
+        isMetroCity: isMetro,
       };
       
       setTimeout(() => {
