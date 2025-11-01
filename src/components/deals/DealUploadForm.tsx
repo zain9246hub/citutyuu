@@ -11,6 +11,8 @@ import PricingSection from "./form-sections/PricingSection";
 import LocationContact from "./form-sections/LocationContact";
 import DealTierSelection from "./form-sections/DealTierSelection";
 import ZipCodeSelector from "./form-sections/ZipCodeSelector";
+import TagsSection from "./form-sections/TagsSection";
+import TierPaymentDialog from "./form-sections/TierPaymentDialog";
 import { ALL_CITIES } from "@/utils/cityData";
 import { getPricingForCity, isMetroCity, MAX_IMAGES, IMAGE_CHANGE_POLICY, ZIP_CODE_LIMITS } from "@/utils/metroCities";
 import { Alert, AlertDescription } from "@/components/ui/alert";
@@ -279,27 +281,27 @@ const DealUploadForm = () => {
         onExpiryDateChange={handleExpiryDateChange}
       />
       
-      <TagsFeatures
+      <TagsSection
         tags={dealData.tags}
         tagInput={tagInput}
-        isFeatured={dealData.isFeatured}
-        calculatePrice={calculatePrice}
         setTagInput={setTagInput}
         handleTagInputKeyDown={handleTagInputKeyDown}
         addTag={addTag}
         removeTag={removeTag}
-        onFeaturedChange={(checked) => 
-          setDealData(prev => ({ ...prev, isFeatured: checked }))
-        }
       />
       
-      <DurationPromotion
-        duration={dealData.duration}
-        isFeatured={dealData.isFeatured}
-        durationOptions={durationOptions}
-        onDurationChange={handleDurationChange}
-        calculatePrice={calculatePrice}
-      />
+      <div className="pt-4 bg-blue-50 border border-blue-200 rounded-md p-4">
+        <div className="flex items-start">
+          <AlertCircle className="h-5 w-5 text-blue-500 mr-2 mt-0.5" />
+          <div>
+            <h3 className="font-medium text-blue-800">Total Cost</h3>
+            <p className="text-sm text-blue-700 mt-1">
+              Your {dealData.tier} deal will cost ₹{calculatePrice()} (all taxes included)
+              {isMetro && <span className="ml-1 text-xs">(Metro City Pricing)</span>}
+            </p>
+          </div>
+        </div>
+      </div>
       
       <div className="pt-4 border-t">
         <Button type="submit" className="w-full" disabled={isSubmitting}>
@@ -307,14 +309,14 @@ const DealUploadForm = () => {
         </Button>
       </div>
       
-      <PaymentDialog
+      <TierPaymentDialog
         open={showPaymentDialog}
         onOpenChange={setShowPaymentDialog}
-        duration={dealData.duration}
-        isFeatured={dealData.isFeatured}
+        tier={dealData.tier}
+        price={calculatePrice()}
+        isMetro={isMetro}
+        zipCodeCount={zipCodes.length}
         isProcessingPayment={isProcessingPayment}
-        durationOptions={durationOptions}
-        calculatePrice={calculatePrice}
         onCancel={() => setShowPaymentDialog(false)}
         onConfirm={handlePaymentAndSubmit}
       />
