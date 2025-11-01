@@ -22,6 +22,12 @@ export interface Deal {
   duration?: number; // Duration in days
   tier?: DealTier; // Deal tier: standard, highlight, or citywide
   isMetroCity?: boolean; // Whether the city is a metro city
+  // Subscription tracking
+  uploadedBy?: string;
+  subscriptionStartDate?: string;
+  subscriptionEndDate?: string;
+  subscriptionPrice?: number;
+  isActive?: boolean;
 }
 
 export interface FilterOptions {
