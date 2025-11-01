@@ -13,6 +13,8 @@ import GooglePayButton from "@/components/payment/GooglePayButton";
 import { useAdvertisements } from "@/contexts/AdvertisementContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { ALL_STATES, getCitiesForState } from "@/utils/cityData";
+import BannerTierSelection, { BannerTier } from "./BannerTierSelection";
+import BusinessInfoForm, { BusinessInfo } from "./BusinessInfoForm";
 
 interface SlotBookingFormProps {
   open: boolean;
@@ -25,6 +27,7 @@ interface SlotBookingFormProps {
 }
 
 const SlotBookingForm = ({ open, onClose, slotId, location, onSuccess, isRenewal = false, existingAdId }: SlotBookingFormProps) => {
+  const [selectedTier, setSelectedTier] = useState<BannerTier>("banner-only");
   const [images, setImages] = useState<File[]>([]);
   const [uploading, setUploading] = useState(false);
   const [progress, setProgress] = useState(0);
@@ -40,6 +43,21 @@ const SlotBookingForm = ({ open, onClose, slotId, location, onSuccess, isRenewal
     locationUrl: "",
     websiteUrl: "",
     phoneNumber: "",
+  });
+
+  const [businessData, setBusinessData] = useState<BusinessInfo>({
+    name: "",
+    category: "",
+    description: "",
+    address: "",
+    pincode: "",
+    email: "",
+    website: "",
+    openingTime: "",
+    closingTime: "",
+    workingDays: [],
+    priceRange: "",
+    specialFeatures: [],
   });
 
   // Get available cities based on selected state
@@ -59,8 +77,8 @@ const SlotBookingForm = ({ open, onClose, slotId, location, onSuccess, isRenewal
     }
   }, [selectedState, availableCities, selectedCity]);
 
-  // Monthly subscription pricing
-  const slotPrice = 2999;
+  // Monthly subscription pricing based on tier
+  const slotPrice = selectedTier === "banner-only" ? 3538 : 5900;
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []);
@@ -97,6 +115,18 @@ const SlotBookingForm = ({ open, onClose, slotId, location, onSuccess, isRenewal
         variant: "destructive",
       });
       return;
+    }
+
+    // Additional validation for business tier
+    if (selectedTier === "banner-business") {
+      if (!businessData.name || !businessData.category || !businessData.description || !businessData.address || !businessData.pincode) {
+        toast({
+          title: "Business information required",
+          description: "Please fill in all required business fields",
+          variant: "destructive",
+        });
+        return;
+      }
     }
 
     setShowPayment(true);
@@ -163,13 +193,65 @@ const SlotBookingForm = ({ open, onClose, slotId, location, onSuccess, isRenewal
           uploadedBy: currentUser?.name || 'Anonymous',
           subscriptionStartDate: startDate.toISOString(),
           subscriptionEndDate: endDate.toISOString(),
-          monthlyPrice: 2999
+          monthlyPrice: slotPrice
         });
+
+        // If business tier, also save business data
+        if (selectedTier === "banner-business") {
+          const businessId = `business-${Date.now()}`;
+          const newBusiness = {
+            id: businessId,
+            name: businessData.name,
+            category: businessData.category,
+            rating: 0,
+            reviewCount: 0,
+            priceRange: businessData.priceRange || "₹₹",
+            location: `${businessData.address}, ${selectedCity}, ${selectedState}`,
+            city: selectedCity,
+            state: selectedState,
+            distance: "0.0 km",
+            coordinates: { lat: 0, lng: 0 },
+            image: imageUrl || "/placeholder.svg",
+            images: imageUrl ? [imageUrl] : ["/placeholder.svg"],
+            isNew: true,
+            isUserSubmitted: true,
+            offers: false,
+            categories: [businessData.category],
+            description: businessData.description,
+            phone: formData.phoneNumber,
+            email: businessData.email,
+            website: businessData.website,
+            hours: businessData.workingDays.map(day => ({
+              day,
+              open: businessData.openingTime || "09:00",
+              close: businessData.closingTime || "18:00",
+              isOpen: true
+            })),
+            isOpenNow: true,
+            products: [],
+            reviews: [],
+            features: businessData.specialFeatures,
+            socialMedia: {}
+          };
+
+          // Save business to localStorage
+          try {
+            const existingBusinesses = JSON.parse(localStorage.getItem('userBusinesses') || '[]');
+            existingBusinesses.unshift(newBusiness);
+            localStorage.setItem('userBusinesses', JSON.stringify(existingBusinesses));
+          } catch (error) {
+            console.error('Error saving business:', error);
+          }
+        }
         
         setUploading(false);
+        const successMessage = selectedTier === "banner-business" 
+          ? "Your advertisement is live and your business is now listed on Discover!"
+          : "Your advertisement is now live for 30 days!";
+        
         toast({
           title: "Success!",
-          description: "Your advertisement is now live for 30 days! You'll receive a renewal reminder 1 day before expiry.",
+          description: successMessage + " You'll receive a renewal reminder 1 day before expiry.",
         });
         onSuccess?.();
         onClose();
@@ -178,7 +260,22 @@ const SlotBookingForm = ({ open, onClose, slotId, location, onSuccess, isRenewal
         setImages([]);
         setSelectedState("");
         setSelectedCity("");
+        setSelectedTier("banner-only");
         setFormData({ title: "", description: "", locationUrl: "", websiteUrl: "", phoneNumber: "" });
+        setBusinessData({
+          name: "",
+          category: "",
+          description: "",
+          address: "",
+          pincode: "",
+          email: "",
+          website: "",
+          openingTime: "",
+          closingTime: "",
+          workingDays: [],
+          priceRange: "",
+          specialFeatures: [],
+        });
       }
     }, 500);
   };
@@ -273,14 +370,25 @@ const SlotBookingForm = ({ open, onClose, slotId, location, onSuccess, isRenewal
             <DialogTitle>{isRenewal ? 'Renew Advertisement' : 'Book Advertisement Slot'}</DialogTitle>
             <DialogDescription>
               {isRenewal 
-                ? 'Renew your existing advertisement for another 30 days at ₹2999/month'
-                : 'Upload your advertisement content - ₹2999/month (30 days)'
+                ? `Renew your existing advertisement for another 30 days at ₹${slotPrice}/month`
+                : 'Choose your plan and upload your advertisement content'
               }
             </DialogDescription>
           </DialogHeader>
 
         <div className="flex-1 overflow-y-auto px-1">
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form onSubmit={handleSubmit} className="space-y-6">
+          
+          {/* Tier Selection */}
+          {!isRenewal && (
+            <BannerTierSelection
+              selectedTier={selectedTier}
+              onTierChange={setSelectedTier}
+            />
+          )}
+
+          <Separator />
+          
           <div className="space-y-2">
             <Label>Advertisement Title</Label>
             <Input
@@ -414,6 +522,17 @@ const SlotBookingForm = ({ open, onClose, slotId, location, onSuccess, isRenewal
               </div>
             )}
           </div>
+
+          {/* Business Information for Banner + Business tier */}
+          {selectedTier === "banner-business" && (
+            <>
+              <Separator />
+              <BusinessInfoForm
+                businessData={businessData}
+                onChange={(updates) => setBusinessData(prev => ({ ...prev, ...updates }))}
+              />
+            </>
+          )}
 
           {uploading && (
             <div className="space-y-2">
