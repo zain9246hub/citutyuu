@@ -5,7 +5,6 @@ import BusinessAnalytics from "@/components/analytics/BusinessAnalytics";
 import DealCard from "@/components/DealCard";
 import NotificationsTab from "@/components/profile/NotificationsTab";
 import SubscriptionManagement from "@/components/profile/SubscriptionManagement";
-import SubscriptionPlans from '@/components/subscription/SubscriptionPlans';
 import ThemeSelector from "@/components/profile/ThemeSelector";
 import { Deal } from "@/types/deal";
 import { List, PlusCircle, Store } from "lucide-react";
@@ -223,7 +222,7 @@ const ProfileTabs = ({ currentUser, activeTab, setActiveTab, isEditing }: Profil
           </TabsContent>
 
           <TabsContent value="subscriptions" className="space-y-4">
-            <SubscriptionPlans />
+            <SubscriptionManagement />
           </TabsContent>
         </>
       )}
