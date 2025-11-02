@@ -1,8 +1,15 @@
-import React from "react";
+import React, { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { SlotBanner } from "@/types/slot";
-import { MapPin, ExternalLink, Phone, Mail, Globe } from "lucide-react";
+import { MapPin, Phone, Mail, Globe, ChevronLeft, ChevronRight } from "lucide-react";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel";
 
 interface FullBannerModalProps {
   open: boolean;
@@ -15,7 +22,11 @@ const FullBannerModal: React.FC<FullBannerModalProps> = ({
   onOpenChange,
   banner,
 }) => {
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  
   if (!banner) return null;
+
+  const images = banner.imageUrls || (banner.imageUrl ? [banner.imageUrl] : []);
 
   const handleContactAction = (action: string, value?: string) => {
     try {
@@ -78,58 +89,49 @@ const FullBannerModal: React.FC<FullBannerModalProps> = ({
         </DialogHeader>
         
         <div className="space-y-6">
-          {/* Full Size Banner */}
+          {/* Full Size Banner with Carousel */}
           <div className="relative rounded-lg overflow-hidden">
-            {banner.imageUrl ? (
+            {images.length > 0 ? (
               <div className="relative">
-                <img 
-                  src={banner.imageUrl} 
-                  alt={banner.adContent}
-                  className="w-full h-96 object-cover"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent" />
-                <div className="absolute bottom-0 left-0 right-0 p-6 text-white">
-                  <h2 className="text-3xl font-bold mb-2">{banner.adContent}</h2>
-                  {banner.description && (
-                    <p className="text-lg text-white/90 mb-3">{banner.description}</p>
-                  )}
-                  {banner.businessName && (
-                    <p className="text-sm text-white/80 uppercase tracking-wider font-medium">
-                      {banner.businessName}
-                    </p>
-                  )}
-                </div>
+                {images.length === 1 ? (
+                  <img 
+                    src={images[0]} 
+                    alt={banner.adContent}
+                    className="w-full h-96 object-cover"
+                  />
+                ) : (
+                  <Carousel className="w-full">
+                    <CarouselContent>
+                      {images.map((imageUrl, index) => (
+                        <CarouselItem key={index}>
+                          <img 
+                            src={imageUrl} 
+                            alt={`${banner.adContent} - Image ${index + 1}`}
+                            className="w-full h-96 object-cover"
+                          />
+                        </CarouselItem>
+                      ))}
+                    </CarouselContent>
+                    <CarouselPrevious className="left-4" />
+                    <CarouselNext className="right-4" />
+                  </Carousel>
+                )}
               </div>
             ) : banner.demoVideoUrl ? (
-              <div className="relative h-96">
-                <video
-                  src={banner.demoVideoUrl}
-                  className="w-full h-full object-cover"
-                  autoPlay
-                  muted
-                  loop
-                  playsInline
-                />
-                <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
-                  <div className="text-white p-6 text-center">
-                    <h2 className="text-3xl font-bold mb-2">{banner.adContent}</h2>
-                    {banner.description && (
-                      <p className="text-lg text-white/90">{banner.description}</p>
-                    )}
-                  </div>
-                </div>
-              </div>
+              <video
+                src={banner.demoVideoUrl}
+                className="w-full h-96 object-cover"
+                autoPlay
+                muted
+                loop
+                playsInline
+              />
             ) : (
               <div className={`${banner.backgroundColor} h-96 flex items-center justify-center p-8`}>
                 <div className="text-center">
                   <h2 className="text-3xl font-bold mb-3">{banner.adContent}</h2>
                   {banner.description && (
                     <p className="text-lg text-muted-foreground mb-3">{banner.description}</p>
-                  )}
-                  {banner.businessName && (
-                    <p className="text-sm text-muted-foreground uppercase tracking-wider font-medium">
-                      {banner.businessName}
-                    </p>
                   )}
                 </div>
               </div>

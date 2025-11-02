@@ -27,58 +27,32 @@ const BannerPreviewModal: React.FC<BannerPreviewModalProps> = ({
           </DialogTitle>
         </DialogHeader>
         <div className="space-y-4">
-          {/* Enhanced Banner Preview */}
-          <div className="relative rounded-lg overflow-hidden">
-            {banner.imageUrl ? (
-              <div className="relative">
-                <img 
-                  src={banner.imageUrl} 
-                  alt={banner.adContent}
-                  className="w-full h-64 object-cover"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
-                <div className="absolute bottom-0 left-0 right-0 p-4 text-white">
-                  <h3 className="text-xl font-bold mb-1">{banner.adContent}</h3>
-                  {banner.description && (
-                    <p className="text-sm text-white/90 mb-2">{banner.description}</p>
-                  )}
-                  {banner.businessName && (
-                    <p className="text-xs text-white/80 uppercase tracking-wider">
-                      {banner.businessName}
-                    </p>
-                  )}
-                </div>
-              </div>
+          {/* Enhanced Banner Preview - Clean without text overlays */}
+          <div 
+            className="relative rounded-lg overflow-hidden cursor-pointer"
+            onClick={() => {
+              if (isExplorer && banner.isBooked && onViewFullBanner) {
+                onViewFullBanner();
+              }
+            }}
+          >
+            {banner.imageUrl || banner.imageUrls?.[0] ? (
+              <img 
+                src={banner.imageUrl || banner.imageUrls?.[0]} 
+                alt={banner.adContent}
+                className="w-full h-64 object-cover"
+              />
             ) : banner.demoVideoUrl ? (
-              <div className="relative h-64">
-                <video
-                  src={banner.demoVideoUrl}
-                  className="w-full h-full object-cover"
-                  autoPlay
-                  muted
-                  loop
-                  playsInline
-                />
-                <div className="absolute inset-0 bg-black/30 flex items-center justify-center">
-                  <div className="text-white p-4 text-center">
-                    <h3 className="text-xl font-bold">{banner.adContent}</h3>
-                  </div>
-                </div>
-              </div>
+              <video
+                src={banner.demoVideoUrl}
+                className="w-full h-64 object-cover"
+                autoPlay
+                muted
+                loop
+                playsInline
+              />
             ) : (
-              <div className={`${banner.backgroundColor} h-64 flex items-center justify-center p-6`}>
-                <div className="text-center">
-                  <h3 className="text-xl font-bold mb-2">{banner.adContent}</h3>
-                  {banner.description && (
-                    <p className="text-sm text-muted-foreground mb-2">{banner.description}</p>
-                  )}
-                  {banner.businessName && (
-                    <p className="text-xs text-muted-foreground uppercase tracking-wider">
-                      {banner.businessName}
-                    </p>
-                  )}
-                </div>
-              </div>
+              <div className={`${banner.backgroundColor} h-64`} />
             )}
           </div>
 
@@ -103,22 +77,8 @@ const BannerPreviewModal: React.FC<BannerPreviewModalProps> = ({
               <Button 
                 onClick={() => {
                   try {
-                    console.log('[BannerPreviewModal] View full banner clicked');
-                    onViewFullBanner?.();
-                  } catch (error) {
-                    console.error('[BannerPreviewModal] Error viewing full banner:', error);
-                  }
-                }} 
-                variant="outline"
-                className="w-full flex items-center justify-center gap-2"
-              >
-                <Eye className="h-4 w-4" />
-                View Full Banner
-              </Button>
-              <Button 
-                onClick={() => {
-                  try {
                     console.log('[BannerPreviewModal] Visit business clicked for banner:', banner.id);
+                    onOpenChange(false); // Close preview modal first
                     onVisitBusiness?.();
                   } catch (error) {
                     console.error('[BannerPreviewModal] Error visiting business:', error);

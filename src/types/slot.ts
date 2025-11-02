@@ -6,6 +6,7 @@ export interface SlotBanner {
   backgroundColor: string;
   demoVideoUrl?: string;
   imageUrl?: string;
+  imageUrls?: string[]; // Support multiple images for carousel
   isBooked?: boolean;
   title?: string;
   description?: string;
