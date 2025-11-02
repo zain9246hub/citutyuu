@@ -126,11 +126,11 @@ const FullBannerModal: React.FC<FullBannerModalProps> = ({
                         </CarouselItem>
                       ))}
                     </CarouselContent>
-                    <CarouselPrevious className="left-4 h-10 w-10 bg-background/90 hover:bg-background border-2" />
-                    <CarouselNext className="right-4 h-10 w-10 bg-background/90 hover:bg-background border-2" />
+                    <CarouselPrevious className="left-2 bg-background/80 hover:bg-background" />
+                    <CarouselNext className="right-2 bg-background/80 hover:bg-background" />
                   </Carousel>
                   {/* Image counter */}
-                  <div className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-background/90 px-4 py-2 rounded-full text-sm font-medium border">
+                  <div className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-background/80 px-3 py-1 rounded-full text-xs">
                     {currentImageIndex + 1} / {images.length}
                   </div>
                 </div>
