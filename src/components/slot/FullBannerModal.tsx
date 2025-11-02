@@ -1,14 +1,15 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { SlotBanner } from "@/types/slot";
-import { MapPin, Phone, Mail, Globe, ChevronLeft, ChevronRight } from "lucide-react";
+import { MapPin, Phone, Mail, Globe } from "lucide-react";
 import {
   Carousel,
   CarouselContent,
   CarouselItem,
   CarouselNext,
   CarouselPrevious,
+  type CarouselApi,
 } from "@/components/ui/carousel";
 
 interface FullBannerModalProps {
@@ -23,6 +24,19 @@ const FullBannerModal: React.FC<FullBannerModalProps> = ({
   banner,
 }) => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [api, setApi] = useState<CarouselApi>();
+  
+  useEffect(() => {
+    if (!api) return;
+
+    api.on("select", () => {
+      setCurrentImageIndex(api.selectedScrollSnap());
+    });
+  }, [api]);
+
+  useEffect(() => {
+    setCurrentImageIndex(0);
+  }, [open]);
   
   if (!banner) return null;
 
@@ -89,34 +103,38 @@ const FullBannerModal: React.FC<FullBannerModalProps> = ({
         </DialogHeader>
         
         <div className="space-y-6">
-          {/* Full Size Banner with Carousel */}
+          {/* Full Size Banner with Carousel - Clean without text overlays */}
           <div className="relative rounded-lg overflow-hidden">
             {images.length > 0 ? (
-              <div className="relative">
-                {images.length === 1 ? (
-                  <img 
-                    src={images[0]} 
-                    alt={banner.adContent}
-                    className="w-full h-96 object-cover"
-                  />
-                ) : (
-                  <Carousel className="w-full">
-                    <CarouselContent>
+              images.length === 1 ? (
+                <img 
+                  src={images[0]} 
+                  alt={banner.adContent}
+                  className="w-full h-96 object-cover"
+                />
+              ) : (
+                <div className="relative">
+                  <Carousel setApi={setApi} className="w-full">
+                    <CarouselContent className="-ml-0">
                       {images.map((imageUrl, index) => (
-                        <CarouselItem key={index}>
+                        <CarouselItem key={index} className="pl-0">
                           <img 
                             src={imageUrl} 
-                            alt={`${banner.adContent} - Image ${index + 1}`}
+                            alt={`Banner image ${index + 1}`}
                             className="w-full h-96 object-cover"
                           />
                         </CarouselItem>
                       ))}
                     </CarouselContent>
-                    <CarouselPrevious className="left-4" />
-                    <CarouselNext className="right-4" />
+                    <CarouselPrevious className="left-2 bg-background/80 hover:bg-background" />
+                    <CarouselNext className="right-2 bg-background/80 hover:bg-background" />
                   </Carousel>
-                )}
-              </div>
+                  {/* Image counter */}
+                  <div className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-background/80 px-3 py-1 rounded-full text-xs">
+                    {currentImageIndex + 1} / {images.length}
+                  </div>
+                </div>
+              )
             ) : banner.demoVideoUrl ? (
               <video
                 src={banner.demoVideoUrl}
@@ -127,14 +145,7 @@ const FullBannerModal: React.FC<FullBannerModalProps> = ({
                 playsInline
               />
             ) : (
-              <div className={`${banner.backgroundColor} h-96 flex items-center justify-center p-8`}>
-                <div className="text-center">
-                  <h2 className="text-3xl font-bold mb-3">{banner.adContent}</h2>
-                  {banner.description && (
-                    <p className="text-lg text-muted-foreground mb-3">{banner.description}</p>
-                  )}
-                </div>
-              </div>
+              <div className={`${banner.backgroundColor} h-96`} />
             )}
           </div>
 
