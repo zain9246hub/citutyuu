@@ -17,7 +17,7 @@ const BusinessHeader = ({ handleSaveBusiness, handleShareBusiness }: BusinessHea
       <Button 
         variant="ghost" 
         size="icon" 
-        onClick={() => navigate("/businesses")}
+        onClick={() => navigate(-1)}
       >
         <ArrowLeft className="h-5 w-5" />
       </Button>
