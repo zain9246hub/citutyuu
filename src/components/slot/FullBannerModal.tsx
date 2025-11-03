@@ -114,7 +114,15 @@ const FullBannerModal: React.FC<FullBannerModalProps> = ({
                 />
               ) : (
                 <div className="relative">
-                  <Carousel setApi={setApi} className="w-full">
+                  <Carousel 
+                    setApi={setApi} 
+                    className="w-full"
+                    opts={{
+                      align: "start",
+                      loop: true,
+                      dragFree: true,
+                    }}
+                  >
                     <CarouselContent className="-ml-0">
                       {images.map((imageUrl, index) => (
                         <CarouselItem key={index} className="pl-0">
