@@ -29,14 +29,14 @@ const Navbar = () => {
 
   return (
     <motion.div 
-      className="fixed bottom-0 w-full z-50 safe-bottom"
+      className="fixed bottom-0 w-full z-50 pb-safe no-tap-highlight"
       initial={{ y: "100%" }}
       animate={{ 
         y: isVisible ? 0 : "100%",
       }}
       transition={{ type: "spring", stiffness: 300, damping: 30 }}
     >
-      <div className="px-4 py-2 mx-auto backdrop-blur-md bg-background/80 border-t border-border/20 shadow-lg">
+      <div className="px-4 py-2 mx-auto backdrop-blur-md bg-background/90 border-t border-border/20 shadow-lg">
         <div className="flex justify-between items-center max-w-md mx-auto">
           {[
             { path: "/", icon: Home, label: "Home" },
@@ -49,7 +49,7 @@ const Navbar = () => {
             <Link
               key={path}
               to={path}
-              className="group relative flex flex-col items-center"
+              className="group relative flex flex-col items-center no-tap-highlight"
             >
               <motion.div
                 className={`p-2 rounded-xl transition-all duration-300 group-hover:bg-primary/5 ${

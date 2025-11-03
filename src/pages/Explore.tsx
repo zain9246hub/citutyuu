@@ -72,16 +72,16 @@ const Explore = () => {
   const hasActiveFilters = filterOptions.categories.length > 0 || filterOptions.priceRange;
   
   return (
-    <div className="flex flex-col min-h-screen bg-white">
-      <div className="flex-1 max-w-md mx-auto w-full pb-20">
-        <div className="p-4 sticky top-0 bg-white z-10 border-b border-gray-100 shadow-sm">
+    <div className="flex flex-col min-h-screen-safe bg-white native-scroll">
+      <div className="flex-1 max-w-md mx-auto w-full pb-20 pb-safe">
+        <div className="p-4 pt-safe sticky top-0 bg-white z-10 border-b border-gray-100 shadow-sm">
           <div className="flex justify-between items-center mb-4">
             <div className="flex items-center gap-2">
               <Button 
                 variant="ghost" 
                 size="icon" 
                 onClick={() => navigate(-1)}
-                className="mr-1"
+                className="mr-1 no-tap-highlight"
               >
                 <ArrowLeft className="h-5 w-5" />
               </Button>
@@ -92,7 +92,7 @@ const Explore = () => {
                 variant="ghost" 
                 size="icon" 
                 onClick={handleShare}
-                className="text-gray-500 hover:text-gray-800"
+                className="text-gray-500 hover:text-gray-800 no-tap-highlight"
               >
                 <Share2 className="h-5 w-5" />
               </Button>
@@ -111,7 +111,7 @@ const Explore = () => {
               variant={hasActiveFilters ? "secondary" : "ghost"}
               size="icon" 
               className={cn(
-                "absolute right-1 top-1/2 transform -translate-y-1/2 h-10 w-10",
+                "absolute right-1 top-1/2 transform -translate-y-1/2 h-10 w-10 no-tap-highlight",
                 hasActiveFilters ? "bg-primary/10" : ""
               )}
               onClick={handleFilterToggle}

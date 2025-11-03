@@ -21,7 +21,7 @@ const TopNavbar = memo(({ title = "Cityoffers", showBackButton = false, actions 
   }, [navigate]);
 
   return (
-    <div className="sticky top-0 z-50 w-full bg-white/80 backdrop-blur-sm border-b border-transparent bg-gradient-to-r from-red-500 via-yellow-500 via-green-500 via-blue-500 to-purple-500 bg-size-200 animate-gradient-x">
+    <div className="sticky top-0 z-50 w-full bg-white/80 backdrop-blur-sm border-b border-transparent bg-gradient-to-r from-red-500 via-yellow-500 via-green-500 via-blue-500 to-purple-500 bg-size-200 animate-gradient-x pt-safe">
       <div className="flex items-center justify-between px-4 h-14 bg-white/90 backdrop-blur-md">
         <div className="flex items-center gap-3">
           {showBackButton && (
@@ -29,7 +29,7 @@ const TopNavbar = memo(({ title = "Cityoffers", showBackButton = false, actions 
               variant="ghost" 
               size="icon" 
               onClick={handleBack}
-              className="mr-1"
+              className="mr-1 no-tap-highlight"
             >
               <ArrowLeft className="h-5 w-5" />
             </Button>
