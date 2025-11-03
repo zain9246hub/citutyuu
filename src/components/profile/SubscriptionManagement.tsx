@@ -6,15 +6,15 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Calendar, RefreshCw, AlertCircle, Tag, Image, Building, Video } from 'lucide-react';
-import SlotBookingForm from '@/components/slot/SlotBookingForm';
+import RenewalPreviewDialog from './RenewalPreviewDialog';
 import { Deal } from '@/types/deal';
 
 const SubscriptionManagement: React.FC = () => {
-  const { uploadedAds, renewAd } = useAdvertisements();
+  const { uploadedAds } = useAdvertisements();
   const { currentUser } = useAuth();
   const [renewalType, setRenewalType] = useState<'banner' | 'deal' | null>(null);
   const [renewalId, setRenewalId] = useState<string | null>(null);
-  const [showRenewalForm, setShowRenewalForm] = useState(false);
+  const [showRenewalDialog, setShowRenewalDialog] = useState(false);
 
   // Filter banners by current user
   const userBanners = uploadedAds.filter(ad => 
@@ -56,13 +56,13 @@ const SubscriptionManagement: React.FC = () => {
   const handleRenewBanner = (bannerId: string) => {
     setRenewalType('banner');
     setRenewalId(bannerId);
-    setShowRenewalForm(true);
+    setShowRenewalDialog(true);
   };
 
   const handleRenewDeal = (dealId: number) => {
     setRenewalType('deal');
     setRenewalId(dealId.toString());
-    setShowRenewalForm(true);
+    setShowRenewalDialog(true);
   };
 
   const hasAnySubscriptions = userBanners.length > 0 || userDeals.length > 0;
@@ -236,23 +236,18 @@ const SubscriptionManagement: React.FC = () => {
         </CardContent>
       </Card>
 
-      {showRenewalForm && renewalId && renewalType === 'banner' && (
-        <SlotBookingForm
-          open={showRenewalForm}
-          onClose={() => {
-            setShowRenewalForm(false);
-            setRenewalId(null);
-            setRenewalType(null);
+      {showRenewalDialog && renewalId && renewalType && (
+        <RenewalPreviewDialog
+          open={showRenewalDialog}
+          onOpenChange={(open) => {
+            setShowRenewalDialog(open);
+            if (!open) {
+              setRenewalId(null);
+              setRenewalType(null);
+            }
           }}
-          slotId="renewal"
-          location="Renewal"
-          isRenewal={true}
-          existingAdId={renewalId}
-          onSuccess={() => {
-            setShowRenewalForm(false);
-            setRenewalId(null);
-            setRenewalType(null);
-          }}
+          type={renewalType}
+          itemId={renewalId}
         />
       )}
     </>
