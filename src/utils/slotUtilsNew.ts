@@ -101,7 +101,8 @@ export const generateMockSlotBanners = (
     adContent: ad.title,
     location: ad.location,
     backgroundColor: "bg-gradient-to-br from-blue-50 to-blue-100",
-    imageUrl: ad.imageUrl || ad.videoUrl || totalBanners[0].imageUrl, // Fallback to first demo image
+    imageUrl: ad.imageUrl || ad.imageUrls?.[0] || ad.videoUrl || totalBanners[0].imageUrl, // Use first uploaded image, fallback to video/demo
+    imageUrls: ad.imageUrls,
     isBooked: true, // Uploaded ads are always booked
     title: ad.title,
     description: ad.description,

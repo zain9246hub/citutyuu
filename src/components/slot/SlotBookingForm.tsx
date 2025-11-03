@@ -169,8 +169,9 @@ const SlotBookingForm = ({ open, onClose, slotId, location, onSuccess, isRenewal
       if (progress === 100) {
         clearInterval(interval);
         
-        // Convert uploaded files to data URLs for persistence
-        const imageUrl = images.length > 0 ? await fileToDataURL(images[0]) : undefined;
+        // Convert uploaded files (max 5) to data URLs for persistence
+        const imageUrls = await Promise.all(images.slice(0, 5).map(fileToDataURL));
+        const imageUrl = imageUrls[0];
         
         // Use slotId directly as position (slotId is "1" or "2")
         const position = parseInt(slotId) || 1;
@@ -187,6 +188,7 @@ const SlotBookingForm = ({ open, onClose, slotId, location, onSuccess, isRenewal
           title: formData.title,
           description: formData.description,
           imageUrl,
+          imageUrls,
           locationUrl: formData.locationUrl,
           websiteUrl: formData.websiteUrl,
           phoneNumber: formData.phoneNumber,

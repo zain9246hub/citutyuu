@@ -13,6 +13,7 @@ export interface UploadedAd {
   websiteUrl?: string; // official website
   phoneNumber?: string;
   imageUrl?: string;
+  imageUrls?: string[]; // Support up to 5 images
   videoUrl?: string;
   uploadedBy: string;
   uploadedAt: string;

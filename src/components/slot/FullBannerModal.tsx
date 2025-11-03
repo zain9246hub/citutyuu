@@ -40,7 +40,7 @@ const FullBannerModal: React.FC<FullBannerModalProps> = ({
   
   if (!banner) return null;
 
-  const images = banner.imageUrls || (banner.imageUrl ? [banner.imageUrl] : []);
+  const images = (banner.imageUrls && banner.imageUrls.length > 0 ? banner.imageUrls : (banner.imageUrl ? [banner.imageUrl] : [])).slice(0, 5);
 
   const handleContactAction = (action: string, value?: string) => {
     try {
