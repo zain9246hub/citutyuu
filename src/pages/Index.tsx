@@ -107,10 +107,10 @@ const Index = () => {
   }, [currentUser, navigate, toast]);
 
   return (
-    <div className="flex flex-col min-h-screen-safe bg-background text-foreground native-scroll">
+    <div className="flex flex-col min-h-screen bg-background text-foreground">
       <TopNavbar title="Cityoffers" showBackButton={false} />
       
-      <div className="flex-1 w-full pb-20 pb-safe mx-auto max-w-md md:max-w-2xl lg:max-w-4xl">
+      <div className="flex-1 w-full pb-20 mx-auto max-w-md md:max-w-2xl lg:max-w-4xl">
         
         <StateCitySelector />
         

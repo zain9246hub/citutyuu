@@ -47,13 +47,13 @@ const Reels = () => {
   }, [toast]);
 
   return (
-    <div className="flex flex-col h-screen-safe bg-black overflow-hidden relative native-scroll">
-      <div className="absolute top-5 pt-safe right-5 z-20 pointer-events-none flex items-center justify-between w-full px-5">
+    <div className="flex flex-col h-screen bg-black overflow-hidden relative">
+      <div className="absolute top-5 right-5 z-20 pointer-events-none flex items-center justify-between w-full px-5">
         <Link to="/" className="pointer-events-auto">
           <Button 
             variant="ghost" 
             size="icon" 
-            className="rounded-full bg-black/40 hover:bg-black/60 no-tap-highlight"
+            className="rounded-full bg-black/40 hover:bg-black/60"
           >
             <Home className="h-5 w-5 text-white" />
           </Button>
@@ -68,7 +68,7 @@ const Reels = () => {
       
       <div 
         ref={scrollAreaRef}
-        className="h-full overflow-y-scroll snap-mandatory snap-y no-scrollbar native-scroll"
+        className="h-full overflow-y-scroll snap-mandatory snap-y no-scrollbar"
         onScroll={handleScroll}
       >
         {reels.map((reel, index) => (
