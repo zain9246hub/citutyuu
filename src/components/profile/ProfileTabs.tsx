@@ -5,6 +5,7 @@ import BusinessAnalytics from "@/components/analytics/BusinessAnalytics";
 import DealCard from "@/components/DealCard";
 import NotificationsTab from "@/components/profile/NotificationsTab";
 import SubscriptionManagement from "@/components/profile/SubscriptionManagement";
+import ManageBusinesses from "@/components/profile/ManageBusinesses";
 import ThemeSelector from "@/components/profile/ThemeSelector";
 import { Deal } from "@/types/deal";
 import { List, PlusCircle, Store } from "lucide-react";
@@ -129,7 +130,7 @@ const ProfileTabs = ({ currentUser, activeTab, setActiveTab, isEditing }: Profil
       <TabsList 
         className="grid w-full" 
         style={{ 
-          gridTemplateColumns: currentUser.role === "business" ? "repeat(5, 1fr)" : "repeat(3, 1fr)" 
+          gridTemplateColumns: currentUser.role === "business" ? "repeat(6, 1fr)" : currentUser.role === "explorer" ? "repeat(4, 1fr)" : "repeat(3, 1fr)" 
         }}
       >
         <TabsTrigger value="profile">Profile</TabsTrigger>
@@ -137,11 +138,15 @@ const ProfileTabs = ({ currentUser, activeTab, setActiveTab, isEditing }: Profil
           <>
             <TabsTrigger value="analytics">Analytics</TabsTrigger>
             <TabsTrigger value="manage">Manage</TabsTrigger>
+            <TabsTrigger value="businesses">Businesses</TabsTrigger>
             <TabsTrigger value="subscriptions">Subscriptions</TabsTrigger>
           </>
         )}
         {currentUser.role === "explorer" && (
-          <TabsTrigger value="saved">Saved</TabsTrigger>
+          <>
+            <TabsTrigger value="saved">Saved</TabsTrigger>
+            <TabsTrigger value="subscriptions">Subscriptions</TabsTrigger>
+          </>
         )}
         <TabsTrigger value="notifications">Notifications</TabsTrigger>
       </TabsList>
@@ -221,6 +226,10 @@ const ProfileTabs = ({ currentUser, activeTab, setActiveTab, isEditing }: Profil
             {renderBusinessManagementContent()}
           </TabsContent>
 
+          <TabsContent value="businesses" className="space-y-4">
+            <ManageBusinesses />
+          </TabsContent>
+
           <TabsContent value="subscriptions" className="space-y-4">
             <SubscriptionManagement />
           </TabsContent>
@@ -228,32 +237,38 @@ const ProfileTabs = ({ currentUser, activeTab, setActiveTab, isEditing }: Profil
       )}
 
       {currentUser.role === "explorer" && (
-        <TabsContent value="saved" className="p-4 bg-background rounded-lg border">
-          <div className="space-y-4">
-            {savedDeals.length > 0 ? (
-              savedDeals.map(deal => (
-                <DealCard
-                  key={deal.id}
-                  deal={deal}
-                  saved={true}
-                  featured={deal.featured}
-                  onToggleSave={() => toggleSave(deal.id)}
-                  onShare={() => handleShare(deal.id)}
-                  onClick={() => handleDealClick(deal.id)}
-                />
-              ))
-            ) : (
-              <div className="rounded-lg p-6 text-center py-12 bg-muted/30 border border-dashed">
-                <List className="h-12 w-12 mx-auto text-muted-foreground/50 mb-3" />
-                <h3 className="font-semibold mb-2 text-foreground">No Saved Deals Yet</h3>
-                <p className="text-sm text-muted-foreground mb-4">
-                  Save deals and offers to view them here later
-                </p>
-                <Button size="sm" onClick={() => navigate("/explore")}>Browse Deals</Button>
-              </div>
-            )}
-          </div>
-        </TabsContent>
+        <>
+          <TabsContent value="saved" className="p-4 bg-background rounded-lg border">
+            <div className="space-y-4">
+              {savedDeals.length > 0 ? (
+                savedDeals.map(deal => (
+                  <DealCard
+                    key={deal.id}
+                    deal={deal}
+                    saved={true}
+                    featured={deal.featured}
+                    onToggleSave={() => toggleSave(deal.id)}
+                    onShare={() => handleShare(deal.id)}
+                    onClick={() => handleDealClick(deal.id)}
+                  />
+                ))
+              ) : (
+                <div className="rounded-lg p-6 text-center py-12 bg-muted/30 border border-dashed">
+                  <List className="h-12 w-12 mx-auto text-muted-foreground/50 mb-3" />
+                  <h3 className="font-semibold mb-2 text-foreground">No Saved Deals Yet</h3>
+                  <p className="text-sm text-muted-foreground mb-4">
+                    Save deals and offers to view them here later
+                  </p>
+                  <Button size="sm" onClick={() => navigate("/explore")}>Browse Deals</Button>
+                </div>
+              )}
+            </div>
+          </TabsContent>
+
+          <TabsContent value="subscriptions" className="space-y-4">
+            <SubscriptionManagement />
+          </TabsContent>
+        </>
       )}
 
       <TabsContent value="notifications" className="bg-background">

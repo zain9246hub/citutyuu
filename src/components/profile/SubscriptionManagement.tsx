@@ -38,6 +38,20 @@ const SubscriptionManagement: React.FC = () => {
     }
   }, [currentUser]);
 
+  // Get user businesses from localStorage
+  const userBusinesses = useMemo(() => {
+    try {
+      const stored = localStorage.getItem('userBusinesses');
+      if (!stored || !currentUser) return [];
+      
+      const businesses = JSON.parse(stored);
+      return Array.isArray(businesses) ? businesses : [];
+    } catch (error) {
+      console.error('Error loading user businesses:', error);
+      return [];
+    }
+  }, [currentUser]);
+
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('en-IN', {
       day: '2-digit',
@@ -65,7 +79,7 @@ const SubscriptionManagement: React.FC = () => {
     setShowRenewalDialog(true);
   };
 
-  const hasAnySubscriptions = userBanners.length > 0 || userDeals.length > 0;
+  const hasAnySubscriptions = userBanners.length > 0 || userDeals.length > 0 || userBusinesses.length > 0;
 
   const renderSubscriptionCard = (
     id: string,
@@ -226,7 +240,22 @@ const SubscriptionManagement: React.FC = () => {
             </TabsContent>
 
             <TabsContent value="businesses" className="space-y-4 mt-4">
-              <p className="text-muted-foreground text-center py-8">No business subscriptions found</p>
+              {userBusinesses.length === 0 ? (
+                <p className="text-muted-foreground text-center py-8">No business subscriptions found</p>
+              ) : (
+                userBusinesses.map(business => 
+                  renderSubscriptionCard(
+                    business.id,
+                    business.name,
+                    business.city,
+                    business.subscriptionStartDate || new Date().toISOString(),
+                    business.subscriptionEndDate || new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
+                    business.subscriptionPrice || 999,
+                    'banner',
+                    <Building className="w-4 h-4 text-primary" />
+                  )
+                )
+              )}
             </TabsContent>
 
             <TabsContent value="reels" className="space-y-4 mt-4">
