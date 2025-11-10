@@ -14,8 +14,17 @@ import { useToast } from "@/hooks/use-toast";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import BusinessImageUploader from "./BusinessImageUploader";
+import ProductServiceUploader from "./ProductServiceUploader";
 import { categoryOptions } from "@/components/filters/FilterOptions";
 import { STATES_WITH_ALL, getCitiesForState } from "@/utils/indiaGeo";
+
+interface ProductService {
+  id: string;
+  name: string;
+  description: string;
+  price: string;
+  image: string;
+}
 
 interface Business {
   id: string;
@@ -32,6 +41,8 @@ interface Business {
   images: string[];
   features?: string[];
   hours?: Array<{ day: string; open: string; close: string; isOpen: boolean }>;
+  products?: ProductService[];
+  services?: ProductService[];
 }
 
 interface BusinessEditDialogProps {
@@ -70,6 +81,8 @@ const BusinessEditDialog: React.FC<BusinessEditDialogProps> = ({
   });
 
   const [images, setImages] = useState<string[]>(business.images || []);
+  const [products, setProducts] = useState<ProductService[]>(business.products || []);
+  const [services, setServices] = useState<ProductService[]>(business.services || []);
 
   const availableCities = getCitiesForState(businessData.state);
 
@@ -135,6 +148,8 @@ const BusinessEditDialog: React.FC<BusinessEditDialogProps> = ({
       priceRange: businessData.priceRange,
       images: images,
       features: businessData.specialFeatures,
+      products: products,
+      services: services,
     };
 
     onSave(updatedBusiness);
@@ -344,6 +359,24 @@ const BusinessEditDialog: React.FC<BusinessEditDialogProps> = ({
                 </div>
               ))}
             </div>
+          </div>
+
+          {/* Products */}
+          <div className="space-y-4">
+            <ProductServiceUploader
+              type="products"
+              items={products}
+              setItems={setProducts}
+            />
+          </div>
+
+          {/* Services */}
+          <div className="space-y-4">
+            <ProductServiceUploader
+              type="services"
+              items={services}
+              setItems={setServices}
+            />
           </div>
         </div>
 

@@ -18,6 +18,14 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 
+interface ProductService {
+  id: string;
+  name: string;
+  description: string;
+  price: string;
+  image: string;
+}
+
 interface Business {
   id: string;
   name: string;
@@ -36,6 +44,8 @@ interface Business {
   isUserSubmitted?: boolean;
   features?: string[];
   hours?: Array<{ day: string; open: string; close: string; isOpen: boolean }>;
+  products?: ProductService[];
+  services?: ProductService[];
 }
 
 const ManageBusinesses: React.FC = () => {
