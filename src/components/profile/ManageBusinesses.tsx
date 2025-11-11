@@ -57,7 +57,7 @@ const ManageBusinesses: React.FC = () => {
   const [businesses, setBusinesses] = useState<Business[]>([]);
 
   // Load businesses from localStorage
-  useMemo(() => {
+  const loadBusinesses = () => {
     try {
       const stored = localStorage.getItem('userBusinesses');
       if (stored) {
@@ -67,6 +67,23 @@ const ManageBusinesses: React.FC = () => {
     } catch (error) {
       console.error('Error loading businesses:', error);
     }
+  };
+
+  React.useEffect(() => {
+    loadBusinesses();
+
+    // Listen for business updates
+    const handleStorageChange = () => {
+      loadBusinesses();
+    };
+
+    window.addEventListener('businessUpdated', handleStorageChange);
+    window.addEventListener('storage', handleStorageChange);
+
+    return () => {
+      window.removeEventListener('businessUpdated', handleStorageChange);
+      window.removeEventListener('storage', handleStorageChange);
+    };
   }, []);
 
   const handleEdit = (business: Business) => {

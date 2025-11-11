@@ -155,6 +155,9 @@ const BusinessEditDialog: React.FC<BusinessEditDialogProps> = ({
     onSave(updatedBusiness);
     onOpenChange(false);
     
+    // Dispatch custom event to notify other components
+    window.dispatchEvent(new Event('businessUpdated'));
+    
     toast({
       title: "Business Updated",
       description: "Your business details have been updated successfully",

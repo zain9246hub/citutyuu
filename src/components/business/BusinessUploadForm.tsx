@@ -264,6 +264,9 @@ const BusinessUploadForm = () => {
           localStorage.setItem('userBusinesses', finalData);
           console.log('🔥 [DEBUG] Business saved successfully with', existingBusinesses.length, 'total businesses');
           
+          // Dispatch custom event to notify other components
+          window.dispatchEvent(new Event('businessUpdated'));
+          
         } catch (initialError) {
           console.log('🔥 [DEBUG] Initial save failed, trying emergency cleanup...');
           
@@ -272,6 +275,9 @@ const BusinessUploadForm = () => {
             localStorage.removeItem('userBusinesses');
             localStorage.setItem('userBusinesses', JSON.stringify([newBusiness]));
             console.log('🔥 [DEBUG] Emergency save successful - only new business saved');
+            
+            // Dispatch custom event to notify other components
+            window.dispatchEvent(new Event('businessUpdated'));
             
             toast({
               title: "⚠️ Storage Limit Reached",
