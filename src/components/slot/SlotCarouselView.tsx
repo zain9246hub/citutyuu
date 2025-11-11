@@ -24,6 +24,8 @@ const SlotCarouselView: React.FC<SlotCarouselViewProps> = ({
   currentPage = 1,
   onPageChange,
   maxVisible,
+  onViewFull,
+  onVisitBusiness,
 }) => {
   // Quick return for empty slides
   if (!slides.length) return null;
@@ -95,6 +97,8 @@ const SlotCarouselView: React.FC<SlotCarouselViewProps> = ({
         autoplayPlugin={autoplayPlugin}
         shouldShowControls={shouldShowControls}
         maxVisible={maxVisible}
+        onViewFull={onViewFull}
+        onVisitBusiness={onVisitBusiness}
       />
       
       {shouldShowPagination && (

@@ -22,6 +22,8 @@ interface SlotCarouselContentProps {
   autoplayPlugin?: any;
   shouldShowControls?: boolean;
   maxVisible?: number;
+  onViewFull?: (banner: SlotBanner) => void;
+  onVisitBusiness?: (banner: SlotBanner) => void;
 }
 
 const SlotCarouselContent: React.FC<SlotCarouselContentProps> = ({
@@ -36,6 +38,8 @@ const SlotCarouselContent: React.FC<SlotCarouselContentProps> = ({
   autoplayPlugin,
   shouldShowControls = true,
   maxVisible,
+  onViewFull,
+  onVisitBusiness,
 }) => {
   const carouselOptions = useMemo(() => ({
     loop: true,
@@ -68,6 +72,8 @@ const SlotCarouselContent: React.FC<SlotCarouselContentProps> = ({
           onClick={onBannerClick}
           onBook={onBook}
           showBookButton={showBookButton}
+          onViewFull={onViewFull}
+          onVisitBusiness={onVisitBusiness}
         />
       </div>
     );
@@ -89,6 +95,8 @@ const SlotCarouselContent: React.FC<SlotCarouselContentProps> = ({
               onClick={onBannerClick}
               onBook={onBook}
               showBookButton={showBookButton}
+              onViewFull={onViewFull}
+              onVisitBusiness={onVisitBusiness}
             />
           </CarouselItem>
         ))}

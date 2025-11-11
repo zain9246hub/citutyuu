@@ -161,6 +161,8 @@ const SlotCarousel: React.FC<SlotCarouselProps> = ({
         currentPage={currentPage}
         onPageChange={handlePageChange}
         maxVisible={maxVisible}
+        onViewFull={handleViewFullBanner}
+        onVisitBusiness={handleVisitBusiness}
       />
       
       {localSelectedBanner && (

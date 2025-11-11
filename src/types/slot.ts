@@ -46,6 +46,8 @@ export interface SlotBannerCardProps {
   onClick: (banner: SlotBanner) => void;
   onBook?: (e: React.MouseEvent) => void;
   showBookButton?: boolean;
+  onViewFull?: (banner: SlotBanner) => void;
+  onVisitBusiness?: (banner: SlotBanner) => void;
 }
 
 export interface SlotCarouselViewProps {
@@ -66,6 +68,8 @@ export interface SlotCarouselViewProps {
   currentPage?: number;
   onPageChange?: (page: number) => void;
   maxVisible?: number;
+  onViewFull?: (banner: SlotBanner) => void;
+  onVisitBusiness?: (banner: SlotBanner) => void;
 }
 
 export interface BannerPreviewModalProps {
