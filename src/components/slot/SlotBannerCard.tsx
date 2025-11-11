@@ -30,6 +30,8 @@ const SlotBannerCard = memo(({
 
   const handleViewFull = (e: React.MouseEvent) => {
     e.stopPropagation();
+    e.preventDefault();
+    console.log('[SlotBannerCard] View Full clicked', slide);
     if (onViewFull) {
       onViewFull(slide);
     }
@@ -37,6 +39,8 @@ const SlotBannerCard = memo(({
 
   const handleVisitBusiness = (e: React.MouseEvent) => {
     e.stopPropagation();
+    e.preventDefault();
+    console.log('[SlotBannerCard] Visit Business clicked', slide);
     if (onVisitBusiness) {
       onVisitBusiness(slide);
     }
@@ -147,7 +151,10 @@ const SlotBannerCard = memo(({
 
         {/* BACK SIDE - Only for explorers with booked banners */}
         {shouldShowFlipOptions && (
-          <div className="flip-card-back rounded-lg border border-border overflow-hidden bg-gradient-to-br from-primary/20 via-primary/10 to-background backdrop-blur-sm">
+          <div 
+            className="flip-card-back rounded-lg border border-border overflow-hidden bg-gradient-to-br from-primary/20 via-primary/10 to-background backdrop-blur-sm"
+            onClick={(e) => e.stopPropagation()}
+          >
             <div className="h-full flex flex-col items-center justify-center p-6 space-y-4">
               <div className="text-center mb-4">
                 <h3 className="text-xl font-bold mb-2">{slide.adContent}</h3>
@@ -162,6 +169,7 @@ const SlotBannerCard = memo(({
                     onClick={handleViewFull}
                     className="w-full bg-primary hover:bg-primary/90 text-primary-foreground shadow-lg"
                     size="lg"
+                    type="button"
                   >
                     <Eye className="h-5 w-5 mr-2" />
                     View Full Details
@@ -174,6 +182,7 @@ const SlotBannerCard = memo(({
                     variant="secondary"
                     className="w-full shadow-lg"
                     size="lg"
+                    type="button"
                   >
                     <Store className="h-5 w-5 mr-2" />
                     Visit Business Profile

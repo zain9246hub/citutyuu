@@ -89,29 +89,33 @@ const SlotCarousel: React.FC<SlotCarouselProps> = ({
     window.scrollTo({ top: window.scrollY - 100, behavior: 'smooth' });
   };
 
-  const handleViewFullBanner = () => {
+  const handleViewFullBanner = (banner: SlotBanner) => {
+    console.log('[SlotCarousel] View Full Banner clicked for:', banner);
+    setLocalSelectedBanner(banner);
     handleClosePreview();
     setShowFullBanner(true);
   };
 
-  const handleVisitBusiness = () => {
+  const handleVisitBusiness = (banner: SlotBanner) => {
     try {
-      if (!localSelectedBanner) {
-        console.error('[SlotCarousel] No banner selected for business visit');
+      console.log('[SlotCarousel] Visit Business clicked for:', banner);
+      
+      if (!banner) {
+        console.error('[SlotCarousel] No banner provided for business visit');
         return;
       }
       
       // Use enhanced business ID utility
       const businessUrl = BusinessIdUtils.getBusinessUrl(
-        localSelectedBanner.id, 
-        localSelectedBanner.position, 
-        localSelectedBanner.businessId
+        banner.id, 
+        banner.position, 
+        banner.businessId
       );
       
       const businessId = BusinessIdUtils.resolveBusinessId(
-        localSelectedBanner.id, 
-        localSelectedBanner.position, 
-        localSelectedBanner.businessId
+        banner.id, 
+        banner.position, 
+        banner.businessId
       );
       
       // Validate business exists before navigation
@@ -184,8 +188,8 @@ const SlotCarousel: React.FC<SlotCarouselProps> = ({
               }
             } : undefined}
             showBookButton={showBookButton && !isExplorer}
-            onViewFullBanner={handleViewFullBanner}
-            onVisitBusiness={handleVisitBusiness}
+            onViewFullBanner={() => handleViewFullBanner(localSelectedBanner)}
+            onVisitBusiness={() => handleVisitBusiness(localSelectedBanner)}
             isExplorer={isExplorer}
           />
           
