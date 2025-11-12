@@ -22,7 +22,7 @@ const ChatComponent: React.FC = () => {
   return (
     <div className="flex flex-col h-full max-w-md mx-auto w-full relative">
       {/* Premium glass container */}
-      <div className="absolute inset-0 bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl shadow-2xl" />
+      <div className="absolute inset-0 glass-card rounded-2xl shadow-2xl" />
       <div className="relative z-10 flex flex-col h-full rounded-2xl overflow-hidden">
         <ChatHeader 
           activeChat={activeChat} 

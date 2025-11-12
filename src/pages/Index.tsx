@@ -107,7 +107,7 @@ const Index = () => {
   }, [currentUser, navigate, toast]);
 
   return (
-    <div className="flex flex-col min-h-screen bg-background text-foreground">
+    <div className="flex flex-col min-h-screen bg-gradient-to-br from-background via-background to-muted/20 text-foreground">
       <TopNavbar title="Cityoffers" showBackButton={false} />
       
       <div className="flex-1 w-full pb-20 mx-auto max-w-md md:max-w-2xl lg:max-w-4xl">

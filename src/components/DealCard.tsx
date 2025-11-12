@@ -43,7 +43,7 @@ const DealCard = ({
 
   return (
     <div 
-      className="rounded-lg border overflow-hidden bg-card transition-all cursor-pointer hover:shadow-md"
+      className="rounded-lg glass-card overflow-hidden transition-all cursor-pointer hover:shadow-xl hover:scale-[1.02]"
       onClick={onClick}
       onKeyDown={(e) => {
         if (e.key === 'Enter' || e.key === ' ') {

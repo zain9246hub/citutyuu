@@ -36,7 +36,7 @@ const Navbar = () => {
       }}
       transition={{ type: "spring", stiffness: 300, damping: 30 }}
     >
-      <div className="px-4 py-2 mx-auto backdrop-blur-md bg-background/80 border-t border-border/20 shadow-lg">
+      <div className="px-4 py-2 mx-auto glass-navbar border-t">
         <div className="flex justify-between items-center max-w-md mx-auto">
           {[
             { path: "/", icon: Home, label: "Home" },

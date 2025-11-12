@@ -241,6 +241,55 @@
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
   }
 
+  /* Modern Glass Effects */
+  .glass-card {
+    @apply bg-background/70 backdrop-blur-xl border border-border/50 shadow-xl;
+  }
+  
+  .dark .glass-card {
+    @apply bg-background/60 backdrop-blur-xl border-border/30;
+  }
+  
+  .glass-navbar {
+    @apply bg-background/80 backdrop-blur-md border-border/20 shadow-lg;
+  }
+  
+  .dark .glass-navbar {
+    @apply bg-background/70 backdrop-blur-lg border-border/10;
+  }
+  
+  .glass-primary {
+    @apply bg-primary/10 backdrop-blur-xl border border-primary/20 shadow-lg;
+  }
+  
+  .dark .glass-primary {
+    @apply bg-primary/5 backdrop-blur-xl border-primary/10;
+  }
+  
+  .glass-subtle {
+    @apply bg-background/50 backdrop-blur-sm border border-border/30;
+  }
+  
+  .dark .glass-subtle {
+    @apply bg-background/40 backdrop-blur-md border-border/20;
+  }
+
+  .glass-effect {
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(16px) saturate(180%);
+    -webkit-backdrop-filter: blur(16px) saturate(180%);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
+  }
+  
+  .glass-dark {
+    background: rgba(17, 25, 40, 0.75);
+    backdrop-filter: blur(16px) saturate(180%);
+    -webkit-backdrop-filter: blur(16px) saturate(180%);
+    border: 1px solid rgba(255, 255, 255, 0.125);
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+  }
+
   /* 3D Flip Card */
   .flip-card {
     perspective: 1000px;

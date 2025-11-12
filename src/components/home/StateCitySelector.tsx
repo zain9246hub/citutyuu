@@ -47,7 +47,7 @@ const StateCitySelector: React.FC<StateCitySelectorProps> = () => {
   const showLocationWarning = !isCurrentLocationApproved();
 
   return (
-    <div className="px-4 py-3 bg-background/95 backdrop-blur-sm border-b sticky top-0 z-40">
+    <div className="px-4 py-3 glass-navbar border-b sticky top-0 z-40">
       {showLocationWarning && (
         <div className="mb-3 p-3 bg-green-50 border-l-4 border-green-400 rounded">
           <div className="flex items-center">
