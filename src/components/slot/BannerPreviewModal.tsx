@@ -31,14 +31,7 @@ const BannerPreviewModal: React.FC<BannerPreviewModalProps> = ({
         </DialogHeader>
         <div className="space-y-4">
           {/* Enhanced Banner Preview - Clean without text overlays */}
-          <div 
-            className="relative rounded-lg overflow-hidden cursor-pointer"
-            onClick={() => {
-              if (isExplorer && banner.isBooked && onViewFullBanner) {
-                onViewFullBanner();
-              }
-            }}
-          >
+          <div className="relative rounded-lg overflow-hidden">
             {banner.imageUrl || banner.imageUrls?.[0] ? (
               <img 
                 src={banner.imageUrl || banner.imageUrls?.[0]} 
