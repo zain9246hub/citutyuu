@@ -1,5 +1,5 @@
 
-import React from "react";
+import React, { useMemo } from "react";
 import { 
   Select, 
   SelectContent, 
@@ -11,6 +11,18 @@ import { ArrowLeft, MessageSquare, MapPin, Globe } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { STATE_TO_CITIES } from "@/utils/cityData";
+
+// Helper to get state for a city
+const getStateForCity = (city: string): string | null => {
+  if (city === "All Cities") return null;
+  for (const [state, cities] of Object.entries(STATE_TO_CITIES)) {
+    if (cities.includes(city as any)) {
+      return state;
+    }
+  }
+  return null;
+};
 
 interface ChatHeaderProps {
   activeChat: string | null;
@@ -50,12 +62,17 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({
           </div>
           <div className="flex flex-col">
             <h1 className="text-lg font-bold bg-gradient-to-r from-white via-purple-200 to-cyan-200 bg-clip-text text-transparent">
-              Public Chat
+              City Chat
             </h1>
             {activeChat && (
               <div className="flex items-center gap-1 text-xs text-white/60">
                 {getCityIcon(activeChat)}
-                <span>{activeChat}</span>
+                <span>
+                  {activeChat}
+                  {activeChat !== "All Cities" && getStateForCity(activeChat) && (
+                    <span className="text-white/40">, {getStateForCity(activeChat)}</span>
+                  )}
+                </span>
               </div>
             )}
           </div>
@@ -80,7 +97,12 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({
             >
               <div className="flex items-center gap-2 w-full">
                 {getCityIcon(chat)}
-                <span className="flex-1">{chat}</span>
+                <div className="flex flex-col flex-1">
+                  <span>{chat}</span>
+                  {chat !== "All Cities" && getStateForCity(chat) && (
+                    <span className="text-[10px] text-white/40">{getStateForCity(chat)}</span>
+                  )}
+                </div>
                 {chat === "All Cities" && (
                   <span className="text-xs text-emerald-400 font-medium">Global</span>
                 )}
