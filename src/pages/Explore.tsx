@@ -72,27 +72,27 @@ const Explore = () => {
   const hasActiveFilters = filterOptions.categories.length > 0 || filterOptions.priceRange;
   
   return (
-    <div className="flex flex-col min-h-screen bg-white">
+    <div className="flex flex-col min-h-screen bg-background">
       <div className="flex-1 max-w-md mx-auto w-full pb-20">
-        <div className="p-4 sticky top-0 bg-white z-10 border-b border-gray-100 shadow-sm">
+        <div className="p-4 sticky top-0 bg-background z-10 border-b border-border shadow-sm">
           <div className="flex justify-between items-center mb-4">
             <div className="flex items-center gap-2">
               <Button 
                 variant="ghost" 
                 size="icon" 
                 onClick={() => navigate(-1)}
-                className="mr-1"
+                className="mr-1 text-foreground"
               >
                 <ArrowLeft className="h-5 w-5" />
               </Button>
-              <h1 className="text-2xl font-bold">Explore Deals {sortedDeals && `(${sortedDeals.length})`}</h1>
+              <h1 className="text-2xl font-bold text-foreground">Explore Deals {sortedDeals && `(${sortedDeals.length})`}</h1>
             </div>
             {isExplorer && (
               <Button 
                 variant="ghost" 
                 size="icon" 
                 onClick={handleShare}
-                className="text-gray-500 hover:text-gray-800"
+                className="text-muted-foreground hover:text-foreground"
               >
                 <Share2 className="h-5 w-5" />
               </Button>
@@ -100,10 +100,10 @@ const Explore = () => {
           </div>
           
           <div className="relative flex items-center mb-4">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
             <Input
               placeholder="Search deals..."
-              className="pl-10 pr-12 py-2 w-full bg-gray-50 border border-gray-200 rounded-lg h-12 shadow-sm focus:shadow transition-shadow"
+              className="pl-10 pr-12 py-2 w-full bg-muted/50 border border-border text-foreground placeholder:text-muted-foreground rounded-lg h-12 shadow-sm focus:shadow transition-shadow"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
             />

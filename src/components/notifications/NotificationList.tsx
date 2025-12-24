@@ -108,31 +108,31 @@ const NotificationList = () => {
                 {notification.message}
               </p>
 
-              <div className="flex items-center justify-between">
+              <div className="flex flex-col gap-3">
                 <span className="text-xs text-muted-foreground font-medium">
                   {notification.time} • From {notification.location}
                 </span>
                 
                 {notification.actions && (
-                  <div className="flex space-x-3">
+                  <div className="flex flex-wrap gap-2">
                     {notification.actions.viewLocation && (
                       <Button 
                         variant="outline" 
                         size="sm" 
-                        className="h-9 px-4 border-blue-200 text-blue-600 hover:bg-blue-50 hover:text-blue-700 dark:border-blue-800/30 dark:text-blue-400 dark:hover:bg-blue-900/20 transition-all duration-200"
+                        className="h-8 px-3 text-xs border-blue-200 text-blue-600 hover:bg-blue-50 hover:text-blue-700 dark:border-blue-800/30 dark:text-blue-400 dark:hover:bg-blue-900/20 transition-all duration-200"
                       >
-                        <MapPin className="h-4 w-4 mr-1.5" />
-                        View Location
+                        <MapPin className="h-3 w-3 mr-1" />
+                        Location
                       </Button>
                     )}
                     {notification.actions.phoneNumber && (
                       <Button 
                         variant="default" 
                         size="sm" 
-                        className="h-9 px-4 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 shadow-md hover:shadow-green-500/25 transition-all duration-200"
+                        className="h-8 px-3 text-xs bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 shadow-md hover:shadow-green-500/25 transition-all duration-200"
                       >
-                        <Phone className="h-4 w-4 mr-1.5" />
-                        {notification.actions.phoneNumber}
+                        <Phone className="h-3 w-3 mr-1" />
+                        Call
                       </Button>
                     )}
                   </div>

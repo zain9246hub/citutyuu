@@ -127,29 +127,28 @@ const ProfileTabs = ({ currentUser, activeTab, setActiveTab, isEditing }: Profil
       value={activeTab} 
       onValueChange={setActiveTab}
     >
-      <TabsList 
-        className="grid w-full" 
-        style={{ 
-          gridTemplateColumns: currentUser.role === "business" ? "repeat(6, 1fr)" : currentUser.role === "explorer" ? "repeat(4, 1fr)" : "repeat(3, 1fr)" 
-        }}
-      >
-        <TabsTrigger value="profile">Profile</TabsTrigger>
-        {currentUser.role === "business" && (
-          <>
-            <TabsTrigger value="analytics">Analytics</TabsTrigger>
-            <TabsTrigger value="manage">Manage</TabsTrigger>
-            <TabsTrigger value="businesses">Businesses</TabsTrigger>
-            <TabsTrigger value="subscriptions">Subscriptions</TabsTrigger>
-          </>
-        )}
-        {currentUser.role === "explorer" && (
-          <>
-            <TabsTrigger value="saved">Saved</TabsTrigger>
-            <TabsTrigger value="subscriptions">Subscriptions</TabsTrigger>
-          </>
-        )}
-        <TabsTrigger value="notifications">Notifications</TabsTrigger>
-      </TabsList>
+      <div className="overflow-x-auto -mx-4 px-4 scrollbar-hide">
+        <TabsList 
+          className="inline-flex w-max min-w-full"
+        >
+          <TabsTrigger value="profile" className="text-xs sm:text-sm px-3 sm:px-4 whitespace-nowrap">Profile</TabsTrigger>
+          {currentUser.role === "business" && (
+            <>
+              <TabsTrigger value="analytics" className="text-xs sm:text-sm px-3 sm:px-4 whitespace-nowrap">Analytics</TabsTrigger>
+              <TabsTrigger value="manage" className="text-xs sm:text-sm px-3 sm:px-4 whitespace-nowrap">Manage</TabsTrigger>
+              <TabsTrigger value="businesses" className="text-xs sm:text-sm px-3 sm:px-4 whitespace-nowrap">Businesses</TabsTrigger>
+              <TabsTrigger value="subscriptions" className="text-xs sm:text-sm px-3 sm:px-4 whitespace-nowrap">Subscriptions</TabsTrigger>
+            </>
+          )}
+          {currentUser.role === "explorer" && (
+            <>
+              <TabsTrigger value="saved" className="text-xs sm:text-sm px-3 sm:px-4 whitespace-nowrap">Saved</TabsTrigger>
+              <TabsTrigger value="subscriptions" className="text-xs sm:text-sm px-3 sm:px-4 whitespace-nowrap">Subscriptions</TabsTrigger>
+            </>
+          )}
+          <TabsTrigger value="notifications" className="text-xs sm:text-sm px-3 sm:px-4 whitespace-nowrap">Notifications</TabsTrigger>
+        </TabsList>
+      </div>
 
       <TabsContent value="profile" className="p-4 bg-gradient-to-b from-background to-muted/10 rounded-xl border border-border/50 shadow-sm">
         {!isEditing && (
