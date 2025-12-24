@@ -1,9 +1,9 @@
 
 import React from "react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { BannerPreviewModalProps } from "@/types/slot";
-import { ArrowRight, MapPin, Eye, Building } from "lucide-react";
+import { MapPin, Building } from "lucide-react";
 
 const BannerPreviewModal: React.FC<BannerPreviewModalProps> = ({
   open,
@@ -20,11 +20,14 @@ const BannerPreviewModal: React.FC<BannerPreviewModalProps> = ({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-lg">
+      <DialogContent className="w-[calc(100%-2rem)] max-w-lg mx-auto">
         <DialogHeader>
           <DialogTitle>
             {isExplorer ? "What would you like to do?" : "Banner Preview"}
           </DialogTitle>
+          <DialogDescription className="sr-only">
+            Preview of the selected banner advertisement
+          </DialogDescription>
         </DialogHeader>
         <div className="space-y-4">
           {/* Enhanced Banner Preview - Clean without text overlays */}
@@ -102,7 +105,7 @@ const BannerPreviewModal: React.FC<BannerPreviewModalProps> = ({
               }}
               className="w-full flex items-center justify-center gap-2"
             >
-              Book This Banner <ArrowRight className="h-4 w-4" />
+              Book This Banner
             </Button>
           ) : null}
         </div>
