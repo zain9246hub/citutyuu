@@ -7,9 +7,16 @@ import {
   CarouselNext,
   CarouselPrevious
 } from "@/components/ui/carousel";
-import React, { useEffect, useState, useRef, useMemo, useCallback } from "react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import React, { useEffect, useState, useMemo, useCallback } from "react";
 import { MapPin } from "lucide-react";
-import { CITIES_WITH_ALL } from "@/utils/cityData";
+import { STATES_WITH_ALL, getCitiesForState } from "@/utils/indiaGeo";
 import { cn } from "@/lib/utils";
 import Autoplay from "embla-carousel-autoplay";
 
@@ -21,9 +28,15 @@ interface CityFilterProps {
 
 const CityFilter = React.memo(({ selectedCity, onSelectCity, autoPlay = false }: CityFilterProps) => {
   const [isMobile, setIsMobile] = useState(false);
+  const [selectedState, setSelectedState] = useState<string>("All States");
   
-  // Memoize cities to prevent unnecessary re-renders
-  const cities = useMemo(() => CITIES_WITH_ALL, []);
+  // Get cities based on selected state
+  const cities = useMemo(() => {
+    const stateCities = getCitiesForState(selectedState);
+    return selectedState === "All States" 
+      ? ["All Cities", ...stateCities] 
+      : ["All Cities", ...stateCities];
+  }, [selectedState]);
   
   // Stabilize mobile check with useCallback
   const checkMobile = useCallback(() => {
@@ -39,8 +52,17 @@ const CityFilter = React.memo(({ selectedCity, onSelectCity, autoPlay = false }:
     };
   }, [checkMobile]);
 
+  // Handle state change
+  const handleStateChange = useCallback((state: string) => {
+    setSelectedState(state);
+    // Reset city selection when state changes
+    localStorage.setItem('selectedCity', 'All Cities');
+    onSelectCity(null);
+  }, [onSelectCity]);
+
   // Memoize clear filter handler
   const handleClearFilter = useCallback(() => {
+    setSelectedState("All States");
     localStorage.setItem('selectedCity', 'All Cities');
     onSelectCity(null);
   }, [onSelectCity]);
@@ -103,43 +125,65 @@ const CityFilter = React.memo(({ selectedCity, onSelectCity, autoPlay = false }:
   }, [cities, selectedCity, handleCityClick]);
 
   return (
-    <div className="mb-3">
-      <div className="flex items-center justify-between mb-3">
-        <h3 className="text-sm font-medium text-foreground/80">Filter by City</h3>
-        {selectedCity && selectedCity !== "All Cities" && (
-          <Button 
-            variant="ghost" 
-            size="sm" 
-            onClick={handleClearFilter}
-            className="text-xs text-muted-foreground hover:text-foreground hover:bg-muted/50"
-          >
-            Clear Filter
-          </Button>
-        )}
+    <div className="mb-3 space-y-3">
+      {/* State Filter Dropdown */}
+      <div>
+        <div className="flex items-center justify-between mb-2">
+          <h3 className="text-sm font-medium text-foreground/80">Filter by State</h3>
+          {(selectedState !== "All States" || selectedCity) && (
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              onClick={handleClearFilter}
+              className="text-xs text-muted-foreground hover:text-foreground hover:bg-muted/50"
+            >
+              Clear All Filters
+            </Button>
+          )}
+        </div>
+        <Select value={selectedState} onValueChange={handleStateChange}>
+          <SelectTrigger className="w-full h-10 bg-background border-border">
+            <SelectValue placeholder="Select a state" />
+          </SelectTrigger>
+          <SelectContent className="max-h-[300px] z-50 bg-popover">
+            {STATES_WITH_ALL.map((state) => (
+              <SelectItem key={state} value={state}>
+                {state}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
       </div>
-      
-      <Carousel
-        opts={carouselOpts}
-        plugins={autoplayPlugin ? [autoplayPlugin] : []}
-        className="w-full overflow-hidden"
-      >
-        <CarouselContent className="-ml-2 flex items-center">
-          {cityButtons}
-        </CarouselContent>
+
+      {/* City Filter Carousel */}
+      <div>
+        <h3 className="text-sm font-medium text-foreground/80 mb-2">
+          Filter by City {selectedState !== "All States" && <span className="text-muted-foreground">in {selectedState}</span>}
+        </h3>
         
-        {!isMobile && (
-          <>
-            <CarouselPrevious 
-              className="left-0 bg-background/95 backdrop-blur-sm hover:bg-background border border-border/40 shadow-md h-8 w-8"
-              size="sm"
-            />
-            <CarouselNext 
-              className="right-0 bg-background/95 backdrop-blur-sm hover:bg-background border border-border/40 shadow-md h-8 w-8"
-              size="sm"
-            />
-          </>
-        )}
-      </Carousel>
+        <Carousel
+          opts={carouselOpts}
+          plugins={autoplayPlugin ? [autoplayPlugin] : []}
+          className="w-full overflow-hidden"
+        >
+          <CarouselContent className="-ml-2 flex items-center">
+            {cityButtons}
+          </CarouselContent>
+          
+          {!isMobile && (
+            <>
+              <CarouselPrevious 
+                className="left-0 bg-background/95 backdrop-blur-sm hover:bg-background border border-border/40 shadow-md h-8 w-8"
+                size="sm"
+              />
+              <CarouselNext 
+                className="right-0 bg-background/95 backdrop-blur-sm hover:bg-background border border-border/40 shadow-md h-8 w-8"
+                size="sm"
+              />
+            </>
+          )}
+        </Carousel>
+      </div>
     </div>
   );
 });
