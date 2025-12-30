@@ -1,5 +1,5 @@
 
-import React, { useMemo } from "react";
+import React, { useMemo, useState, useCallback } from "react";
 import { 
   Select, 
   SelectContent, 
@@ -7,11 +7,10 @@ import {
   SelectTrigger, 
   SelectValue 
 } from "@/components/ui/select";
-import { ArrowLeft, MessageSquare, MapPin, Globe } from "lucide-react";
+import { ArrowLeft, MessageSquare, MapPin, Globe, Building2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { STATE_TO_CITIES } from "@/utils/cityData";
+import { STATES_WITH_ALL, STATE_TO_CITIES, getCitiesForState } from "@/utils/indiaGeo";
 
 // Helper to get state for a city
 const getStateForCity = (city: string): string | null => {
@@ -36,6 +35,13 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({
   chats
 }) => {
   const navigate = useNavigate();
+  const [selectedState, setSelectedState] = useState<string>("All States");
+  
+  // Get cities based on selected state
+  const filteredCities = useMemo(() => {
+    const stateCities = getCitiesForState(selectedState);
+    return ["All Cities", ...stateCities];
+  }, [selectedState]);
   
   const getCityIcon = (city: string) => {
     if (city === "All Cities") {
@@ -43,9 +49,16 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({
     }
     return <MapPin className="h-4 w-4 text-purple-400" />;
   };
+
+  const handleStateChange = useCallback((state: string) => {
+    setSelectedState(state);
+    // Reset to All Cities when state changes
+    setActiveChat("All Cities");
+  }, [setActiveChat]);
   
   return (
-    <div className="border-b border-white/10 px-4 py-4 flex items-center justify-between bg-white/5 backdrop-blur-sm sticky top-0 z-10 safe-top">
+    <div className="border-b border-white/10 px-4 py-3 flex flex-col gap-3 bg-white/5 backdrop-blur-sm sticky top-0 z-10 safe-top">
+      {/* Top row: Back button + Title */}
       <div className="flex items-center gap-3">
         <Button 
           variant="ghost" 
@@ -78,39 +91,63 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({
           </div>
         </div>
       </div>
-      <Select 
-        value={activeChat || ""} 
-        onValueChange={setActiveChat}
-      >
-        <SelectTrigger className="w-[140px] sm:w-[180px] h-10 text-sm bg-white/10 backdrop-blur-sm border border-white/20 hover:border-white/30 transition-all duration-300 rounded-xl shadow-lg text-white">
-          <div className="flex items-center gap-2">
-            {activeChat && getCityIcon(activeChat)}
-            <SelectValue placeholder="Select a city" />
-          </div>
-        </SelectTrigger>
-        <SelectContent className="bg-black/80 backdrop-blur-xl border border-white/20 rounded-xl shadow-2xl max-h-[300px]">
-          {chats.map((chat) => (
-            <SelectItem 
-              key={chat} 
-              value={chat} 
-              className="text-sm flex items-center gap-2 cursor-pointer hover:bg-white/10 focus:bg-white/10 transition-all duration-300 text-white"
-            >
-              <div className="flex items-center gap-2 w-full">
-                {getCityIcon(chat)}
-                <div className="flex flex-col flex-1">
+
+      {/* Bottom row: State + City dropdowns */}
+      <div className="flex items-center gap-2">
+        {/* State Dropdown */}
+        <Select value={selectedState} onValueChange={handleStateChange}>
+          <SelectTrigger className="flex-1 h-9 text-xs bg-white/10 backdrop-blur-sm border border-white/20 hover:border-white/30 transition-all duration-300 rounded-xl shadow-lg text-white">
+            <div className="flex items-center gap-2">
+              <Building2 className="h-3.5 w-3.5 text-cyan-400" />
+              <SelectValue placeholder="State" />
+            </div>
+          </SelectTrigger>
+          <SelectContent className="bg-black/90 backdrop-blur-xl border border-white/20 rounded-xl shadow-2xl max-h-[250px] z-50">
+            {STATES_WITH_ALL.map((state) => (
+              <SelectItem 
+                key={state} 
+                value={state} 
+                className="text-xs cursor-pointer hover:bg-white/10 focus:bg-white/10 transition-all duration-300 text-white"
+              >
+                <div className="flex items-center gap-2">
+                  <Building2 className="h-3 w-3 text-cyan-400" />
+                  <span>{state}</span>
+                </div>
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+
+        {/* City Dropdown */}
+        <Select 
+          value={activeChat || ""} 
+          onValueChange={setActiveChat}
+        >
+          <SelectTrigger className="flex-1 h-9 text-xs bg-white/10 backdrop-blur-sm border border-white/20 hover:border-white/30 transition-all duration-300 rounded-xl shadow-lg text-white">
+            <div className="flex items-center gap-2">
+              {activeChat && getCityIcon(activeChat)}
+              <SelectValue placeholder="City" />
+            </div>
+          </SelectTrigger>
+          <SelectContent className="bg-black/90 backdrop-blur-xl border border-white/20 rounded-xl shadow-2xl max-h-[250px] z-50">
+            {filteredCities.map((chat) => (
+              <SelectItem 
+                key={chat} 
+                value={chat} 
+                className="text-xs cursor-pointer hover:bg-white/10 focus:bg-white/10 transition-all duration-300 text-white"
+              >
+                <div className="flex items-center gap-2 w-full">
+                  {getCityIcon(chat)}
                   <span>{chat}</span>
-                  {chat !== "All Cities" && getStateForCity(chat) && (
-                    <span className="text-[10px] text-white/40">{getStateForCity(chat)}</span>
+                  {chat === "All Cities" && (
+                    <span className="text-[10px] text-emerald-400 font-medium ml-auto">Global</span>
                   )}
                 </div>
-                {chat === "All Cities" && (
-                  <span className="text-xs text-emerald-400 font-medium">Global</span>
-                )}
-              </div>
-            </SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
     </div>
   );
 };
