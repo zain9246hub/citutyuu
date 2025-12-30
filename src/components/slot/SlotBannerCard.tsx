@@ -1,5 +1,5 @@
 import React, { memo, useState } from "react";
-import { MapPin, ArrowRight, Eye, Store } from "lucide-react";
+import { ChevronRight, Eye, Store } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { SlotBannerCardProps } from "@/types/slot";
 import { useAuth } from "@/contexts/AuthContext";
@@ -48,131 +48,108 @@ const SlotBannerCard = memo(({
   
   return (
     <div 
-      className={`flip-card rounded-lg ${shouldShowFlipOptions ? 'cursor-pointer' : ''} ${isFlipped ? 'flipped' : ''}`}
+      className={`flip-card rounded-xl ${shouldShowFlipOptions ? 'cursor-pointer' : ''} ${isFlipped ? 'flipped' : ''} select-none`}
       onClick={handleCardClick}
       onMouseEnter={() => shouldShowFlipOptions && setIsFlipped(true)}
       onMouseLeave={() => shouldShowFlipOptions && setIsFlipped(false)}
+      style={{ 
+        WebkitUserSelect: 'none', 
+        userSelect: 'none',
+        WebkitTouchCallout: 'none'
+      }}
     >
-      <div className={`flip-card-inner min-h-[280px] ${!slide.imageUrl ? slide.backgroundColor : ''}`}>
+      <div className={`flip-card-inner min-h-[180px] ${!slide.imageUrl ? slide.backgroundColor : ''}`}>
         {/* FRONT SIDE */}
-        <div className="flip-card-front rounded-lg border border-border overflow-hidden bg-background">
-          {slide.imageUrl ? (
-            <div className="relative h-64 overflow-hidden">
+        <div className="flip-card-front rounded-xl overflow-hidden bg-card border border-border/50 shadow-lg">
+          <div className="relative h-[180px] overflow-hidden">
+            {/* Background Image or Gradient */}
+            {slide.imageUrl ? (
               <img 
                 src={slide.imageUrl} 
                 alt={slide.adContent}
-                className="w-full h-full object-cover"
+                className="w-full h-full object-cover pointer-events-none"
+                draggable={false}
+                onContextMenu={(e) => e.preventDefault()}
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
-              {slide.isBooked && (
-                <div className="absolute top-3 right-3 bg-primary text-primary-foreground px-3 py-1 rounded-full text-xs font-medium shadow-lg">
-                  🔥 Featured
-                </div>
-              )}
-              
-              <div className="absolute bottom-0 left-0 right-0 p-4 text-white">
-                {isExplorer && (
-                  <div className="text-xs uppercase tracking-wider text-white/80 mb-2 font-medium">Position #{slide.position}</div>
-                )}
-                <h3 className="text-lg font-bold mb-2 leading-tight">{slide.adContent}</h3>
-                {slide.description && (
-                  <p className="text-sm text-white/90 mb-3 leading-relaxed">
-                    {slide.description}
-                  </p>
-                )}
-                <div className="text-sm bg-white/20 backdrop-blur-sm rounded-full px-3 py-1 inline-block">
-                  📍 {slide.location}
-                </div>
+            ) : (
+              <div className={`w-full h-full ${slide.backgroundColor || 'bg-gradient-to-br from-primary/30 to-primary/10'}`} />
+            )}
+            
+            {/* Gradient Overlay */}
+            <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/40 to-transparent" />
+            
+            {/* Position Badge - Top Left */}
+            <div className="absolute top-3 left-3 bg-muted/90 dark:bg-background/80 backdrop-blur-sm text-foreground px-2.5 py-1 rounded text-[10px] font-semibold uppercase tracking-wider">
+              Position {slide.position}
+            </div>
+            
+            {/* Featured Badge - Top Right */}
+            {slide.isBooked && (
+              <div className="absolute top-3 right-3 bg-amber-500 text-white px-3 py-1 rounded text-xs font-medium">
+                Featured
+              </div>
+            )}
+            
+            {/* Content - Bottom Left */}
+            <div className="absolute bottom-0 left-0 right-12 p-4">
+              <h3 className="text-white text-base font-bold mb-1 leading-tight line-clamp-2">
+                {slide.adContent}
+              </h3>
+              <p className="text-white/80 text-xs">
+                {slide.location}
+              </p>
+            </div>
+            
+            {/* Arrow - Right Side */}
+            <div className="absolute right-3 top-1/2 -translate-y-1/2">
+              <div className="w-8 h-8 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center">
+                <ChevronRight className="h-5 w-5 text-white" />
               </div>
             </div>
-          ) : (
-            <div className={`${slide.backgroundColor} min-h-[200px] flex items-center justify-center p-6`}>
-              <div className="text-center">
-                {isExplorer && (
-                  <div className="text-xs uppercase tracking-wider text-muted-foreground mb-2 font-medium">Position #{slide.position}</div>
-                )}
-                <h3 className="text-lg font-semibold mb-2">{slide.adContent}</h3>
-                {slide.description && (
-                  <p className="text-sm text-muted-foreground mb-3">
-                    {slide.description}
-                  </p>
-                )}
-                <div className="text-sm bg-muted rounded-full px-3 py-1 inline-block">
-                  📍 {slide.location}
-                </div>
+            
+            {/* Book Button for Business Users */}
+            {shouldShowBookButton && onBook && (
+              <div className="absolute bottom-3 right-3">
+                <Button 
+                  variant="secondary"
+                  size="sm"
+                  className="bg-white hover:bg-white/90 text-foreground shadow-lg text-xs px-3 py-1 h-7"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onBook(e);
+                  }}
+                >
+                  Book Slot
+                </Button>
               </div>
-            </div>
-          )}
-          
-          {shouldShowBookButton && onBook && (
-            <div className="absolute bottom-4 right-4">
-              <Button 
-                variant="secondary"
-                size="sm"
-                className="bg-white/90 hover:bg-white text-gray-900 shadow-lg backdrop-blur-sm"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onBook(e);
-                }}
-              >
-                Book This Slot
-                <ArrowRight className="h-4 w-4 ml-2" />
-              </Button>
-            </div>
-          )}
-          
-          {!isExplorer && !slide.imageUrl && !slide.isBooked && (
-            <div className="border-t border-border p-3 flex justify-between items-center bg-muted/50">
-              <span className="text-xs font-medium">Available Slot</span>
-              <div className="flex items-center text-xs text-muted-foreground">
-                <MapPin className="h-3 w-3 mr-1" /> {slide.location}
-              </div>
-            </div>
-          )}
-          
-          {!isExplorer && !slide.imageUrl && slide.isBooked && (
-            <div className="border-t border-border p-3 flex justify-between items-center bg-primary/10">
-              <span className="text-xs font-medium text-primary">🔥 Featured Business</span>
-              <div className="flex items-center text-xs text-muted-foreground">
-                <MapPin className="h-3 w-3 mr-1" /> {slide.location}
-              </div>
-            </div>
-          )}
-          
-          {isExplorer && !slide.imageUrl && (
-            <div className="border-t border-border p-3 flex justify-between items-center bg-muted/30">
-              <span className="text-xs font-medium">Ad Slot #{slide.id}</span>
-              <div className="flex items-center text-xs text-muted-foreground">
-                <MapPin className="h-3 w-3 mr-1" /> {slide.location}
-              </div>
-            </div>
-          )}
+            )}
+          </div>
         </div>
 
         {/* BACK SIDE - Only for explorers with booked banners */}
         {shouldShowFlipOptions && (
           <div 
-            className="flip-card-back rounded-lg border border-border overflow-hidden bg-gradient-to-br from-primary/20 via-primary/10 to-background backdrop-blur-sm"
+            className="flip-card-back rounded-xl overflow-hidden bg-gradient-to-br from-primary/20 via-primary/10 to-background backdrop-blur-sm border border-border/50"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="h-full flex flex-col items-center justify-center p-6 space-y-4">
-              <div className="text-center mb-4">
-                <h3 className="text-xl font-bold mb-2">{slide.adContent}</h3>
+            <div className="h-full flex flex-col items-center justify-center p-4 space-y-3">
+              <div className="text-center mb-2">
+                <h3 className="text-lg font-bold mb-1">{slide.adContent}</h3>
                 <p className="text-sm text-muted-foreground">
-                  📍 {slide.location}
+                  {slide.location}
                 </p>
               </div>
               
-              <div className="flex flex-col gap-3 w-full max-w-xs">
+              <div className="flex flex-col gap-2 w-full max-w-xs">
                 {onViewFull && (
                   <Button
                     onClick={handleViewFull}
                     className="w-full bg-primary hover:bg-primary/90 text-primary-foreground shadow-lg"
-                    size="lg"
+                    size="sm"
                     type="button"
                   >
-                    <Eye className="h-5 w-5 mr-2" />
-                    View Full Details
+                    <Eye className="h-4 w-4 mr-2" />
+                    View Details
                   </Button>
                 )}
                 
@@ -181,18 +158,14 @@ const SlotBannerCard = memo(({
                     onClick={handleVisitBusiness}
                     variant="secondary"
                     className="w-full shadow-lg"
-                    size="lg"
+                    size="sm"
                     type="button"
                   >
-                    <Store className="h-5 w-5 mr-2" />
-                    Visit Business Profile
+                    <Store className="h-4 w-4 mr-2" />
+                    Visit Business
                   </Button>
                 )}
               </div>
-              
-              <p className="text-xs text-muted-foreground text-center mt-4">
-                Click or hover to flip back
-              </p>
             </div>
           </div>
         )}
