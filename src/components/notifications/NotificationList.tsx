@@ -2,43 +2,23 @@ import { Trash2, Bell, MapPin, Phone, Flame } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { useState } from "react";
-
-interface Notification {
-  id: number;
-  title: string;
-  message: string;
-  location: string;
-  time: string;
-  type: "deal" | "alert" | "info";
-  actions?: {
-    viewLocation?: boolean;
-    phoneNumber?: string;
-  };
-}
+import { useNotifications } from "@/contexts/NotificationContext";
+import { formatDistanceToNow } from "date-fns";
 
 const NotificationList = () => {
-  const [notifications, setNotifications] = useState<Notification[]>([
-    {
-      id: 1,
-      title: "Flash Sale at Pizza Palace!",
-      message: "Get 50% off on all pizzas! Valid till midnight. Call now to place your order.",
-      location: "Mumbai",
-      time: "1 day ago",
-      type: "deal",
-      actions: {
-        viewLocation: true,
-        phoneNumber: "+91 98765 43210"
-      }
-    }
-  ]);
+  const { notifications, markAsRead, markAllAsRead, clearNotifications } = useNotifications();
 
-  const clearNotification = (id: number) => {
-    setNotifications(prev => prev.filter(notification => notification.id !== id));
+  const handleViewLocation = (shopLocation?: string) => {
+    if (shopLocation) {
+      const encodedAddress = encodeURIComponent(shopLocation);
+      window.open(`https://www.google.com/maps/search/?api=1&query=${encodedAddress}`, '_blank');
+    }
   };
 
-  const clearAllNotifications = () => {
-    setNotifications([]);
+  const handleCall = (phoneNumber?: string) => {
+    if (phoneNumber) {
+      window.location.href = `tel:${phoneNumber}`;
+    }
   };
 
   if (notifications.length === 0) {
@@ -56,88 +36,121 @@ const NotificationList = () => {
   }
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
+    <div className="space-y-4 p-4 max-h-[70vh] overflow-y-auto">
+      <div className="flex items-center justify-between sticky top-0 bg-popover pb-2 z-10">
         <div className="flex items-center space-x-3">
           <div className="w-8 h-8 bg-gradient-to-br from-primary/20 to-primary/10 rounded-lg flex items-center justify-center">
             <Bell className="h-4 w-4 text-primary" />
           </div>
           <h2 className="text-lg font-semibold text-foreground">Notifications</h2>
+          <Badge variant="secondary" className="text-xs">{notifications.length}</Badge>
         </div>
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={clearAllNotifications}
-          className="text-muted-foreground hover:text-foreground border-border/50 hover:bg-muted/50 transition-all duration-200"
-        >
-          <Trash2 className="h-4 w-4 mr-2" />
-          Clear All
-        </Button>
+        <div className="flex gap-2">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={markAllAsRead}
+            className="text-xs text-muted-foreground hover:text-foreground"
+          >
+            Mark all read
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={clearNotifications}
+            className="text-muted-foreground hover:text-foreground border-border/50 hover:bg-muted/50"
+          >
+            <Trash2 className="h-4 w-4" />
+          </Button>
+        </div>
       </div>
 
-      <div className="space-y-4">
+      <div className="space-y-3">
         {notifications.map((notification) => (
-          <Card key={notification.id} className="group relative overflow-hidden bg-gradient-to-br from-background via-background to-muted/10 border-border/50 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-[1.01]">
-            <div className="absolute top-0 left-0 w-1 h-full bg-gradient-to-b from-orange-400 to-orange-600" />
+          <Card 
+            key={notification.id} 
+            className={`group relative overflow-hidden border-border/50 shadow-sm hover:shadow-md transition-all duration-200 ${
+              !notification.read ? 'bg-primary/5 border-primary/20' : 'bg-background'
+            }`}
+            onClick={() => markAsRead(notification.id)}
+          >
+            <div className={`absolute top-0 left-0 w-1 h-full ${
+              notification.type === 'new_deal' ? 'bg-gradient-to-b from-orange-400 to-orange-600' :
+              notification.type === 'expiring_deal' ? 'bg-gradient-to-b from-red-400 to-red-600' :
+              notification.type === 'price_drop' ? 'bg-gradient-to-b from-green-400 to-green-600' :
+              'bg-gradient-to-b from-blue-400 to-blue-600'
+            }`} />
             
-            <CardContent className="p-5">
-              <div className="flex justify-between items-start mb-4">
-                <div className="flex items-center space-x-3">
-                  <div className="w-8 h-8 bg-gradient-to-br from-orange-100 to-orange-200 dark:from-orange-900/30 dark:to-orange-800/20 rounded-lg flex items-center justify-center">
-                    <Flame className="h-4 w-4 text-orange-600 dark:text-orange-400" />
+            <CardContent className="p-4">
+              <div className="flex justify-between items-start mb-2">
+                <div className="flex items-center space-x-2">
+                  <div className={`w-7 h-7 rounded-lg flex items-center justify-center ${
+                    notification.type === 'new_deal' ? 'bg-orange-100 dark:bg-orange-900/30' :
+                    notification.type === 'expiring_deal' ? 'bg-red-100 dark:bg-red-900/30' :
+                    notification.type === 'price_drop' ? 'bg-green-100 dark:bg-green-900/30' :
+                    'bg-blue-100 dark:bg-blue-900/30'
+                  }`}>
+                    <Flame className={`h-4 w-4 ${
+                      notification.type === 'new_deal' ? 'text-orange-600 dark:text-orange-400' :
+                      notification.type === 'expiring_deal' ? 'text-red-600 dark:text-red-400' :
+                      notification.type === 'price_drop' ? 'text-green-600 dark:text-green-400' :
+                      'text-blue-600 dark:text-blue-400'
+                    }`} />
                   </div>
-                  <Badge variant="secondary" className="bg-red-50 text-red-700 border-red-200/50 dark:bg-red-900/20 dark:text-red-300 dark:border-red-800/30 font-medium">
-                    <MapPin className="h-3 w-3 mr-1.5" />
-                    {notification.location}
-                  </Badge>
+                  {notification.city && (
+                    <Badge variant="secondary" className="text-xs">
+                      <MapPin className="h-3 w-3 mr-1" />
+                      {notification.city}
+                    </Badge>
+                  )}
+                  {!notification.read && (
+                    <span className="w-2 h-2 bg-primary rounded-full"></span>
+                  )}
                 </div>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => clearNotification(notification.id)}
-                  className="opacity-0 group-hover:opacity-100 transition-opacity h-8 w-8 p-0 hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-900/20 dark:hover:text-red-400"
-                >
-                  <Trash2 className="h-4 w-4" />
-                </Button>
+                <span className="text-xs text-muted-foreground">
+                  {formatDistanceToNow(notification.timestamp, { addSuffix: true })}
+                </span>
               </div>
 
-              <h3 className="font-semibold text-foreground mb-3 text-base leading-tight">
+              <h3 className="font-semibold text-foreground mb-1 text-sm leading-tight">
                 {notification.title}
               </h3>
-              <p className="text-sm text-muted-foreground mb-5 leading-relaxed">
+              <p className="text-xs text-muted-foreground mb-3 leading-relaxed">
                 {notification.message}
               </p>
 
-              <div className="flex flex-col gap-3">
-                <span className="text-xs text-muted-foreground font-medium">
-                  {notification.time} • From {notification.location}
-                </span>
-                
-                {notification.actions && (
-                  <div className="flex flex-wrap gap-2">
-                    {notification.actions.viewLocation && (
-                      <Button 
-                        variant="outline" 
-                        size="sm" 
-                        className="h-8 px-3 text-xs border-blue-200 text-blue-600 hover:bg-blue-50 hover:text-blue-700 dark:border-blue-800/30 dark:text-blue-400 dark:hover:bg-blue-900/20 transition-all duration-200"
-                      >
-                        <MapPin className="h-3 w-3 mr-1" />
-                        Location
-                      </Button>
-                    )}
-                    {notification.actions.phoneNumber && (
-                      <Button 
-                        variant="default" 
-                        size="sm" 
-                        className="h-8 px-3 text-xs bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 shadow-md hover:shadow-green-500/25 transition-all duration-200"
-                      >
-                        <Phone className="h-3 w-3 mr-1" />
-                        Call
-                      </Button>
-                    )}
-                  </div>
-                )}
-              </div>
+              {(notification.shopLocation || notification.phoneNumber) && (
+                <div className="flex flex-wrap gap-2">
+                  {notification.shopLocation && (
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      className="h-7 px-2 text-xs"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleViewLocation(notification.shopLocation);
+                      }}
+                    >
+                      <MapPin className="h-3 w-3 mr-1" />
+                      Location
+                    </Button>
+                  )}
+                  {notification.phoneNumber && (
+                    <Button 
+                      variant="default" 
+                      size="sm" 
+                      className="h-7 px-2 text-xs bg-green-600 hover:bg-green-700"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleCall(notification.phoneNumber);
+                      }}
+                    >
+                      <Phone className="h-3 w-3 mr-1" />
+                      Call
+                    </Button>
+                  )}
+                </div>
+              )}
             </CardContent>
           </Card>
         ))}
