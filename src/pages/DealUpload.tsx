@@ -1,12 +1,18 @@
-import React from "react";
+import React, { useState } from "react";
 import TopNavbar from "@/components/TopNavbar";
 import DealUploadForm from "@/components/deals/DealUploadForm";
 import DealPricingGuide from "@/components/deals/DealPricingGuide";
 import { useAuth } from "@/contexts/AuthContext";
 import { AlertTriangle } from "lucide-react";
+import { DealTier } from "@/types/deal";
 
 const DealUpload = () => {
   const { currentUser } = useAuth();
+  const [selectedTier, setSelectedTier] = useState<DealTier>("standard");
+
+  const handleTierSelect = (tier: DealTier) => {
+    setSelectedTier(tier);
+  };
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
@@ -23,11 +29,14 @@ const DealUpload = () => {
               <p className="text-muted-foreground mt-1">Choose a tier and reach your customers</p>
             </div>
 
-            <DealPricingGuide />
+            <DealPricingGuide 
+              selectedTier={selectedTier}
+              onTierSelect={handleTierSelect}
+            />
 
             {currentUser?.role === "business" ? (
-              <div className="bg-card rounded-lg shadow-sm border border-border p-4 sm:p-6">
-                <DealUploadForm />
+              <div id="deal-upload-form" className="bg-card rounded-lg shadow-sm border border-border p-4 sm:p-6">
+                <DealUploadForm initialTier={selectedTier} onTierChange={setSelectedTier} />
               </div>
             ) : (
               <div className="bg-card rounded-lg shadow-sm border border-border p-6 text-center">
