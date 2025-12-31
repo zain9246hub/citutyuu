@@ -2,17 +2,31 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Check, X, MapPin, Bell, Star, Zap } from "lucide-react";
 import { isMetroCity, METRO_PRICING, NON_METRO_PRICING } from "@/utils/metroCities";
+import { DealTier } from "@/types/deal";
 
 interface DealPricingGuideProps {
   selectedCity?: string;
+  selectedTier?: DealTier;
+  onTierSelect?: (tier: DealTier) => void;
 }
 
-const DealPricingGuide = ({ selectedCity }: DealPricingGuideProps) => {
+const DealPricingGuide = ({ selectedCity, selectedTier, onTierSelect }: DealPricingGuideProps) => {
   const isMetro = selectedCity ? isMetroCity(selectedCity) : false;
   const pricing = isMetro ? METRO_PRICING : NON_METRO_PRICING;
 
-  const tiers = [
+  const tiers: {
+    id: DealTier;
+    name: string;
+    price: number;
+    icon: typeof MapPin;
+    color: string;
+    badgeColor: string;
+    popular?: boolean;
+    features: { text: string; included: boolean }[];
+    bestFor: string;
+  }[] = [
     {
+      id: "standard",
       name: "Standard Deal",
       price: pricing.standard,
       icon: MapPin,
@@ -28,6 +42,7 @@ const DealPricingGuide = ({ selectedCity }: DealPricingGuideProps) => {
       bestFor: "Local businesses, neighborhood promotions",
     },
     {
+      id: "highlight",
       name: "Highlight Deal",
       price: pricing.highlight,
       icon: Star,
@@ -44,6 +59,7 @@ const DealPricingGuide = ({ selectedCity }: DealPricingGuideProps) => {
       bestFor: "Growing businesses, wider reach",
     },
     {
+      id: "citywide",
       name: "City-Wide Push",
       price: pricing.citywide,
       icon: Zap,
@@ -60,6 +76,19 @@ const DealPricingGuide = ({ selectedCity }: DealPricingGuideProps) => {
     },
   ];
 
+  const handleCardClick = (tierId: DealTier) => {
+    if (onTierSelect) {
+      onTierSelect(tierId);
+      // Scroll to form after selection
+      setTimeout(() => {
+        const formElement = document.getElementById('deal-upload-form');
+        if (formElement) {
+          formElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      }, 100);
+    }
+  };
+
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
@@ -72,11 +101,17 @@ const DealPricingGuide = ({ selectedCity }: DealPricingGuideProps) => {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         {tiers.map((tier) => {
           const IconComponent = tier.icon;
+          const isSelected = selectedTier === tier.id;
           return (
             <Card 
-              key={tier.name} 
-              className={`relative overflow-hidden border-2 transition-all hover:shadow-lg ${
-                tier.popular ? "border-amber-500 dark:border-amber-400" : "border-border"
+              key={tier.name}
+              onClick={() => handleCardClick(tier.id)}
+              className={`relative overflow-hidden border-2 transition-all cursor-pointer hover:shadow-lg hover:scale-[1.02] ${
+                isSelected 
+                  ? "border-primary ring-2 ring-primary/20 shadow-lg" 
+                  : tier.popular 
+                    ? "border-amber-500 dark:border-amber-400" 
+                    : "border-border hover:border-primary/50"
               }`}
             >
               {tier.popular && (
@@ -84,6 +119,14 @@ const DealPricingGuide = ({ selectedCity }: DealPricingGuideProps) => {
                   <Badge className="rounded-none rounded-bl-lg bg-amber-500 text-white hover:bg-amber-500">
                     Popular
                   </Badge>
+                </div>
+              )}
+
+              {isSelected && (
+                <div className="absolute top-2 left-2">
+                  <div className="w-5 h-5 rounded-full bg-primary flex items-center justify-center">
+                    <Check className="w-3 h-3 text-primary-foreground" />
+                  </div>
                 </div>
               )}
               

@@ -20,7 +20,12 @@ import { AlertCircle } from "lucide-react";
 
 const cities = ALL_CITIES;
 
-const DealUploadForm = () => {
+interface DealUploadFormProps {
+  initialTier?: DealTier;
+  onTierChange?: (tier: DealTier) => void;
+}
+
+const DealUploadForm = ({ initialTier = 'standard', onTierChange }: DealUploadFormProps) => {
   const { toast } = useToast();
   const navigate = useNavigate();
   const [expiryDate, setExpiryDate] = useState<Date | undefined>(undefined);
@@ -37,7 +42,7 @@ const DealUploadForm = () => {
     phone: "",
     expiryDate: "",
     tags: [] as string[],
-    tier: 'standard' as DealTier,
+    tier: initialTier as DealTier,
   });
   
   const [images, setImages] = useState<string[]>([]);
@@ -47,6 +52,16 @@ const DealUploadForm = () => {
   const [showPaymentDialog, setShowPaymentDialog] = useState(false);
   const [isProcessingPayment, setIsProcessingPayment] = useState(false);
   const [imagesLocked, setImagesLocked] = useState(false);
+
+  // Sync tier when initialTier changes from parent
+  React.useEffect(() => {
+    if (initialTier !== dealData.tier) {
+      setDealData(prev => ({ ...prev, tier: initialTier }));
+      if (initialTier === 'citywide') {
+        setZipCodes([]);
+      }
+    }
+  }, [initialTier]);
 
   // Calculate pricing based on selected city
   const currentPricing = dealData.city ? getPricingForCity(dealData.city) : getPricingForCity('');
@@ -117,6 +132,10 @@ const DealUploadForm = () => {
     // Clear zip codes if switching to city-wide
     if (tier === 'citywide') {
       setZipCodes([]);
+    }
+    // Notify parent of tier change
+    if (onTierChange) {
+      onTierChange(tier);
     }
   };
 
