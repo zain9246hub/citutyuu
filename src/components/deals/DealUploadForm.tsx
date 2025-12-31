@@ -299,6 +299,15 @@ const DealUploadForm = ({ initialTier = 'standard', onTierChange }: DealUploadFo
         onSelectChange={handleSelectChange}
         onExpiryDateChange={handleExpiryDateChange}
       />
+
+      <div className="space-y-4">
+        <h2 className="text-xl font-semibold">Target Area (Zip Codes)</h2>
+        <ZipCodeSelector
+          tier={dealData.tier}
+          zipCodes={zipCodes}
+          onZipCodesChange={setZipCodes}
+        />
+      </div>
       
       <TagsSection
         tags={dealData.tags}

@@ -3,6 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Check, X, MapPin, Bell, Star, Zap } from "lucide-react";
 import { isMetroCity, METRO_PRICING, NON_METRO_PRICING } from "@/utils/metroCities";
 import { DealTier } from "@/types/deal";
+import { cn } from "@/lib/utils";
 
 interface DealPricingGuideProps {
   selectedCity?: string;
@@ -99,20 +100,26 @@ const DealPricingGuide = ({ selectedCity, selectedTier, onTierSelect }: DealPric
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        {tiers.map((tier) => {
+        {tiers.map((tier, index) => {
           const IconComponent = tier.icon;
           const isSelected = selectedTier === tier.id;
           return (
             <Card 
               key={tier.name}
               onClick={() => handleCardClick(tier.id)}
-              className={`relative overflow-hidden border-2 transition-all cursor-pointer hover:shadow-lg hover:scale-[1.02] ${
+              style={{
+                animationDelay: `${index * 150}ms`,
+                animationFillMode: 'backwards'
+              }}
+              className={cn(
+                "relative overflow-hidden border-2 transition-all cursor-pointer hover:shadow-lg hover:scale-[1.02]",
+                "animate-fade-in opacity-0",
                 isSelected 
                   ? "border-primary ring-2 ring-primary/20 shadow-lg" 
                   : tier.popular 
                     ? "border-amber-500 dark:border-amber-400" 
                     : "border-border hover:border-primary/50"
-              }`}
+              )}
             >
               {tier.popular && (
                 <div className="absolute top-0 right-0">

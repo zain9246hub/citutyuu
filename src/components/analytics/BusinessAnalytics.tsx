@@ -1,6 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { MousePointer, Eye, Phone, Star, TrendingUp, TrendingDown, BarChart3 } from "lucide-react";
+import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, Legend } from "recharts";
 
 interface BusinessAnalyticsProps {
   businessId: string;
@@ -12,6 +13,17 @@ interface DealMetric {
   clicks: number;
   conversionRate: string;
 }
+
+// Weekly performance data for graphs
+const weeklyData = [
+  { day: 'Mon', views: 120, clicks: 45 },
+  { day: 'Tue', views: 180, clicks: 72 },
+  { day: 'Wed', views: 150, clicks: 58 },
+  { day: 'Thu', views: 220, clicks: 89 },
+  { day: 'Fri', views: 280, clicks: 112 },
+  { day: 'Sat', views: 340, clicks: 135 },
+  { day: 'Sun', views: 190, clicks: 68 },
+];
 
 const BusinessAnalytics = ({ businessId }: BusinessAnalyticsProps) => {
   // Mock data - in real app, fetch based on businessId
@@ -140,9 +152,74 @@ const BusinessAnalytics = ({ businessId }: BusinessAnalyticsProps) => {
         </TabsList>
         
         <TabsContent value="deals" className="space-y-4 mt-6">
+          {/* Performance Graph */}
+          <Card className="bg-gradient-to-br from-background via-background to-muted/20 border-border/50 shadow-lg">
+            <CardHeader className="pb-2">
+              <CardTitle className="text-lg font-semibold text-foreground">Weekly Performance</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="h-64">
+                <ResponsiveContainer width="100%" height="100%">
+                  <AreaChart data={weeklyData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                    <defs>
+                      <linearGradient id="colorViews" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.3}/>
+                        <stop offset="95%" stopColor="hsl(var(--primary))" stopOpacity={0}/>
+                      </linearGradient>
+                      <linearGradient id="colorClicks" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="5%" stopColor="hsl(142, 76%, 36%)" stopOpacity={0.3}/>
+                        <stop offset="95%" stopColor="hsl(142, 76%, 36%)" stopOpacity={0}/>
+                      </linearGradient>
+                    </defs>
+                    <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                    <XAxis dataKey="day" tick={{ fontSize: 12, fill: 'hsl(var(--muted-foreground))' }} />
+                    <YAxis tick={{ fontSize: 12, fill: 'hsl(var(--muted-foreground))' }} />
+                    <Tooltip 
+                      contentStyle={{ 
+                        backgroundColor: 'hsl(var(--background))', 
+                        border: '1px solid hsl(var(--border))',
+                        borderRadius: '8px',
+                        color: 'hsl(var(--foreground))'
+                      }} 
+                    />
+                    <Area 
+                      type="monotone" 
+                      dataKey="views" 
+                      stroke="hsl(var(--primary))" 
+                      fillOpacity={1} 
+                      fill="url(#colorViews)" 
+                      strokeWidth={2}
+                      name="Views"
+                    />
+                    <Area 
+                      type="monotone" 
+                      dataKey="clicks" 
+                      stroke="hsl(142, 76%, 36%)" 
+                      fillOpacity={1} 
+                      fill="url(#colorClicks)" 
+                      strokeWidth={2}
+                      name="Clicks"
+                    />
+                  </AreaChart>
+                </ResponsiveContainer>
+              </div>
+              <div className="flex justify-center gap-6 mt-3 text-sm">
+                <div className="flex items-center gap-2">
+                  <div className="w-3 h-3 rounded-full bg-primary" />
+                  <span className="text-muted-foreground">Views</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <div className="w-3 h-3 rounded-full" style={{ backgroundColor: 'hsl(142, 76%, 36%)' }} />
+                  <span className="text-muted-foreground">Clicks</span>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Deal Table */}
           <Card className="bg-gradient-to-br from-background via-background to-muted/20 border-border/50 shadow-lg">
             <CardHeader className="pb-4">
-              <CardTitle className="text-lg font-semibold text-foreground">Deal Performance</CardTitle>
+              <CardTitle className="text-lg font-semibold text-foreground">Top Deals</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
