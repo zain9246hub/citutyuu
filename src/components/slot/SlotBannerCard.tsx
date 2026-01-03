@@ -113,7 +113,7 @@ const SlotBannerCard = memo(({
                 <Button 
                   variant="secondary"
                   size="sm"
-                  className="bg-white hover:bg-white/90 text-foreground shadow-lg text-xs px-3 py-1 h-7"
+                  className="bg-white hover:bg-white/90 text-black shadow-lg text-xs px-3 py-1 h-7"
                   onClick={(e) => {
                     e.stopPropagation();
                     onBook(e);
