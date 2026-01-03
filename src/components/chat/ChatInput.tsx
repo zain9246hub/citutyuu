@@ -155,22 +155,22 @@ const ChatInput: React.FC<ChatInputProps> = ({
         className="hidden"
       />
       
-      <div className="border-t border-white/10 p-4 bg-white/5 backdrop-blur-sm sticky bottom-0 z-10 pb-8 safe-bottom">
+      <div className="border-t border-purple-200/50 dark:border-white/10 p-4 bg-white/60 dark:bg-white/5 backdrop-blur-sm sticky bottom-0 z-10 pb-8 safe-bottom">
         {!canSendMessage && (
-          <div className="mb-3 p-3 bg-orange-500/20 backdrop-blur-sm border border-orange-500/30 rounded-xl">
-            <p className="text-sm text-orange-200 text-center">
+          <div className="mb-3 p-3 bg-orange-100 dark:bg-orange-500/20 backdrop-blur-sm border border-orange-300 dark:border-orange-500/30 rounded-xl">
+            <p className="text-sm text-orange-700 dark:text-orange-200 text-center">
               {monthlyMessagesUsed}/{maxMonthlyMessages} free messages used this month
             </p>
           </div>
         )}
         
         {showAttachOptions && (
-        <div className="flex items-center gap-3 mb-4 p-4 bg-white/5 backdrop-blur-sm rounded-2xl border border-white/10 shadow-lg">
+        <div className="flex items-center gap-3 mb-4 p-4 bg-white/60 dark:bg-white/5 backdrop-blur-sm rounded-2xl border border-purple-200/50 dark:border-white/10 shadow-lg">
           <Button 
             variant="outline" 
             size="icon" 
             onClick={handleImageShare}
-            className="h-10 w-10 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 hover:bg-white/20 text-white hover:text-white transition-all duration-300 transform hover:scale-110" 
+            className="h-10 w-10 rounded-full bg-purple-100 dark:bg-white/10 backdrop-blur-sm border border-purple-200 dark:border-white/20 hover:bg-purple-200 dark:hover:bg-white/20 text-foreground transition-all duration-300 transform hover:scale-110" 
             disabled={disabled || isRecording}
           >
             <Image className="h-5 w-5" />
@@ -178,7 +178,7 @@ const ChatInput: React.FC<ChatInputProps> = ({
           <Button 
             variant="outline" 
             size="icon" 
-            className="h-10 w-10 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 hover:bg-white/20 text-white hover:text-white transition-all duration-300 transform hover:scale-110" 
+            className="h-10 w-10 rounded-full bg-purple-100 dark:bg-white/10 backdrop-blur-sm border border-purple-200 dark:border-white/20 hover:bg-purple-200 dark:hover:bg-white/20 text-foreground transition-all duration-300 transform hover:scale-110" 
             disabled={disabled || isRecording}
           >
             <Smile className="h-5 w-5" />
@@ -192,7 +192,7 @@ const ChatInput: React.FC<ChatInputProps> = ({
           variant="ghost"
           onClick={toggleAttachOptions}
           disabled={disabled || isRecording}
-          className="h-10 w-10 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 hover:bg-white/20 text-white flex-shrink-0 transition-all duration-300 transform hover:scale-110"
+          className="h-10 w-10 rounded-full bg-purple-100 dark:bg-white/10 backdrop-blur-sm border border-purple-200 dark:border-white/20 hover:bg-purple-200 dark:hover:bg-white/20 text-foreground flex-shrink-0 transition-all duration-300 transform hover:scale-110"
           title="Attach files"
         >
           <Paperclip className="h-5 w-5" />
@@ -204,7 +204,7 @@ const ChatInput: React.FC<ChatInputProps> = ({
             onChange={(e) => setMessage(e.target.value)}
             onKeyDown={handleKeyDown}
             placeholder="Type a message..."
-            className="flex-1 resize-none min-h-[48px] max-h-[120px] py-3 px-4 text-base rounded-2xl bg-white/10 backdrop-blur-sm border border-white/20 placeholder:text-white/50 text-white focus-visible:border-white/40 focus-visible:ring-white/20 shadow-lg transition-all duration-300"
+            className="flex-1 resize-none min-h-[48px] max-h-[120px] py-3 px-4 text-base rounded-2xl bg-white/80 dark:bg-white/10 backdrop-blur-sm border border-purple-200/50 dark:border-white/20 placeholder:text-muted-foreground text-foreground focus-visible:border-purple-400 dark:focus-visible:border-white/40 focus-visible:ring-purple-200/50 dark:focus-visible:ring-white/20 shadow-lg transition-all duration-300"
             disabled={disabled || isRecording}
           />
           
@@ -246,36 +246,36 @@ const ChatInput: React.FC<ChatInputProps> = ({
         )}
       </div>
       
-      {isRecording && (
-        <div className="mt-4 text-center animate-fade-in">
-          <div className="inline-flex items-center gap-4 px-6 py-3 bg-gradient-to-r from-red-500/20 to-pink-500/20 backdrop-blur-sm border border-red-500/30 rounded-2xl shadow-lg">
-            {/* Animated recording indicator */}
-            <div className="relative">
-              <div className="w-3 h-3 bg-red-400 rounded-full animate-pulse" />
-              <div className="absolute inset-0 w-3 h-3 bg-red-400 rounded-full animate-ping" />
+        {isRecording && (
+          <div className="mt-4 text-center animate-fade-in">
+            <div className="inline-flex items-center gap-4 px-6 py-3 bg-gradient-to-r from-red-100 to-pink-100 dark:from-red-500/20 dark:to-pink-500/20 backdrop-blur-sm border border-red-300 dark:border-red-500/30 rounded-2xl shadow-lg">
+              {/* Animated recording indicator */}
+              <div className="relative">
+                <div className="w-3 h-3 bg-red-500 dark:bg-red-400 rounded-full animate-pulse" />
+                <div className="absolute inset-0 w-3 h-3 bg-red-500 dark:bg-red-400 rounded-full animate-ping" />
+              </div>
+              
+              {/* Timer display */}
+              <div className="flex items-center gap-2">
+                <span className="text-lg font-bold text-red-700 dark:text-white tabular-nums animate-scale-in">
+                  {Math.floor(recordingTime / 60)}:{(recordingTime % 60).toString().padStart(2, '0')}
+                </span>
+                <span className="text-xs text-red-500 dark:text-red-200">/ 1:00</span>
+              </div>
+            
+              {/* Animated waveform */}
+              <div className="flex gap-1 items-center">
+                <div className="w-1 h-3 bg-red-500 dark:bg-red-400 rounded-full animate-pulse" />
+                <div className="w-1 h-5 bg-red-500 dark:bg-red-400 rounded-full animate-pulse" style={{animationDelay: '0.1s'}} />
+                <div className="w-1 h-4 bg-red-500 dark:bg-red-400 rounded-full animate-pulse" style={{animationDelay: '0.2s'}} />
+                <div className="w-1 h-6 bg-red-500 dark:bg-red-400 rounded-full animate-pulse" style={{animationDelay: '0.3s'}} />
+                <div className="w-1 h-3 bg-red-500 dark:bg-red-400 rounded-full animate-pulse" style={{animationDelay: '0.4s'}} />
+              </div>
+              
+              {/* Recording text */}
+              <span className="text-sm text-red-600 dark:text-red-200 font-medium">Recording</span>
             </div>
             
-            {/* Timer display */}
-            <div className="flex items-center gap-2">
-              <span className="text-lg font-bold text-white tabular-nums animate-scale-in">
-                {Math.floor(recordingTime / 60)}:{(recordingTime % 60).toString().padStart(2, '0')}
-              </span>
-              <span className="text-xs text-red-200">/ 1:00</span>
-            </div>
-            
-            {/* Animated waveform */}
-            <div className="flex gap-1 items-center">
-              <div className="w-1 h-3 bg-red-400 rounded-full animate-pulse" />
-              <div className="w-1 h-5 bg-red-400 rounded-full animate-pulse" style={{animationDelay: '0.1s'}} />
-              <div className="w-1 h-4 bg-red-400 rounded-full animate-pulse" style={{animationDelay: '0.2s'}} />
-              <div className="w-1 h-6 bg-red-400 rounded-full animate-pulse" style={{animationDelay: '0.3s'}} />
-              <div className="w-1 h-3 bg-red-400 rounded-full animate-pulse" style={{animationDelay: '0.4s'}} />
-            </div>
-            
-            {/* Recording text */}
-            <span className="text-sm text-red-200 font-medium">Recording</span>
-          </div>
-          
           {/* Progress bar */}
           <div className="mt-3 w-full max-w-xs mx-auto h-1 bg-white/10 rounded-full overflow-hidden">
             <div 
