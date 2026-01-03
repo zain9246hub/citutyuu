@@ -109,11 +109,11 @@ const DealPricingGuide = ({ selectedCity, selectedTier, onTierSelect }: DealPric
               onClick={() => handleCardClick(tier.id)}
               style={{
                 animationDelay: `${index * 150}ms`,
-                animationFillMode: 'backwards'
+                animationFillMode: 'forwards'
               }}
               className={cn(
                 "relative overflow-hidden border-2 transition-all cursor-pointer hover:shadow-lg hover:scale-[1.02]",
-                "animate-fade-in opacity-0",
+                "animate-fade-in",
                 isSelected 
                   ? "border-primary ring-2 ring-primary/20 shadow-lg" 
                   : tier.popular 
