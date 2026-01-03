@@ -57,33 +57,33 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({
   }, [setActiveChat]);
   
   return (
-    <div className="border-b border-white/10 px-4 py-3 flex flex-col gap-3 bg-white/5 backdrop-blur-sm sticky top-0 z-10 safe-top">
+    <div className="border-b border-border/30 px-4 py-3 flex flex-col gap-3 bg-background/80 backdrop-blur-sm sticky top-0 z-10 safe-top">
       {/* Top row: Back button + Title */}
       <div className="flex items-center gap-3">
         <Button 
           variant="ghost" 
           size="icon" 
-          className="md:hidden rounded-full bg-white/10 hover:bg-white/20 text-white border border-white/20 transition-all duration-300 hover:scale-105"
+          className="md:hidden rounded-full bg-muted hover:bg-muted/80 text-foreground border border-border transition-all duration-300 hover:scale-105"
           onClick={() => navigate("/")}
         >
           <ArrowLeft className="h-5 w-5" />
         </Button>
         <div className="flex items-center">
           <div className="relative">
-            <MessageSquare className="h-5 w-5 text-white mr-2" />
+            <MessageSquare className="h-5 w-5 text-primary mr-2" />
             <div className="absolute -top-1 -right-1 w-2 h-2 bg-gradient-to-r from-emerald-400 to-cyan-400 rounded-full animate-pulse" />
           </div>
           <div className="flex flex-col">
-            <h1 className="text-lg font-bold bg-gradient-to-r from-white via-purple-200 to-cyan-200 bg-clip-text text-transparent">
+            <h1 className="text-lg font-bold bg-gradient-to-r from-primary via-purple-500 to-cyan-500 bg-clip-text text-transparent">
               City Chat
             </h1>
             {activeChat && (
-              <div className="flex items-center gap-1 text-xs text-white/60">
+              <div className="flex items-center gap-1 text-xs text-muted-foreground">
                 {getCityIcon(activeChat)}
                 <span>
                   {activeChat}
                   {activeChat !== "All Cities" && getStateForCity(activeChat) && (
-                    <span className="text-white/40">, {getStateForCity(activeChat)}</span>
+                    <span className="text-muted-foreground/70">, {getStateForCity(activeChat)}</span>
                   )}
                 </span>
               </div>
@@ -96,21 +96,21 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({
       <div className="flex items-center gap-2">
         {/* State Dropdown */}
         <Select value={selectedState} onValueChange={handleStateChange}>
-          <SelectTrigger className="flex-1 h-9 text-xs bg-white/10 backdrop-blur-sm border border-white/20 hover:border-white/30 transition-all duration-300 rounded-xl shadow-lg text-white">
+          <SelectTrigger className="flex-1 h-9 text-xs bg-muted/50 backdrop-blur-sm border border-border hover:border-primary/50 transition-all duration-300 rounded-xl shadow-sm text-foreground">
             <div className="flex items-center gap-2">
-              <Building2 className="h-3.5 w-3.5 text-cyan-400" />
+              <Building2 className="h-3.5 w-3.5 text-cyan-500" />
               <SelectValue placeholder="State" />
             </div>
           </SelectTrigger>
-          <SelectContent className="bg-black/90 backdrop-blur-xl border border-white/20 rounded-xl shadow-2xl max-h-[250px] z-50">
+          <SelectContent className="bg-popover backdrop-blur-xl border border-border rounded-xl shadow-2xl max-h-[250px] z-50">
             {STATES_WITH_ALL.map((state) => (
               <SelectItem 
                 key={state} 
                 value={state} 
-                className="text-xs cursor-pointer hover:bg-white/10 focus:bg-white/10 transition-all duration-300 text-white"
+                className="text-xs cursor-pointer"
               >
                 <div className="flex items-center gap-2">
-                  <Building2 className="h-3 w-3 text-cyan-400" />
+                  <Building2 className="h-3 w-3 text-cyan-500" />
                   <span>{state}</span>
                 </div>
               </SelectItem>
@@ -123,24 +123,24 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({
           value={activeChat || ""} 
           onValueChange={setActiveChat}
         >
-          <SelectTrigger className="flex-1 h-9 text-xs bg-white/10 backdrop-blur-sm border border-white/20 hover:border-white/30 transition-all duration-300 rounded-xl shadow-lg text-white">
+          <SelectTrigger className="flex-1 h-9 text-xs bg-muted/50 backdrop-blur-sm border border-border hover:border-primary/50 transition-all duration-300 rounded-xl shadow-sm text-foreground">
             <div className="flex items-center gap-2">
               {activeChat && getCityIcon(activeChat)}
               <SelectValue placeholder="City" />
             </div>
           </SelectTrigger>
-          <SelectContent className="bg-black/90 backdrop-blur-xl border border-white/20 rounded-xl shadow-2xl max-h-[250px] z-50">
+          <SelectContent className="bg-popover backdrop-blur-xl border border-border rounded-xl shadow-2xl max-h-[250px] z-50">
             {filteredCities.map((chat) => (
               <SelectItem 
                 key={chat} 
                 value={chat} 
-                className="text-xs cursor-pointer hover:bg-white/10 focus:bg-white/10 transition-all duration-300 text-white"
+                className="text-xs cursor-pointer"
               >
                 <div className="flex items-center gap-2 w-full">
                   {getCityIcon(chat)}
                   <span>{chat}</span>
                   {chat === "All Cities" && (
-                    <span className="text-[10px] text-emerald-400 font-medium ml-auto">Global</span>
+                    <span className="text-[10px] text-emerald-500 font-medium ml-auto">Global</span>
                   )}
                 </div>
               </SelectItem>
