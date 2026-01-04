@@ -22,7 +22,7 @@ const DealUpload = () => {
       />
       
       <div className="flex-1 mobile-scroll-container">
-        <div className="px-4 py-3 pb-24">
+        <div className="px-4 py-3 pb-16">
           <div className="max-w-4xl mx-auto space-y-4">
             <div className="text-center">
               <h1 className="text-xl font-bold text-foreground">Create New Deal</h1>
