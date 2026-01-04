@@ -82,59 +82,63 @@ const SubscriptionDialog: React.FC<SubscriptionDialogProps> = ({ open, onOpenCha
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto bg-gradient-to-br from-slate-950 via-purple-900 to-indigo-900 border-white/10 p-0">
+      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto bg-background border-border p-0">
         <div className="p-6 space-y-6">
           <div className="text-center space-y-2">
-            <h2 className="text-2xl font-bold text-white">Choose Your Plan</h2>
-            <p className="text-white/70">Unlock premium features with monthly subscription</p>
+            <h2 className="text-2xl font-bold text-foreground">Choose Your Plan</h2>
+            <p className="text-muted-foreground">Unlock premium features with monthly subscription</p>
           </div>
           
           <div className="space-y-4">
             {plans.map((plan) => (
               <Card 
                 key={plan.id}
-                className={`bg-gradient-to-br ${plan.gradient} border-none shadow-xl overflow-hidden ${
-                  plan.popular ? 'ring-2 ring-yellow-400' : ''
+                className={`relative overflow-hidden border-2 shadow-xl ${
+                  plan.popular ? 'border-yellow-400 ring-2 ring-yellow-400/50' : 'border-border'
                 }`}
+                style={{
+                  background: `linear-gradient(135deg, var(--gradient-${plan.id}-start, hsl(270 70% 95%)) 0%, var(--gradient-${plan.id}-end, hsl(280 70% 90%)) 100%)`
+                }}
               >
-                <CardContent className="p-6 text-white">
+                <div className={`absolute inset-0 bg-gradient-to-br ${plan.gradient} opacity-90 dark:opacity-100`} />
+                <CardContent className="relative p-6 text-white">
                   {plan.popular && (
                     <div className="mb-4 flex justify-center">
-                      <Badge className="bg-yellow-400 text-black text-xs font-bold px-3 py-1">
+                      <Badge className="bg-yellow-400 text-black text-xs font-bold px-3 py-1 shadow-lg">
                         POPULAR
                       </Badge>
                     </div>
                   )}
                   
                   <div className="flex items-start gap-4">
-                    <div className="w-16 h-16 rounded-full bg-white/20 flex items-center justify-center backdrop-blur-sm flex-shrink-0">
-                      <plan.icon className="w-8 h-8 text-white" />
+                    <div className="w-16 h-16 rounded-full bg-white/20 flex items-center justify-center backdrop-blur-sm flex-shrink-0 shadow-lg">
+                      <plan.icon className="w-8 h-8 text-white drop-shadow-md" />
                     </div>
                     
                     <div className="flex-1 space-y-3">
                       <div>
-                        <h3 className="text-xl font-bold text-white">{plan.title}</h3>
-                        <div className="text-3xl font-bold text-white mt-2">
+                        <h3 className="text-xl font-bold text-white drop-shadow-md">{plan.title}</h3>
+                        <div className="text-3xl font-bold text-white mt-2 drop-shadow-md">
                           ₹{plan.price}
-                          <span className="text-sm font-normal text-white/70">/month</span>
+                          <span className="text-sm font-normal text-white/80">/month</span>
                         </div>
                       </div>
                       
-                      <ul className="space-y-2 text-sm text-white/90">
+                      <ul className="space-y-2 text-sm text-white">
                         {plan.features.map((feature, idx) => (
                           <li key={idx} className="flex items-start gap-2">
-                            <span className="text-green-400 mt-0.5">✓</span>
-                            <span>{feature}</span>
+                            <span className="text-green-300 mt-0.5 drop-shadow-md">✓</span>
+                            <span className="drop-shadow-sm">{feature}</span>
                           </li>
                         ))}
                       </ul>
                       
                       <Button
                         onClick={() => handleSubscribe(plan.id, plan.price)}
-                        className={`w-full ${
+                        className={`w-full font-semibold shadow-lg ${
                           hasSubscription(plan.id)
-                            ? 'bg-white/20 hover:bg-white/30'
-                            : 'bg-white hover:bg-white/90 text-black'
+                            ? 'bg-white/30 hover:bg-white/40 text-white border border-white/30'
+                            : 'bg-white hover:bg-white/90 text-gray-900'
                         }`}
                         disabled={hasSubscription(plan.id)}
                       >
@@ -148,14 +152,14 @@ const SubscriptionDialog: React.FC<SubscriptionDialogProps> = ({ open, onOpenCha
           </div>
 
           {(hasSubscription('notifications') || hasSubscription('voiceMessages')) && (
-            <Card className="bg-white/10 border-white/20">
+            <Card className="bg-muted border-border">
               <CardContent className="p-4 space-y-4">
                 <div className="flex items-center justify-between">
-                  <h3 className="text-lg font-semibold text-white">Selected Cities for Notifications</h3>
+                  <h3 className="text-lg font-semibold text-foreground">Selected Cities for Notifications</h3>
                   <Button
                     size="sm"
+                    variant="outline"
                     onClick={() => setShowCityInput(!showCityInput)}
-                    className="bg-white/20 hover:bg-white/30 text-white"
                   >
                     Add City
                   </Button>
@@ -168,9 +172,9 @@ const SubscriptionDialog: React.FC<SubscriptionDialogProps> = ({ open, onOpenCha
                       onChange={(e) => setCityInput(e.target.value)}
                       onKeyDown={(e) => e.key === 'Enter' && handleAddCity()}
                       placeholder="Enter city name..."
-                      className="bg-white/10 border-white/30 text-white placeholder:text-white/50"
+                      className="bg-background border-border text-foreground"
                     />
-                    <Button onClick={handleAddCity} size="sm" className="bg-white text-black hover:bg-white/90">
+                    <Button onClick={handleAddCity} size="sm">
                       Add
                     </Button>
                   </div>
@@ -178,12 +182,13 @@ const SubscriptionDialog: React.FC<SubscriptionDialogProps> = ({ open, onOpenCha
 
                 <div className="flex flex-wrap gap-2">
                   {selectedCities.length === 0 ? (
-                    <p className="text-white/50 text-sm">No cities selected yet</p>
+                    <p className="text-muted-foreground text-sm">No cities selected yet</p>
                   ) : (
                     selectedCities.map((city) => (
                       <Badge
                         key={city}
-                        className="bg-white/20 hover:bg-white/30 text-white px-3 py-1 flex items-center gap-2"
+                        variant="secondary"
+                        className="px-3 py-1 flex items-center gap-2"
                       >
                         {city}
                         <X
@@ -198,7 +203,7 @@ const SubscriptionDialog: React.FC<SubscriptionDialogProps> = ({ open, onOpenCha
             </Card>
           )}
           
-          <p className="text-white/50 text-xs text-center">
+          <p className="text-muted-foreground text-xs text-center">
             All plans are valid for 1 month and require renewal to continue
           </p>
         </div>
