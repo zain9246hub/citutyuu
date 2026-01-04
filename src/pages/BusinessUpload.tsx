@@ -16,9 +16,9 @@ const BusinessUpload = () => {
       />
       
       <div className="flex-1 mobile-scroll-container">
-        <div className="px-4 py-6 pb-24">
-          <div className="max-w-2xl mx-auto bg-white rounded-lg shadow p-4 sm:p-6">
-            <h1 className="text-xl sm:text-2xl font-bold mb-6 text-center">List Your Business</h1>
+        <div className="px-4 py-3 pb-24">
+          <div className="max-w-2xl mx-auto bg-card rounded-lg shadow border border-border p-4">
+            <h1 className="text-lg font-bold mb-4 text-center text-foreground">List Your Business</h1>
           
             {currentUser ? (
               <BusinessUploadForm />
