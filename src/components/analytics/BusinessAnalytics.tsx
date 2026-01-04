@@ -1,8 +1,8 @@
+import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { MousePointer, Eye, Phone, Star, TrendingUp, TrendingDown, BarChart3 } from "lucide-react";
+import { MousePointer, Eye, Phone, Star, TrendingUp, TrendingDown, BarChart3, ChevronRight } from "lucide-react";
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, Legend } from "recharts";
-
 interface BusinessAnalyticsProps {
   businessId: string;
 }
@@ -26,6 +26,7 @@ const weeklyData = [
 ];
 
 const BusinessAnalytics = ({ businessId }: BusinessAnalyticsProps) => {
+  const navigate = useNavigate();
   // Mock data - in real app, fetch based on businessId
   const metrics = {
     totalClicks: 238,
@@ -230,8 +231,15 @@ const BusinessAnalytics = ({ businessId }: BusinessAnalyticsProps) => {
                   <div className="text-center">Conv. Rate</div>
                 </div>
                 {topDeals.map((deal, index) => (
-                  <div key={index} className="grid grid-cols-4 gap-4 text-sm items-center py-3 rounded-lg hover:bg-muted/30 transition-colors duration-200 px-2 -mx-2">
-                    <div className="font-medium text-foreground truncate">{deal.name}</div>
+                  <div 
+                    key={index} 
+                    className="grid grid-cols-4 gap-4 text-sm items-center py-3 rounded-lg hover:bg-muted/30 transition-colors duration-200 px-2 -mx-2 cursor-pointer active:scale-[0.98]"
+                    onClick={() => navigate(`/deal-analytics/${index}`)}
+                  >
+                    <div className="font-medium text-foreground truncate flex items-center gap-1">
+                      {deal.name}
+                      <ChevronRight className="h-3 w-3 text-muted-foreground flex-shrink-0" />
+                    </div>
                     <div className="text-center text-muted-foreground font-medium">{deal.views}</div>
                     <div className="text-center text-muted-foreground font-medium">{deal.clicks}</div>
                     <div className="text-center font-semibold text-primary">{deal.conversionRate}</div>
