@@ -26,6 +26,7 @@ import BusinessListing from "./pages/BusinessListing";
 import Business from "./pages/Business"; 
 import BusinessUpload from "./pages/BusinessUpload";
 import DealUpload from "./pages/DealUpload";
+import DealAnalytics from "./pages/DealAnalytics";
 import NotFound from "./pages/NotFound";
 import DealDetail from "./pages/DealDetail";
 import AdminLocations from "./pages/AdminLocations";
@@ -81,6 +82,11 @@ const App = () => {
                       </ProtectedRoute>
                     } />
                     <Route path="/deal/:id" element={<DealDetail />} />
+                    <Route path="/deal-analytics/:dealId" element={
+                      <ProtectedRoute>
+                        <DealAnalytics />
+                      </ProtectedRoute>
+                    } />
                     <Route path="/profile" element={
                       <ProtectedRoute>
                         <Profile />
