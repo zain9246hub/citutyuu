@@ -73,10 +73,10 @@ const SubscriptionPlans: React.FC = () => {
   return (
     <div className="space-y-6 p-4">
       <div className="text-center space-y-2">
-        <h2 className="text-2xl font-bold">Choose Your Plan</h2>
+        <h2 className="text-2xl font-bold text-foreground">Choose Your Plan</h2>
         <p className="text-muted-foreground">All plans valid for 1 month • Renew to continue</p>
         {!hasSubscription('cityChat') && !hasSubscription('voiceMessages') && (
-          <p className="text-sm text-orange-600">
+          <p className="text-sm text-orange-600 dark:text-orange-400">
             Free: {monthlyMessagesUsed}/{maxMonthlyMessages} messages used this month
           </p>
         )}
@@ -86,35 +86,36 @@ const SubscriptionPlans: React.FC = () => {
         {plans.map((plan) => (
           <Card 
             key={plan.id}
-            className={`bg-gradient-to-br ${plan.gradient} border-none shadow-xl overflow-hidden ${
-              plan.highlight ? 'ring-2 ring-yellow-400' : ''
+            className={`relative overflow-hidden border-2 shadow-xl ${
+              plan.highlight ? 'border-yellow-400 ring-2 ring-yellow-400/50' : 'border-border'
             }`}
           >
-            <CardContent className="p-6 text-white">
+            <div className={`absolute inset-0 bg-gradient-to-br ${plan.gradient} opacity-90 dark:opacity-100`} />
+            <CardContent className="relative p-6 text-white">
               <div className="flex flex-col items-center text-center space-y-4">
-                <div className={`w-16 h-16 rounded-full ${plan.iconBg} flex items-center justify-center backdrop-blur-sm`}>
-                  <plan.icon className="w-8 h-8" />
+                <div className={`w-16 h-16 rounded-full bg-white/20 flex items-center justify-center backdrop-blur-sm shadow-lg`}>
+                  <plan.icon className="w-8 h-8 drop-shadow-md" />
                 </div>
 
-                <h3 className="text-xl font-bold">{plan.title}</h3>
+                <h3 className="text-xl font-bold drop-shadow-md">{plan.title}</h3>
 
-                <div className="text-4xl font-bold">
+                <div className="text-4xl font-bold drop-shadow-md">
                   ₹{plan.price}
-                  <span className="text-sm font-normal">/month</span>
+                  <span className="text-sm font-normal text-white/80">/month</span>
                 </div>
 
-                <p className="text-sm opacity-90 min-h-[40px]">
+                <p className="text-sm text-white min-h-[40px] drop-shadow-sm">
                   {plan.description}
                 </p>
 
                 <Button
                   onClick={() => handleSubscribe(plan.id, plan.price)}
                   size="lg"
-                  className={`w-full ${
+                  className={`w-full font-semibold shadow-lg ${
                     hasSubscription(plan.id)
-                      ? 'bg-white/20 hover:bg-white/30 border-2 border-white/50'
-                      : 'bg-white/90 hover:bg-white text-pink-600 hover:text-pink-700'
-                  } transition-all shadow-xl`}
+                      ? 'bg-white/30 hover:bg-white/40 text-white border border-white/30'
+                      : 'bg-white hover:bg-white/90 text-gray-900'
+                  } transition-all`}
                 >
                   {hasSubscription(plan.id) ? 'SUBSCRIBED ✓' : 'UPGRADE'}
                 </Button>
@@ -125,15 +126,15 @@ const SubscriptionPlans: React.FC = () => {
       </div>
 
       {(hasSubscription('notifications') || hasSubscription('voiceMessages')) && (
-        <Card className="bg-gradient-to-br from-slate-800 to-slate-900 border-white/10">
+        <Card className="bg-muted border-border">
           <CardContent className="p-6">
             <div className="space-y-4">
               <div className="flex items-center justify-between">
-                <h3 className="text-lg font-semibold text-white">Selected Cities for Notifications</h3>
+                <h3 className="text-lg font-semibold text-foreground">Selected Cities for Notifications</h3>
                 <Button
                   size="sm"
+                  variant="outline"
                   onClick={() => setShowCityInput(!showCityInput)}
-                  className="bg-white/10 hover:bg-white/20"
                 >
                   Add City
                 </Button>
@@ -146,7 +147,7 @@ const SubscriptionPlans: React.FC = () => {
                     onChange={(e) => setCityInput(e.target.value)}
                     onKeyDown={(e) => e.key === 'Enter' && handleAddCity()}
                     placeholder="Enter city name..."
-                    className="bg-white/5 border-white/20 text-white placeholder:text-white/50"
+                    className="bg-background border-border text-foreground"
                   />
                   <Button onClick={handleAddCity} size="sm">Add</Button>
                 </div>
@@ -154,12 +155,13 @@ const SubscriptionPlans: React.FC = () => {
 
               <div className="flex flex-wrap gap-2">
                 {selectedCities.length === 0 ? (
-                  <p className="text-white/50 text-sm">No cities selected yet</p>
+                  <p className="text-muted-foreground text-sm">No cities selected yet</p>
                 ) : (
                   selectedCities.map((city) => (
                     <Badge
                       key={city}
-                      className="bg-white/10 hover:bg-white/20 text-white px-3 py-1 flex items-center gap-2"
+                      variant="secondary"
+                      className="px-3 py-1 flex items-center gap-2"
                     >
                       {city}
                       <X
