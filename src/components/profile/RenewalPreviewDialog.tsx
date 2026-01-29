@@ -19,7 +19,7 @@ import { useToast } from '@/hooks/use-toast';
 interface RenewalPreviewDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  type: 'banner' | 'deal';
+  type: 'banner' | 'deal' | 'business';
   itemId: string;
 }
 
@@ -36,7 +36,9 @@ const RenewalPreviewDialog: React.FC<RenewalPreviewDialogProps> = ({
   const item = useMemo(() => {
     if (type === 'banner') {
       return uploadedAds.find(ad => ad.id === itemId);
-    } else {
+    }
+
+    if (type === 'deal') {
       const dealsString = localStorage.getItem('userDeals');
       if (!dealsString) return null;
       try {
@@ -46,35 +48,56 @@ const RenewalPreviewDialog: React.FC<RenewalPreviewDialogProps> = ({
         return null;
       }
     }
+
+    // business
+    const businessesString = localStorage.getItem('userBusinesses');
+    if (!businessesString) return null;
+    try {
+      const businesses = JSON.parse(businessesString);
+      if (!Array.isArray(businesses)) return null;
+      return businesses.find((b) => b.id === itemId) || null;
+    } catch {
+      return null;
+    }
   }, [type, itemId, uploadedAds]);
 
   if (!item) return null;
 
   const isBanner = type === 'banner';
-  const banner = isBanner ? item as UploadedAd : null;
-  const deal = !isBanner ? item as Deal : null;
+  const isDeal = type === 'deal';
+  const isBusiness = type === 'business';
 
-  const title = isBanner ? banner!.title : deal!.title;
-  const description = isBanner ? banner!.description : deal!.description;
-  const location = isBanner ? banner!.location : deal!.city;
-  const price = isBanner ? banner!.monthlyPrice : deal!.subscriptionPrice || 0;
-  const phoneNumber = isBanner ? banner!.phoneNumber : deal!.phone;
-  const websiteUrl = isBanner ? banner!.websiteUrl : undefined;
-  const locationUrl = isBanner ? banner!.locationUrl : undefined;
+  const banner = isBanner ? (item as UploadedAd) : null;
+  const deal = isDeal ? (item as Deal) : null;
+  const business = isBusiness ? (item as any) : null;
+
+  const title = isBanner ? banner!.title : isDeal ? deal!.title : business!.name;
+  const description = isBanner ? banner!.description : isDeal ? deal!.description : business!.description;
+  const location = isBanner ? banner!.location : isDeal ? deal!.city : business!.city;
+  const price = isBanner ? banner!.monthlyPrice : isDeal ? (deal!.subscriptionPrice || 0) : (business!.subscriptionPrice || 999);
+  const phoneNumber = isBanner ? banner!.phoneNumber : isDeal ? deal!.phone : business!.phone;
+  const websiteUrl = isBanner ? banner!.websiteUrl : isDeal ? undefined : business!.website;
+  const locationUrl = isBanner ? banner!.locationUrl : isDeal ? undefined : business!.locationUrl;
 
   const images = useMemo(() => {
     if (isBanner) {
       return banner!.imageUrls && banner!.imageUrls.length > 0 
         ? banner!.imageUrls 
         : banner!.imageUrl ? [banner!.imageUrl] : [];
-    } else {
+    }
+
+    if (isDeal) {
       // For deals, use images array or fallback to single image
       if (deal!.images && deal!.images.length > 0) {
         return deal!.images;
       }
       return deal!.image ? [deal!.image] : [];
     }
-  }, [isBanner, banner, deal]);
+
+    // business
+    if (business?.images && Array.isArray(business.images) && business.images.length > 0) return business.images;
+    return business?.image ? [business.image] : [];
+  }, [isBanner, isDeal, banner, deal, business]);
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('en-IN', {
@@ -97,9 +120,9 @@ const RenewalPreviewDialog: React.FC<RenewalPreviewDialogProps> = ({
     setIsProcessing(true);
     
     setTimeout(() => {
-      if (type === 'banner') {
+       if (type === 'banner') {
         renewAd(itemId);
-      } else {
+       } else if (type === 'deal') {
         // Renew deal
         const dealsString = localStorage.getItem('userDeals');
         if (dealsString) {
@@ -122,9 +145,33 @@ const RenewalPreviewDialog: React.FC<RenewalPreviewDialogProps> = ({
             console.error('Error renewing deal:', error);
           }
         }
+       } else {
+         // Renew business
+         const businessesString = localStorage.getItem('userBusinesses');
+         if (businessesString) {
+           try {
+             const businesses = JSON.parse(businessesString);
+             if (Array.isArray(businesses)) {
+               const now = new Date();
+               const newEndDate = new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000);
+               const updated = businesses.map((b) =>
+                 b.id === itemId
+                   ? {
+                       ...b,
+                       subscriptionStartDate: now.toISOString(),
+                       subscriptionEndDate: newEndDate.toISOString(),
+                     }
+                   : b
+               );
+               localStorage.setItem('userBusinesses', JSON.stringify(updated));
+             }
+           } catch (error) {
+             console.error('Error renewing business:', error);
+           }
+         }
       }
 
-      toast({
+       toast({
         title: "Subscription Renewed!",
         description: `Your ${type} subscription has been renewed for 30 days.`,
       });

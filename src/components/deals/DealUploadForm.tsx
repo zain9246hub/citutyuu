@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "@/contexts/AuthContext";
 import BusinessImageUploader from "../business/BusinessImageUploader";
 import confetti from 'canvas-confetti';
 import { addDeal } from "@/utils/dealData";
@@ -28,6 +29,7 @@ interface DealUploadFormProps {
 const DealUploadForm = ({ initialTier = 'standard', onTierChange }: DealUploadFormProps) => {
   const { toast } = useToast();
   const navigate = useNavigate();
+  const { currentUser } = useAuth();
   const [expiryDate, setExpiryDate] = useState<Date | undefined>(undefined);
   
   const [dealData, setDealData] = useState({
@@ -202,6 +204,9 @@ const DealUploadForm = ({ initialTier = 'standard', onTierChange }: DealUploadFo
     setIsProcessingPayment(true);
     
     try {
+      const startDate = new Date();
+      const endDate = new Date(startDate.getTime() + 30 * 24 * 60 * 60 * 1000);
+
       const newDeal: Partial<Deal> = {
         id: Date.now(),
         title: dealData.title,
@@ -222,6 +227,11 @@ const DealUploadForm = ({ initialTier = 'standard', onTierChange }: DealUploadFo
         featured: dealData.tier === 'highlight' || dealData.tier === 'citywide',
         tier: dealData.tier,
         isMetroCity: isMetro,
+        uploadedBy: currentUser?.name,
+        subscriptionStartDate: startDate.toISOString(),
+        subscriptionEndDate: endDate.toISOString(),
+        subscriptionPrice: calculatePrice(),
+        isActive: true,
       };
       
       setTimeout(() => {
