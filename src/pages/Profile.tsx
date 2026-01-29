@@ -9,6 +9,8 @@ import ProfileHeader from "@/components/profile/ProfileHeader";
 import ProfileTabs from "@/components/profile/ProfileTabs";
 import { Tabs } from "@/components/ui/tabs";
 import { useAdExpiry } from "@/hooks/useAdExpiry";
+import { useDealsExpiry } from "@/hooks/useDealsExpiry";
+import { useBusinessExpiry } from "@/hooks/useBusinessExpiry";
 
 const Profile = () => {
   const navigate = useNavigate();
@@ -17,8 +19,10 @@ const Profile = () => {
   const [activeTab, setActiveTab] = useState("profile");
   const [isEditing, setIsEditing] = useState(false);
   
-  // Track expiring ads and show notifications
+  // Track expiring subscriptions and show notifications
   useAdExpiry();
+  useDealsExpiry();
+  useBusinessExpiry();
   
   const handleLogout = () => {
     logout();
