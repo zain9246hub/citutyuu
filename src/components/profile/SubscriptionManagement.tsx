@@ -9,17 +9,33 @@ import { Calendar, RefreshCw, AlertCircle, Tag, Image, Building, Video } from 'l
 import RenewalPreviewDialog from './RenewalPreviewDialog';
 import { Deal } from '@/types/deal';
 
+type RenewalType = 'banner' | 'deal' | 'business';
+
 const SubscriptionManagement: React.FC = () => {
   const { uploadedAds } = useAdvertisements();
   const { currentUser } = useAuth();
-  const [renewalType, setRenewalType] = useState<'banner' | 'deal' | null>(null);
+  const [renewalType, setRenewalType] = useState<RenewalType | null>(null);
   const [renewalId, setRenewalId] = useState<string | null>(null);
   const [showRenewalDialog, setShowRenewalDialog] = useState(false);
 
+  const isOwnedByCurrentUser = (uploadedBy?: string | null) => {
+    if (!currentUser) return false;
+    // Back-compat: older data may not store uploadedBy; treat it as belonging to this device/user.
+    if (!uploadedBy) return true;
+
+    const candidate = uploadedBy.toLowerCase();
+    const keys = [currentUser.name, currentUser.email, currentUser.id]
+      .filter(Boolean)
+      .map((k) => k.toLowerCase());
+
+    return keys.some((k) => candidate === k || candidate.includes(k) || k.includes(candidate));
+  };
+
   // Filter banners by current user
-  const userBanners = uploadedAds.filter(ad => 
-    ad.uploadedBy === currentUser?.name
-  );
+  const userBanners = useMemo(() => {
+    if (!currentUser) return [];
+    return uploadedAds.filter((ad) => isOwnedByCurrentUser(ad.uploadedBy));
+  }, [uploadedAds, currentUser]);
 
   // Get user deals from localStorage
   const userDeals = useMemo(() => {
@@ -28,10 +44,30 @@ const SubscriptionManagement: React.FC = () => {
     
     try {
       const deals: Deal[] = JSON.parse(userDealsString);
-      return deals.filter(deal => 
-        deal.uploadedBy === currentUser.name && 
-        deal.subscriptionEndDate
-      );
+
+      const normalized = deals
+        .filter((deal) => isOwnedByCurrentUser(deal.uploadedBy))
+        // Only show deals that are paid / subscription-based; for backward compatibility,
+        // treat missing subscription dates as a 30-day subscription.
+        .filter((deal) => Boolean(deal.subscriptionEndDate || deal.subscriptionStartDate || deal.tier))
+        .map((deal) => {
+          if (deal.subscriptionStartDate && deal.subscriptionEndDate) return deal;
+
+          // Back-compat: infer dates from timestamp-like IDs if possible.
+          const idAsNumber = typeof deal.id === 'number' ? deal.id : Number.NaN;
+          const inferredStart = Number.isFinite(idAsNumber) && idAsNumber > 1000000000000
+            ? new Date(idAsNumber)
+            : new Date();
+          const inferredEnd = new Date(inferredStart.getTime() + 30 * 24 * 60 * 60 * 1000);
+
+          return {
+            ...deal,
+            subscriptionStartDate: deal.subscriptionStartDate || inferredStart.toISOString(),
+            subscriptionEndDate: deal.subscriptionEndDate || inferredEnd.toISOString(),
+          };
+        });
+
+      return normalized;
     } catch (error) {
       console.error('Error loading user deals:', error);
       return [];
@@ -45,7 +81,24 @@ const SubscriptionManagement: React.FC = () => {
       if (!stored || !currentUser) return [];
       
       const businesses = JSON.parse(stored);
-      return Array.isArray(businesses) ? businesses : [];
+
+      if (!Array.isArray(businesses)) return [];
+
+      const normalized = businesses
+        .filter((b) => isOwnedByCurrentUser(b.uploadedBy))
+        // Only show items that have (or can infer) subscription dates.
+        .map((b) => {
+          if (b.subscriptionStartDate && b.subscriptionEndDate) return b;
+          const now = new Date();
+          const end = new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000);
+          return {
+            ...b,
+            subscriptionStartDate: b.subscriptionStartDate || now.toISOString(),
+            subscriptionEndDate: b.subscriptionEndDate || end.toISOString(),
+          };
+        });
+
+      return normalized;
     } catch (error) {
       console.error('Error loading user businesses:', error);
       return [];
@@ -79,6 +132,12 @@ const SubscriptionManagement: React.FC = () => {
     setShowRenewalDialog(true);
   };
 
+  const handleRenewBusiness = (businessId: string) => {
+    setRenewalType('business');
+    setRenewalId(businessId);
+    setShowRenewalDialog(true);
+  };
+
   const hasAnySubscriptions = userBanners.length > 0 || userDeals.length > 0 || userBusinesses.length > 0;
 
   const renderSubscriptionCard = (
@@ -88,7 +147,7 @@ const SubscriptionManagement: React.FC = () => {
     startDate: string,
     endDate: string,
     price: number,
-    type: 'banner' | 'deal',
+    type: RenewalType,
     icon: React.ReactNode
   ) => {
     const daysRemaining = getDaysRemaining(endDate);
@@ -148,7 +207,11 @@ const SubscriptionManagement: React.FC = () => {
           <Button
             size="sm"
             variant={isExpiringSoon || isExpired ? "default" : "outline"}
-            onClick={() => type === 'banner' ? handleRenewBanner(id) : handleRenewDeal(parseInt(id))}
+            onClick={() => {
+              if (type === 'banner') return handleRenewBanner(id);
+              if (type === 'deal') return handleRenewDeal(parseInt(id));
+              return handleRenewBusiness(id);
+            }}
             className="gap-2"
           >
             <RefreshCw className="w-3 h-3" />
@@ -251,7 +314,7 @@ const SubscriptionManagement: React.FC = () => {
                     business.subscriptionStartDate || new Date().toISOString(),
                     business.subscriptionEndDate || new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
                     business.subscriptionPrice || 999,
-                    'banner',
+                    'business',
                     <Building className="w-4 h-4 text-primary" />
                   )
                 )

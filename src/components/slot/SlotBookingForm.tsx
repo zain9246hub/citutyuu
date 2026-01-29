@@ -223,6 +223,11 @@ const SlotBookingForm = ({ open, onClose, slotId, location, onSuccess, isRenewal
             phone: formData.phoneNumber,
             email: businessData.email,
             website: businessData.website,
+            locationUrl: formData.locationUrl,
+            uploadedBy: currentUser?.name || 'Anonymous',
+            subscriptionStartDate: startDate.toISOString(),
+            subscriptionEndDate: endDate.toISOString(),
+            subscriptionPrice: slotPrice,
             hours: businessData.workingDays.map(day => ({
               day,
               open: businessData.openingTime || "09:00",

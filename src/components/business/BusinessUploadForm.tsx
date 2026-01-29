@@ -187,6 +187,9 @@ const BusinessUploadForm = () => {
       console.log('🔥 [DEBUG] Creating business object');
       
       const businessId = `user-${Date.now()}`;
+      const subscriptionStartDate = new Date();
+      const subscriptionEndDate = new Date(subscriptionStartDate.getTime() + 30 * 24 * 60 * 60 * 1000);
+
       const newBusiness = {
         id: businessId,
         name: businessData.name || "Test Business",
@@ -209,6 +212,11 @@ const BusinessUploadForm = () => {
         phone: businessData.phone || "+91 98765 43210",
         email: businessData.email || "",
         website: businessData.website || "",
+        locationUrl: (businessData as any).locationUrl || "",
+        uploadedBy: currentUser?.name,
+        subscriptionStartDate: subscriptionStartDate.toISOString(),
+        subscriptionEndDate: subscriptionEndDate.toISOString(),
+        subscriptionPrice: 999,
         hours: businessData.workingDays.length > 0 ? businessData.workingDays.map(day => ({
           day,
           open: businessData.openingTime || "09:00",
