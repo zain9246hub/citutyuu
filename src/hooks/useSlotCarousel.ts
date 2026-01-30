@@ -3,6 +3,7 @@ import { useState, useCallback, useEffect, useMemo, useRef } from "react";
 import { SlotBanner } from "@/types/slot";
 import { generateMockSlotBanners } from "@/utils/slotUtilsNew";
 import { useAdvertisements } from "@/contexts/AdvertisementContext";
+import { useAuth } from "@/contexts/AuthContext";
 import Autoplay from "embla-carousel-autoplay";
 
 type UseSlotCarouselOptions = {
@@ -31,11 +32,15 @@ export const useSlotCarousel = ({
   includeImages = false
 }: UseSlotCarouselOptions) => {
   const { uploadedAds } = useAdvertisements();
+  const { currentUser } = useAuth();
   const [api, setApi] = useState<any>();
   const [selectedBanner, setSelectedBanner] = useState<SlotBanner | null>(null);
   const [showPreview, setShowPreview] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  
+  // Get current user identifier for ownership checks
+  const currentUserId = currentUser?.name || currentUser?.email || currentUser?.id;
   
   // Use refs to prevent unnecessary recreations
   const autoplayPluginRef = useRef<any>(null);
@@ -87,7 +92,7 @@ export const useSlotCarousel = ({
       setError(null);
       
       // Generate slides with proper validation
-      const generatedSlides = generateMockSlotBanners(position, rotationIndex, uploadedAds, selectedCity);
+      const generatedSlides = generateMockSlotBanners(position, rotationIndex, uploadedAds, selectedCity, currentUserId);
       
       if (!generatedSlides || generatedSlides.length === 0) {
         console.warn('[SlotCarousel] No slides generated');
@@ -130,7 +135,7 @@ export const useSlotCarousel = ({
       setError('Failed to load banner content');
       return slidesRef.current || []; // Return cached slides as fallback
     }
-  }, [position, selectedCity, maxVisible, rotationIndex, showOnlyBooked, bookedCount, includeImages, uploadedAds]);
+  }, [position, selectedCity, maxVisible, rotationIndex, showOnlyBooked, bookedCount, includeImages, uploadedAds, currentUserId]);
 
   // Enhanced loading state management
   useEffect(() => {

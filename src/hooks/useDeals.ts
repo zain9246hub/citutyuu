@@ -3,9 +3,33 @@ import { deals as initialDeals } from "@/utils/dealData"; // Fixed import path
 import { Deal, FilterOptions } from "@/types/deal";
 import { useToast } from "@/hooks/use-toast";
 import { useDealNotifications } from "@/hooks/useDealNotifications";
+import { useAuth } from "@/contexts/AuthContext";
+
+// Helper to check if a deal is expired
+const isDealExpired = (deal: Deal): boolean => {
+  if (deal.subscriptionEndDate) {
+    return new Date(deal.subscriptionEndDate) < new Date();
+  }
+  if (deal.expiryDate) {
+    return new Date(deal.expiryDate) < new Date();
+  }
+  return false;
+};
+
+// Helper to check if user owns the deal
+const isOwner = (deal: Deal, userId?: string, userName?: string, userEmail?: string): boolean => {
+  if (!deal.uploadedBy) return false;
+  const uploader = deal.uploadedBy.toLowerCase();
+  return (
+    (userId && uploader === userId.toLowerCase()) ||
+    (userName && uploader === userName.toLowerCase()) ||
+    (userEmail && uploader === userEmail.toLowerCase())
+  );
+};
 
 export const useDeals = (cityFilter?: string | null, searchQuery?: string, filterOptions?: FilterOptions) => {
   const { toast } = useToast();
+  const { currentUser } = useAuth();
   const [sortedDeals, setSortedDeals] = useState<Deal[]>([]);
   const [savedDeals, setSavedDeals] = useState<number[]>([]);
   const [featuredDeals, setFeaturedDeals] = useState<number[]>([]);
@@ -107,6 +131,15 @@ export const useDeals = (cityFilter?: string | null, searchQuery?: string, filte
   useEffect(() => {
     let filteredDeals = [...combinedDeals];
     
+    // Filter out expired deals for non-owners (owners can still see their expired deals)
+    filteredDeals = filteredDeals.filter(deal => {
+      const expired = isDealExpired(deal);
+      if (!expired) return true; // Active deals are always visible
+      
+      // Expired deals only visible to owner
+      return isOwner(deal, currentUser?.id, currentUser?.name, currentUser?.email);
+    });
+    
     // City filter
     if (cityFilter && cityFilter !== "All Cities") {
       filteredDeals = filteredDeals.filter(deal => deal.city === cityFilter);
@@ -188,7 +221,7 @@ export const useDeals = (cityFilter?: string | null, searchQuery?: string, filte
     
     setSortedDeals(filteredDeals);
     setIsLoading(false);
-  }, [cityFilter, searchQuery, filterOptions]); // Removed combinedDeals from dependencies
+  }, [cityFilter, searchQuery, filterOptions, currentUser]); // Added currentUser dependency
 
   return {
     sortedDeals,
@@ -200,6 +233,8 @@ export const useDeals = (cityFilter?: string | null, searchQuery?: string, filte
     getDealUsageCount,
     useDeal,
     isLoading,
-    savedDeals // Expose savedDeals for external use
+    savedDeals, // Expose savedDeals for external use
+    isDealExpired, // Expose helper for checking expiry
+    isOwner // Expose helper for checking ownership
   };
 };

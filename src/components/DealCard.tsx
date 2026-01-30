@@ -2,6 +2,10 @@
 import React from "react";
 import { Deal } from "@/types/deal";
 import { useAuth } from "@/contexts/AuthContext";
+import { useNavigate } from "react-router-dom";
+import { RotateCcw } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import DealImage from "./deal/DealImage";
 import DealHeader from "./deal/DealHeader";
 import DealContent from "./deal/DealContent";
@@ -29,7 +33,33 @@ const DealCard = ({
   usageCount = 0
 }: DealCardProps) => {
   const { currentUser } = useAuth();
+  const navigate = useNavigate();
   const isExplorer = currentUser?.role === 'explorer';
+
+  // Check if deal is expired (for owner-only visibility)
+  const isDealExpired = (): boolean => {
+    if (deal.subscriptionEndDate) {
+      return new Date(deal.subscriptionEndDate) < new Date();
+    }
+    if (deal.expiryDate) {
+      return new Date(deal.expiryDate) < new Date();
+    }
+    return false;
+  };
+
+  // Check if current user is the owner
+  const isOwner = (): boolean => {
+    if (!deal.uploadedBy || !currentUser) return false;
+    const uploader = deal.uploadedBy.toLowerCase();
+    return (
+      (currentUser.id && uploader === currentUser.id.toLowerCase()) ||
+      (currentUser.name && uploader === currentUser.name.toLowerCase()) ||
+      (currentUser.email && uploader === currentUser.email.toLowerCase())
+    );
+  };
+
+  const isExpired = isDealExpired();
+  const showExpiredBadge = isExpired && isOwner();
 
   const {
     isLikeAnimating,
@@ -43,7 +73,7 @@ const DealCard = ({
 
   return (
     <div 
-      className="rounded-lg glass-card overflow-hidden transition-all cursor-pointer hover:shadow-xl hover:scale-[1.02]"
+      className="relative rounded-lg glass-card overflow-hidden transition-all cursor-pointer hover:shadow-xl hover:scale-[1.02]"
       onClick={onClick}
       onKeyDown={(e) => {
         if (e.key === 'Enter' || e.key === ' ') {
@@ -55,6 +85,27 @@ const DealCard = ({
       role="button"
       aria-label={`Deal: ${deal.title} with ${deal.discount}% discount`}
     >
+      {/* Expired badge overlay for owner */}
+      {showExpiredBadge && (
+        <div className="absolute top-2 right-2 z-10 flex items-center gap-2">
+          <Badge variant="destructive" className="text-xs">
+            Expired
+          </Badge>
+          <Button 
+            variant="default"
+            size="sm"
+            className="text-xs h-7 px-2"
+            onClick={(e) => {
+              e.stopPropagation();
+              navigate('/profile?tab=subscriptions');
+            }}
+          >
+            <RotateCcw className="h-3 w-3 mr-1" />
+            Renew
+          </Button>
+        </div>
+      )}
+      
       <div className="flex flex-col md:flex-row">
         <DealImage
           image={deal.image}

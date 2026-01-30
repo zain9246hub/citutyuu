@@ -15,7 +15,8 @@ export const generateMockSlotBanners = (
   position: number, 
   rotationIndex: number = 0, 
   uploadedAds: UploadedAd[] = [],
-  selectedCity?: string | null
+  selectedCity?: string | null,
+  currentUserId?: string // Add current user ID for ownership check
 ): SlotBanner[] => {
   const totalBanners = [
     {
@@ -85,37 +86,54 @@ export const generateMockSlotBanners = (
   ];
 
   // Filter uploaded ads for this position and location
-  const relevantUploadedAds = uploadedAds.filter(ad => 
-    ad.position === position && 
-    ad.isActive &&
-    (!selectedCity || ad.location.toLowerCase().includes(selectedCity.toLowerCase()))
-  );
+  // Expired ads are only visible to the owner
+  const relevantUploadedAds = uploadedAds.filter(ad => {
+    const matchesPosition = ad.position === position;
+    const matchesCity = !selectedCity || ad.location.toLowerCase().includes(selectedCity.toLowerCase());
+    
+    // Check if expired
+    const isExpired = new Date(ad.subscriptionEndDate) < new Date();
+    
+    if (isExpired) {
+      // Only show to owner
+      const isOwner = currentUserId && ad.uploadedBy.toLowerCase() === currentUserId.toLowerCase();
+      return matchesPosition && matchesCity && isOwner;
+    }
+    
+    // Active ads visible to all (isActive should still be true)
+    return matchesPosition && matchesCity && ad.isActive;
+  });
 
   // If there are uploaded ads, show them + only ONE available slot
   const showOnlyOneAvailable = relevantUploadedAds.length > 0;
 
   // Convert uploaded ads to SlotBanner format
-  const uploadedBannerSlots: SlotBanner[] = relevantUploadedAds.map(ad => ({
-    id: ad.id,
-    position: ad.position,
-    adContent: ad.title,
-    location: ad.location,
-    backgroundColor: "bg-gradient-to-br from-blue-50 to-blue-100",
-    imageUrl: ad.imageUrl || ad.imageUrls?.[0] || ad.videoUrl || totalBanners[0].imageUrl, // Use first uploaded image, fallback to video/demo
-    imageUrls: ad.imageUrls,
-    isBooked: true, // Uploaded ads are always booked
-    title: ad.title,
-    description: ad.description,
-    businessName: `By ${ad.uploadedBy}`,
-    targetUrl: ad.targetUrl,
-    price: position === 1 ? 1000 : 750,
-    isUploadedAd: true, // Mark as uploaded ad
-    videoUrl: ad.videoUrl,
-    // Include contact information from uploaded ads
-    phoneNumber: ad.phoneNumber,
-    locationUrl: ad.locationUrl,
-    websiteUrl: ad.websiteUrl,
-  }));
+  const uploadedBannerSlots: SlotBanner[] = relevantUploadedAds.map(ad => {
+    const isExpired = new Date(ad.subscriptionEndDate) < new Date();
+    
+    return {
+      id: ad.id,
+      position: ad.position,
+      adContent: ad.title,
+      location: ad.location,
+      backgroundColor: "bg-gradient-to-br from-blue-50 to-blue-100",
+      imageUrl: ad.imageUrl || ad.imageUrls?.[0] || ad.videoUrl || totalBanners[0].imageUrl,
+      imageUrls: ad.imageUrls,
+      isBooked: true,
+      title: ad.title,
+      description: ad.description,
+      businessName: `By ${ad.uploadedBy}`,
+      targetUrl: ad.targetUrl,
+      price: position === 1 ? 1000 : 750,
+      isUploadedAd: true,
+      videoUrl: ad.videoUrl,
+      phoneNumber: ad.phoneNumber,
+      locationUrl: ad.locationUrl,
+      websiteUrl: ad.websiteUrl,
+      isExpired, // Add expiry flag for UI
+      subscriptionEndDate: ad.subscriptionEndDate, // Pass for renewal
+    };
+  });
 
   // Create remaining mock slots - only ONE available slot if there are uploaded ads
   const slotsPerPosition = 1; // Always generate exactly one available slot

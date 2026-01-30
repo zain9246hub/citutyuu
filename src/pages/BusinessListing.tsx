@@ -3,6 +3,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import { useCityContext } from "@/contexts/CityContext";
+import { useAuth } from "@/contexts/AuthContext";
 import Navbar from "@/components/Navbar";
 import CityFilter from "@/components/CityFilter";
 import SearchFilterBar from "@/components/business/SearchFilterBar";
@@ -18,6 +19,7 @@ import { categoryOptions } from "@/components/filters/FilterOptions";
 const BusinessListing = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { currentUser } = useAuth();
   const { selectedCity: globalCity, setSelectedCity: setGlobalCity } = useCityContext();
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
@@ -95,7 +97,8 @@ const BusinessListing = () => {
       showNearby,
       userLocation,
       sortBy: filters.sortBy,
-      showPopular: filters.showPopular
+      showPopular: filters.showPopular,
+      currentUser // Pass currentUser for ownership checks
     }
   );
 
