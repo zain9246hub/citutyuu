@@ -20,6 +20,9 @@ export interface SlotBanner {
   phoneNumber?: string;
   locationUrl?: string;
   websiteUrl?: string;
+  // Expiry tracking
+  isExpired?: boolean;
+  subscriptionEndDate?: string;
 }
 
 export interface SlotCarouselProps {

@@ -28,6 +28,7 @@ export interface Deal {
   subscriptionEndDate?: string;
   subscriptionPrice?: number;
   isActive?: boolean;
+  isExpired?: boolean; // Computed flag for UI
 }
 
 export interface FilterOptions {

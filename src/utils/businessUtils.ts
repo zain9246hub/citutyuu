@@ -14,6 +14,34 @@ export const calculateDistance = (lat1: number, lon1: number, lat2: number, lon2
 };
 
 /**
+ * Check if a business subscription is expired
+ */
+export const isBusinessExpired = (business: any): boolean => {
+  if (business.subscriptionEndDate) {
+    return new Date(business.subscriptionEndDate) < new Date();
+  }
+  return false;
+};
+
+/**
+ * Check if user owns the business
+ */
+export const isBusinessOwner = (
+  business: any, 
+  userId?: string, 
+  userName?: string, 
+  userEmail?: string
+): boolean => {
+  if (!business.uploadedBy) return false;
+  const uploader = business.uploadedBy.toLowerCase();
+  return (
+    (userId && uploader === userId.toLowerCase()) ||
+    (userName && uploader === userName.toLowerCase()) ||
+    (userEmail && uploader === userEmail.toLowerCase())
+  );
+};
+
+/**
  * Filter and sort businesses based on search criteria
  */
 export const filterBusinesses = (
@@ -27,11 +55,24 @@ export const filterBusinesses = (
     showNearby,
     userLocation,
     sortBy,
-    showPopular
+    showPopular,
+    currentUser // Add currentUser for ownership checks
   }
 ) => {
   // Filter businesses
   let filtered = businesses.filter(business => {
+    // Check expiry - expired businesses only visible to owner
+    const expired = isBusinessExpired(business);
+    if (expired) {
+      const isOwner = isBusinessOwner(
+        business, 
+        currentUser?.id, 
+        currentUser?.name, 
+        currentUser?.email
+      );
+      if (!isOwner) return false; // Hide expired from non-owners
+    }
+    
     // Search query filter
     const matchesSearch = business.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       business.category.toLowerCase().includes(searchQuery.toLowerCase()) ||

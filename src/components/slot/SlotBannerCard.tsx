@@ -1,8 +1,10 @@
 import React, { memo, useState } from "react";
-import { ChevronRight, Eye, Store } from "lucide-react";
+import { ChevronRight, Eye, Store, RotateCcw } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { SlotBannerCardProps } from "@/types/slot";
 import { useAuth } from "@/contexts/AuthContext";
+import { useNavigate } from "react-router-dom";
 
 const SlotBannerCard = memo(({ 
   slide, 
@@ -14,11 +16,15 @@ const SlotBannerCard = memo(({
   onVisitBusiness
 }: SlotBannerCardProps) => {
   const { currentUser } = useAuth();
+  const navigate = useNavigate();
   const isExplorer = currentUser?.role === 'explorer';
   const [isFlipped, setIsFlipped] = useState(false);
   
   const shouldShowBookButton = showBookButton && !isExplorer && !slide.isBooked;
   const shouldShowFlipOptions = isExplorer && slide.isBooked;
+  
+  // Check if this is owner's expired banner
+  const isOwnerExpiredBanner = slide.isExpired && slide.isUploadedAd;
 
   const handleCardClick = () => {
     if (shouldShowFlipOptions) {
@@ -84,10 +90,17 @@ const SlotBannerCard = memo(({
             </div>
             
             {/* Featured Badge - Top Right */}
-            {slide.isBooked && (
+            {slide.isBooked && !slide.isExpired && (
               <div className="absolute top-3 right-3 bg-amber-500 text-white px-3 py-1 rounded text-xs font-medium">
                 Featured
               </div>
+            )}
+            
+            {/* Expired Badge - Top Right for owner */}
+            {isOwnerExpiredBanner && (
+              <Badge variant="destructive" className="absolute top-3 right-3 text-xs">
+                Expired
+              </Badge>
             )}
             
             {/* Content - Bottom Left */}
@@ -120,6 +133,24 @@ const SlotBannerCard = memo(({
                   }}
                 >
                   Book Slot
+                </Button>
+              </div>
+            )}
+            
+            {/* Renew Button for Owner's Expired Banners */}
+            {isOwnerExpiredBanner && (
+              <div className="absolute bottom-3 right-3">
+                <Button 
+                  variant="default"
+                  size="sm"
+                  className="bg-primary hover:bg-primary/90 text-primary-foreground shadow-lg text-xs px-3 py-1 h-7"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    navigate('/profile?tab=subscriptions');
+                  }}
+                >
+                  <RotateCcw className="h-3 w-3 mr-1" />
+                  Renew
                 </Button>
               </div>
             )}
