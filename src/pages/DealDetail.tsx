@@ -82,11 +82,11 @@ const DealDetail = () => {
 
   return (
     <div className="flex flex-col min-h-screen">
-      <div className="p-4 sticky top-0 bg-white z-10 flex items-center gap-2 border-b">
+      <div className="p-4 sticky top-0 bg-background z-10 flex items-center gap-2 border-b border-border">
         <Button variant="ghost" size="icon" onClick={() => navigate(-1)}>
           <ArrowLeft className="h-5 w-5" />
         </Button>
-        <h1 className="text-xl font-semibold">Deal Details</h1>
+        <h1 className="text-xl font-semibold text-foreground">Deal Details</h1>
       </div>
 
       <div className="flex-1 pb-20">
@@ -186,7 +186,10 @@ const DealDetail = () => {
 
           {deal.expiryDate && (
             <p className="text-sm text-muted-foreground mt-1">
-              Expires {formatDistanceToNow(new Date(deal.expiryDate), { addSuffix: true })}
+              {new Date(deal.expiryDate) < new Date() 
+                ? `Expired ${formatDistanceToNow(new Date(deal.expiryDate), { addSuffix: true })}`
+                : `Expires ${formatDistanceToNow(new Date(deal.expiryDate), { addSuffix: true })}`
+              }
             </p>
           )}
 
