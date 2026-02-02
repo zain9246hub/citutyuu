@@ -1,11 +1,12 @@
 import React, { useState, useMemo } from 'react';
 import { useAdvertisements } from '@/contexts/AdvertisementContext';
 import { useAuth } from '@/contexts/AuthContext';
+import { useSubscription } from '@/contexts/SubscriptionContext';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Calendar, RefreshCw, AlertCircle, Tag, Image, Building, Video } from 'lucide-react';
+import { Calendar, RefreshCw, AlertCircle, Tag, Image, Building, Video, Bell, MessageCircle, Sparkles, CheckCircle } from 'lucide-react';
 import RenewalPreviewDialog from './RenewalPreviewDialog';
 import { Deal } from '@/types/deal';
 
@@ -14,6 +15,7 @@ type RenewalType = 'banner' | 'deal' | 'business';
 const SubscriptionManagement: React.FC = () => {
   const { uploadedAds } = useAdvertisements();
   const { currentUser } = useAuth();
+  const { hasSubscription } = useSubscription();
   const [renewalType, setRenewalType] = useState<RenewalType | null>(null);
   const [renewalId, setRenewalId] = useState<string | null>(null);
   const [showRenewalDialog, setShowRenewalDialog] = useState(false);
@@ -222,7 +224,16 @@ const SubscriptionManagement: React.FC = () => {
     );
   };
 
-  if (!hasAnySubscriptions) {
+  // Active user plan subscriptions
+  const activePlans = [
+    { id: 'notifications', name: 'Notifications', price: 69, icon: Bell, gradient: 'from-pink-500 to-rose-600' },
+    { id: 'cityChat', name: 'City Chat', price: 69, icon: MessageCircle, gradient: 'from-purple-500 to-indigo-600' },
+    { id: 'voiceMessages', name: 'All Access', price: 119, icon: Sparkles, gradient: 'from-orange-500 to-red-600' },
+  ].filter(plan => hasSubscription(plan.id as 'notifications' | 'cityChat' | 'voiceMessages'));
+
+  const hasActivePlans = activePlans.length > 0;
+
+  if (!hasAnySubscriptions && !hasActivePlans) {
     return (
       <Card>
         <CardHeader>
@@ -238,10 +249,48 @@ const SubscriptionManagement: React.FC = () => {
 
   return (
     <>
+      {/* Active User Plans Section */}
+      {hasActivePlans && (
+        <Card className="mb-4">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <CheckCircle className="w-5 h-5 text-green-500" />
+              Active Plans
+            </CardTitle>
+            <CardDescription>Your currently active subscription plans</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-1 gap-3">
+              {activePlans.map((plan) => (
+                <div
+                  key={plan.id}
+                  className={`relative overflow-hidden rounded-lg p-4 text-white bg-gradient-to-r ${plan.gradient}`}
+                >
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center">
+                        <plan.icon className="w-5 h-5" />
+                      </div>
+                      <div>
+                        <h3 className="font-semibold">{plan.name}</h3>
+                        <p className="text-sm text-white/80">₹{plan.price}/month</p>
+                      </div>
+                    </div>
+                    <Badge className="bg-white/20 text-white border-white/30">Active</Badge>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Business Listings Section */}
+      {hasAnySubscriptions && (
       <Card>
         <CardHeader>
-          <CardTitle>My Subscriptions</CardTitle>
-          <CardDescription>Manage and renew your paid subscriptions</CardDescription>
+          <CardTitle>My Business Listings</CardTitle>
+          <CardDescription>Manage and renew your paid business subscriptions</CardDescription>
         </CardHeader>
         <CardContent>
           <Tabs defaultValue="banners" className="w-full">
@@ -327,6 +376,7 @@ const SubscriptionManagement: React.FC = () => {
           </Tabs>
         </CardContent>
       </Card>
+      )}
 
       {showRenewalDialog && renewalId && renewalType && (
         <RenewalPreviewDialog
