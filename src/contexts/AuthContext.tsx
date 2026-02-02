@@ -9,13 +9,14 @@ export interface User {
   name: string;
   email: string;
   role: UserRole;
+  city?: string;
 }
 
 interface AuthContextType {
   currentUser: User | null;
   isLoading: boolean;
   login: (email: string, password: string, role: UserRole) => Promise<void>;
-  signUp: (name: string, email: string, password: string, role: UserRole) => Promise<void>;
+  signUp: (name: string, email: string, password: string, role: UserRole, city?: string) => Promise<void>;
   logout: () => void;
 }
 
@@ -77,7 +78,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
-  const signUp = async (name: string, email: string, password: string, role: UserRole) => {
+  const signUp = async (name: string, email: string, password: string, role: UserRole, city?: string) => {
     try {
       setIsLoading(true);
       // In a real app, this would be an API call to your backend
@@ -88,7 +89,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         id: Math.random().toString(36).substring(2, 9),
         name,
         email,
-        role
+        role,
+        city
       };
       
       setCurrentUser(user);

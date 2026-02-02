@@ -4,10 +4,12 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth, UserRole } from "@/contexts/AuthContext";
-import { User, Mail, Lock, Building2, Eye, EyeOff, UserCheck } from "lucide-react";
+import { User, Mail, Lock, Building2, Eye, EyeOff, UserCheck, MapPin } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { ALL_CITIES } from "@/utils/cityData";
 
 const SignupForm = () => {
   const navigate = useNavigate();
@@ -18,6 +20,7 @@ const SignupForm = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [city, setCity] = useState("");
   const [role, setRole] = useState<UserRole>("explorer");
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -25,10 +28,10 @@ const SignupForm = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!name || !email || !password || !confirmPassword) {
+    if (!name || !email || !password || !confirmPassword || !city) {
       toast({
         title: "Error",
-        description: "Please fill in all fields",
+        description: "Please fill in all fields including city",
         variant: "destructive",
       });
       return;
@@ -44,7 +47,7 @@ const SignupForm = () => {
     }
     
     try {
-      await signUp(name, email, password, role);
+      await signUp(name, email, password, role, city);
       toast({
         title: "Success",
         description: "Account created successfully",
@@ -177,6 +180,31 @@ const SignupForm = () => {
                 >
                   {showConfirmPassword ? <EyeOff className="h-3.5 w-3.5" /> : <Eye className="h-3.5 w-3.5" />}
                 </button>
+              </div>
+            </div>
+
+            {/* City Selection */}
+            <div className="space-y-1.5">
+              <Label 
+                htmlFor="city" 
+                className="text-white font-semibold text-xs"
+              >
+                Your City
+              </Label>
+              <div className="relative group">
+                <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 h-3.5 w-3.5 text-white/70 z-10 pointer-events-none" />
+                <Select value={city} onValueChange={setCity}>
+                  <SelectTrigger className="pl-9 h-10 bg-white/20 border-2 border-white/30 text-white focus:border-cyan-400 focus:bg-white/30 focus:shadow-lg focus:shadow-cyan-400/20 rounded-xl font-medium text-xs group-hover:border-white/50 transition-all duration-300 [&>span]:text-white/60 [&[data-state=open]>span]:text-white">
+                    <SelectValue placeholder="Select your city" />
+                  </SelectTrigger>
+                  <SelectContent className="max-h-60 bg-background/95 backdrop-blur-lg border-border">
+                    {ALL_CITIES.map((cityName) => (
+                      <SelectItem key={cityName} value={cityName} className="text-foreground">
+                        {cityName}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
             </div>
 
