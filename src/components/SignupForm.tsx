@@ -1,13 +1,13 @@
-
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth, UserRole } from "@/contexts/AuthContext";
-import { User, Mail, Lock, Building2, Eye, EyeOff, UserCheck, MapPin } from "lucide-react";
+import { User, Mail, Lock, Building2, Eye, EyeOff, UserCheck, MapPin, Check, ChevronsUpDown } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { ALL_CITIES } from "@/utils/cityData";
 
@@ -24,6 +24,7 @@ const SignupForm = () => {
   const [role, setRole] = useState<UserRole>("explorer");
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [cityOpen, setCityOpen] = useState(false);
   
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -183,7 +184,7 @@ const SignupForm = () => {
               </div>
             </div>
 
-            {/* City Selection */}
+            {/* City Selection with Search */}
             <div className="space-y-1.5">
               <Label 
                 htmlFor="city" 
@@ -191,21 +192,51 @@ const SignupForm = () => {
               >
                 Your City
               </Label>
-              <div className="relative group">
-                <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 h-3.5 w-3.5 text-white/70 z-10 pointer-events-none" />
-                <Select value={city} onValueChange={setCity}>
-                  <SelectTrigger className="pl-9 h-10 bg-white/20 border-2 border-white/30 text-white focus:border-cyan-400 focus:bg-white/30 focus:shadow-lg focus:shadow-cyan-400/20 rounded-xl font-medium text-xs group-hover:border-white/50 transition-all duration-300 [&>span]:text-white/60 [&[data-state=open]>span]:text-white">
-                    <SelectValue placeholder="Select your city" />
-                  </SelectTrigger>
-                  <SelectContent className="max-h-60 bg-background/95 backdrop-blur-lg border-border">
-                    {ALL_CITIES.map((cityName) => (
-                      <SelectItem key={cityName} value={cityName} className="text-foreground">
-                        {cityName}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
+              <Popover open={cityOpen} onOpenChange={setCityOpen}>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    role="combobox"
+                    aria-expanded={cityOpen}
+                    className="w-full pl-9 h-10 bg-white/20 border-2 border-white/30 text-white hover:bg-white/30 hover:text-white focus:border-cyan-400 focus:bg-white/30 rounded-xl font-medium text-xs justify-between transition-all duration-300"
+                  >
+                    <MapPin className="absolute left-3 h-3.5 w-3.5 text-white/70" />
+                    <span className={city ? "text-white" : "text-white/60"}>
+                      {city || "Search your city..."}
+                    </span>
+                    <ChevronsUpDown className="ml-2 h-3.5 w-3.5 shrink-0 text-white/70" />
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-[calc(100vw-3rem)] max-w-[340px] p-0 bg-background border-border z-50" align="start">
+                  <Command className="bg-background">
+                    <CommandInput placeholder="Search city..." className="h-10 text-sm" />
+                    <CommandList className="max-h-60">
+                      <CommandEmpty>No city found.</CommandEmpty>
+                      <CommandGroup>
+                        {ALL_CITIES.map((cityName) => (
+                          <CommandItem
+                            key={cityName}
+                            value={cityName}
+                            onSelect={(currentValue) => {
+                              setCity(currentValue === city ? "" : cityName);
+                              setCityOpen(false);
+                            }}
+                            className="text-foreground"
+                          >
+                            <Check
+                              className={cn(
+                                "mr-2 h-4 w-4",
+                                city === cityName ? "opacity-100" : "opacity-0"
+                              )}
+                            />
+                            {cityName}
+                          </CommandItem>
+                        ))}
+                      </CommandGroup>
+                    </CommandList>
+                  </Command>
+                </PopoverContent>
+              </Popover>
             </div>
 
             {/* Account Type Selection */}
