@@ -53,14 +53,14 @@ export const useEnhancedAuth = () => {
   };
 
   // Enhanced signup with validation
-  const enhancedSignUp = async (name: string, email: string, password: string, role: UserRole) => {
+  const enhancedSignUp = async (name: string, email: string, password: string, role: UserRole, city?: string) => {
     try {
       if (!name || !email || !password || !role) {
         throw new Error('All fields are required');
       }
       
-      await signUp(name, email, password, role);
-      console.log('[useEnhancedAuth] Signup successful for role:', role);
+      await signUp(name, email, password, role, city);
+      console.log('[useEnhancedAuth] Signup successful for role:', role, 'city:', city);
     } catch (error) {
       console.error('[useEnhancedAuth] Signup failed:', error);
       throw error;
