@@ -52,7 +52,6 @@ const BusinessUploadForm = () => {
   
   const [images, setImages] = useState<string[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [debugMode, setDebugMode] = useState(false);
   const [submissionStep, setSubmissionStep] = useState("");
   
   // Get cities based on selected state
@@ -149,11 +148,8 @@ const BusinessUploadForm = () => {
       if (!businessData.city) missingFields.push('City');
       if (!businessData.phone) missingFields.push('Phone');
       
-      // Debug mode: bypass image requirement
-      const imageCheck = debugMode ? true : images.length > 0;
-      
-      if (missingFields.length > 0 && !debugMode) {
-        console.log('🔥 [DEBUG] Validation failed - missing fields:', missingFields);
+      if (missingFields.length > 0) {
+        console.log('Validation failed - missing fields:', missingFields);
         setSubmissionStep("Validation failed");
         scrollToTop();
         toast({
@@ -164,8 +160,8 @@ const BusinessUploadForm = () => {
         return;
       }
       
-      if (!imageCheck && !debugMode) {
-        console.log('🔥 [DEBUG] Validation failed - no images');
+      if (images.length === 0) {
+        console.log('Validation failed - no images');
         setSubmissionStep("Image validation failed");
         scrollToTop();
         toast({
@@ -363,27 +359,8 @@ const BusinessUploadForm = () => {
   };
   
   return (
-    <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
-      {/* Debug Mode Toggle */}
-      <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
-        <div className="flex items-center space-x-2">
-          <Checkbox
-            id="debugMode"
-            checked={debugMode}
-            onCheckedChange={(checked) => setDebugMode(checked as boolean)}
-          />
-          <Label htmlFor="debugMode" className="text-yellow-800">
-            🐛 Debug Mode (Bypass validation for testing)
-          </Label>
-        </div>
-        {submissionStep && (
-          <div className="mt-2 text-sm text-yellow-700">
-            Current step: {submissionStep}
-          </div>
-        )}
-      </div>
-
-      <div className="space-y-4">
+    <form onSubmit={handleSubmit} className="space-y-5">
+      <div className="space-y-3">
         <h2 className="text-xl font-semibold">Basic Information</h2>
         
         <div className="space-y-2">
@@ -698,15 +675,6 @@ const BusinessUploadForm = () => {
             "🚀 Submit Business"
           )}
         </Button>
-        
-        {/* Debug Info */}
-        {debugMode && (
-          <div className="text-xs text-gray-500 space-y-1">
-            <div>User: {currentUser?.name || 'Not logged in'}</div>
-            <div>Fields filled: {Object.values(businessData).filter(v => v && (typeof v === 'string' ? v.trim() : v)).length}</div>
-            <div>Images: {images.length}</div>
-          </div>
-        )}
       </div>
     </form>
   );
