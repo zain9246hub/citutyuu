@@ -1,4 +1,5 @@
 import React, { useState, useMemo } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAdvertisements } from '@/contexts/AdvertisementContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { useSubscription } from '@/contexts/SubscriptionContext';
@@ -6,13 +7,14 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Calendar, RefreshCw, AlertCircle, Tag, Image, Building, Video, Bell, MessageCircle, Sparkles, CheckCircle } from 'lucide-react';
+import { Calendar, RefreshCw, AlertCircle, Tag, Image, Building, Video, Bell, MessageCircle, Sparkles, CheckCircle, BarChart3 } from 'lucide-react';
 import RenewalPreviewDialog from './RenewalPreviewDialog';
 import { Deal } from '@/types/deal';
 
 type RenewalType = 'banner' | 'deal' | 'business';
 
 const SubscriptionManagement: React.FC = () => {
+  const navigate = useNavigate();
   const { uploadedAds } = useAdvertisements();
   const { currentUser } = useAuth();
   const { hasSubscription, getSubscriptionDetails, renewSubscription } = useSubscription();
@@ -157,6 +159,16 @@ const SubscriptionManagement: React.FC = () => {
     const isExpiringSoon = daysRemaining <= 3;
     const isExpired = daysRemaining < 0;
 
+    const handleAnalytics = () => {
+      if (type === 'banner') {
+        navigate(`/banner-analytics/${id}`);
+      } else if (type === 'business') {
+        navigate(`/business-analytics/${id}`);
+      } else if (type === 'deal') {
+        navigate(`/deal-analytics/${id}`);
+      }
+    };
+
     return (
       <div key={id} className="border rounded-lg p-4 space-y-3">
         <div className="flex items-start justify-between">
@@ -207,19 +219,30 @@ const SubscriptionManagement: React.FC = () => {
 
         <div className="flex items-center justify-between pt-2 border-t">
           <p className="text-sm font-medium">₹{price}/month</p>
-          <Button
-            size="sm"
-            variant={isExpiringSoon || isExpired ? "default" : "outline"}
-            onClick={() => {
-              if (type === 'banner') return handleRenewBanner(id);
-              if (type === 'deal') return handleRenewDeal(parseInt(id));
-              return handleRenewBusiness(id);
-            }}
-            className="gap-2"
-          >
-            <RefreshCw className="w-3 h-3" />
-            {isExpired ? 'Reactivate' : 'Renew Now'}
-          </Button>
+          <div className="flex gap-2">
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={handleAnalytics}
+              className="gap-2"
+            >
+              <BarChart3 className="w-3 h-3" />
+              Analytics
+            </Button>
+            <Button
+              size="sm"
+              variant={isExpiringSoon || isExpired ? "default" : "outline"}
+              onClick={() => {
+                if (type === 'banner') return handleRenewBanner(id);
+                if (type === 'deal') return handleRenewDeal(parseInt(id));
+                return handleRenewBusiness(id);
+              }}
+              className="gap-2"
+            >
+              <RefreshCw className="w-3 h-3" />
+              {isExpired ? 'Reactivate' : 'Renew'}
+            </Button>
+          </div>
         </div>
       </div>
     );
