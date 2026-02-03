@@ -20,9 +20,10 @@ const SubscriptionDialog: React.FC<SubscriptionDialogProps> = ({ open, onOpenCha
 
   const handleSubscribe = (type: 'notifications' | 'cityChat' | 'voiceMessages', price: number) => {
     subscribe(type);
+    const expiryDate = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
     toast({
       title: "Subscribed Successfully!",
-      description: `You are now subscribed for ₹${price}/month`,
+      description: `You are now subscribed for ₹${price}/month. Valid until ${expiryDate.toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })}`,
     });
   };
 

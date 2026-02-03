@@ -15,10 +15,11 @@ type RenewalType = 'banner' | 'deal' | 'business';
 const SubscriptionManagement: React.FC = () => {
   const { uploadedAds } = useAdvertisements();
   const { currentUser } = useAuth();
-  const { hasSubscription } = useSubscription();
+  const { hasSubscription, getSubscriptionDetails, renewSubscription } = useSubscription();
   const [renewalType, setRenewalType] = useState<RenewalType | null>(null);
   const [renewalId, setRenewalId] = useState<string | null>(null);
   const [showRenewalDialog, setShowRenewalDialog] = useState(false);
+  const [showPlanRenewalConfirm, setShowPlanRenewalConfirm] = useState<string | null>(null);
 
   const isOwnedByCurrentUser = (uploadedBy?: string | null) => {
     if (!currentUser) return false;
@@ -224,12 +225,25 @@ const SubscriptionManagement: React.FC = () => {
     );
   };
 
-  // Active user plan subscriptions
+  // Active user plan subscriptions with expiry details
   const activePlans = [
     { id: 'notifications', name: 'Notifications', price: 69, icon: Bell, gradient: 'from-pink-500 to-rose-600' },
     { id: 'cityChat', name: 'City Chat', price: 69, icon: MessageCircle, gradient: 'from-purple-500 to-indigo-600' },
     { id: 'voiceMessages', name: 'All Access', price: 119, icon: Sparkles, gradient: 'from-orange-500 to-red-600' },
-  ].filter(plan => hasSubscription(plan.id as 'notifications' | 'cityChat' | 'voiceMessages'));
+  ].filter(plan => hasSubscription(plan.id as 'notifications' | 'cityChat' | 'voiceMessages'))
+   .map(plan => {
+     const details = getSubscriptionDetails(plan.id as 'notifications' | 'cityChat' | 'voiceMessages');
+     return {
+       ...plan,
+       startDate: details?.startDate || new Date().toISOString(),
+       endDate: details?.endDate || new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
+     };
+   });
+
+  const handleRenewPlan = (planId: string) => {
+    renewSubscription(planId as 'notifications' | 'cityChat' | 'voiceMessages');
+    setShowPlanRenewalConfirm(null);
+  };
 
   const hasActivePlans = activePlans.length > 0;
 
@@ -260,29 +274,104 @@ const SubscriptionManagement: React.FC = () => {
             <CardDescription>Your currently active subscription plans</CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="grid grid-cols-1 gap-3">
-              {activePlans.map((plan) => (
-                <div
-                  key={plan.id}
-                  className={`relative overflow-hidden rounded-lg p-4 text-white bg-gradient-to-r ${plan.gradient}`}
-                >
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center">
-                        <plan.icon className="w-5 h-5" />
+            <div className="grid grid-cols-1 gap-4">
+              {activePlans.map((plan) => {
+                const daysRemaining = getDaysRemaining(plan.endDate);
+                const isExpiringSoon = daysRemaining <= 3 && daysRemaining > 0;
+                const isExpired = daysRemaining <= 0;
+                
+                return (
+                  <div
+                    key={plan.id}
+                    className={`relative overflow-hidden rounded-xl border border-border bg-card p-4 space-y-3`}
+                  >
+                    {/* Header with icon and status */}
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <div className={`w-10 h-10 rounded-full bg-gradient-to-r ${plan.gradient} flex items-center justify-center`}>
+                          <plan.icon className="w-5 h-5 text-white" />
+                        </div>
+                        <div>
+                          <h3 className="font-semibold text-foreground">{plan.name}</h3>
+                          <p className="text-sm text-muted-foreground">₹{plan.price}/month</p>
+                        </div>
+                      </div>
+                      {isExpired ? (
+                        <Badge variant="destructive">Expired</Badge>
+                      ) : isExpiringSoon ? (
+                        <Badge variant="outline" className="border-amber-500 text-amber-600">
+                          <AlertCircle className="w-3 h-3 mr-1" />
+                          Expiring Soon
+                        </Badge>
+                      ) : (
+                        <Badge variant="outline" className="border-green-500 text-green-600">Active</Badge>
+                      )}
+                    </div>
+
+                    {/* Dates */}
+                    <div className="grid grid-cols-2 gap-3 text-sm">
+                      <div>
+                        <p className="text-muted-foreground">Start Date</p>
+                        <p className="flex items-center gap-1 text-foreground">
+                          <Calendar className="w-3 h-3" />
+                          {formatDate(plan.startDate)}
+                        </p>
                       </div>
                       <div>
-                        <h3 className="font-semibold">{plan.name}</h3>
-                        <p className="text-sm text-white/80">₹{plan.price}/month</p>
+                        <p className="text-muted-foreground">End Date</p>
+                        <p className="flex items-center gap-1 text-foreground">
+                          <Calendar className="w-3 h-3" />
+                          {formatDate(plan.endDate)}
+                        </p>
                       </div>
                     </div>
-                    <Badge className="bg-white/20 text-white border-white/30">Active</Badge>
+
+                    {/* Days remaining */}
+                    {!isExpired && (
+                      <div className="text-sm">
+                        <p className="text-muted-foreground">Days Remaining</p>
+                        <p className="font-medium text-foreground">{daysRemaining} days</p>
+                      </div>
+                    )}
+
+                    {/* Renew button */}
+                    <div className="flex items-center justify-end pt-2 border-t border-border">
+                      <Button
+                        size="sm"
+                        variant={isExpiringSoon || isExpired ? "default" : "outline"}
+                        onClick={() => setShowPlanRenewalConfirm(plan.id)}
+                        className="gap-2"
+                      >
+                        <RefreshCw className="w-3 h-3" />
+                        {isExpired ? 'Reactivate' : 'Renew Now'}
+                      </Button>
+                    </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </CardContent>
         </Card>
+      )}
+
+      {/* Plan Renewal Confirmation Dialog */}
+      {showPlanRenewalConfirm && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+          <div className="bg-card rounded-xl border border-border p-6 max-w-sm w-full space-y-4">
+            <h3 className="font-semibold text-lg text-foreground">Confirm Renewal</h3>
+            <p className="text-muted-foreground">
+              Renew your subscription for another 30 days?
+            </p>
+            <div className="flex gap-3 justify-end">
+              <Button variant="outline" onClick={() => setShowPlanRenewalConfirm(null)}>
+                Cancel
+              </Button>
+              <Button onClick={() => handleRenewPlan(showPlanRenewalConfirm)}>
+                Confirm Renewal
+              </Button>
+            </div>
+          </div>
+        </div>
       )}
 
       {/* Business Listings Section */}
