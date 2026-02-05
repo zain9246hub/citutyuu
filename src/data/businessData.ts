@@ -279,6 +279,423 @@ export const businesses: Business[] = [
     socialMedia: {
       instagram: "creativedesignsstudio"
     }
+  },
+  {
+    id: "4",
+    name: "Spice Garden Restaurant",
+    category: "Restaurant",
+    rating: 4.7,
+    reviewCount: 312,
+    priceRange: "₹₹",
+    location: "Koramangala, Bangalore",
+    city: "Bangalore",
+    distance: "1.5 km",
+    coordinates: { lat: 12.9352, lng: 77.6245 },
+    image: "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?ixlib=rb-4.0.3&auto=format&fit=crop&w=1770&q=80",
+    images: [
+      "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?ixlib=rb-4.0.3&auto=format&fit=crop&w=1770&q=80",
+      "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?ixlib=rb-4.0.3&auto=format&fit=crop&w=1774&q=80"
+    ],
+    isNew: false,
+    offers: true,
+    categories: ["Indian Cuisine", "Fine Dining", "Catering"],
+    description: "Authentic Indian cuisine with a modern twist. Experience the flavors of India in an elegant setting.",
+    phone: "+91 98765 43213",
+    email: "reservations@spicegarden.com",
+    website: "www.spicegarden.com",
+    hours: [
+      { day: "Monday", open: "11:00", close: "23:00", isOpen: true },
+      { day: "Tuesday", open: "11:00", close: "23:00", isOpen: true },
+      { day: "Wednesday", open: "11:00", close: "23:00", isOpen: true },
+      { day: "Thursday", open: "11:00", close: "23:00", isOpen: true },
+      { day: "Friday", open: "11:00", close: "00:00", isOpen: true },
+      { day: "Saturday", open: "11:00", close: "00:00", isOpen: true },
+      { day: "Sunday", open: "11:00", close: "23:00", isOpen: true }
+    ],
+    isOpenNow: true,
+    products: [
+      {
+        id: "p7",
+        name: "Family Feast Package",
+        price: "₹2,500",
+        description: "Complete meal for 4 with starters, mains, and desserts",
+        image: "https://images.unsplash.com/photo-1585937421612-70a008356fbe?ixlib=rb-4.0.3&auto=format&fit=crop&w=1936&q=80",
+        category: "Food"
+      }
+    ],
+    reviews: [
+      {
+        id: "r7",
+        name: "Vikram Reddy",
+        rating: 5,
+        comment: "Best biryani in Bangalore! The ambiance is perfect for family dinners.",
+        date: "2 days ago",
+        verified: true
+      }
+    ],
+    features: ["Valet Parking", "Private Dining", "Live Music", "Home Delivery"],
+    socialMedia: {
+      instagram: "spicegardenblr",
+      facebook: "spicegardenrestaurant"
+    }
+  },
+  {
+    id: "5",
+    name: "FitLife Gym & Wellness",
+    category: "Fitness",
+    rating: 4.6,
+    reviewCount: 198,
+    priceRange: "₹₹₹",
+    location: "Sector 18, Noida",
+    city: "Delhi",
+    distance: "4.2 km",
+    coordinates: { lat: 28.5706, lng: 77.3217 },
+    image: "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?ixlib=rb-4.0.3&auto=format&fit=crop&w=1770&q=80",
+    images: [
+      "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?ixlib=rb-4.0.3&auto=format&fit=crop&w=1770&q=80",
+      "https://images.unsplash.com/photo-1540497077202-7c8a3999166f?ixlib=rb-4.0.3&auto=format&fit=crop&w=1770&q=80"
+    ],
+    isNew: true,
+    offers: true,
+    categories: ["Gym", "Personal Training", "Yoga", "CrossFit"],
+    description: "State-of-the-art fitness center with certified trainers and modern equipment for all fitness levels.",
+    phone: "+91 98765 43214",
+    email: "join@fitlifegym.com",
+    website: "www.fitlifegym.com",
+    hours: [
+      { day: "Monday", open: "05:00", close: "23:00", isOpen: true },
+      { day: "Tuesday", open: "05:00", close: "23:00", isOpen: true },
+      { day: "Wednesday", open: "05:00", close: "23:00", isOpen: true },
+      { day: "Thursday", open: "05:00", close: "23:00", isOpen: true },
+      { day: "Friday", open: "05:00", close: "23:00", isOpen: true },
+      { day: "Saturday", open: "06:00", close: "22:00", isOpen: true },
+      { day: "Sunday", open: "06:00", close: "20:00", isOpen: true }
+    ],
+    isOpenNow: true,
+    products: [
+      {
+        id: "p8",
+        name: "Annual Membership",
+        price: "₹35,000",
+        description: "Full access to all facilities and group classes",
+        image: "https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?ixlib=rb-4.0.3&auto=format&fit=crop&w=1770&q=80",
+        category: "Membership"
+      },
+      {
+        id: "p9",
+        name: "Personal Training Pack",
+        price: "₹15,000",
+        description: "20 sessions with certified personal trainer",
+        image: "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?ixlib=rb-4.0.3&auto=format&fit=crop&w=1770&q=80",
+        category: "Training"
+      }
+    ],
+    reviews: [
+      {
+        id: "r8",
+        name: "Neha Sharma",
+        rating: 5,
+        comment: "Amazing facilities and the trainers are really motivating!",
+        date: "1 week ago",
+        verified: true
+      }
+    ],
+    features: ["24/7 Access", "Personal Trainers", "Steam & Sauna", "Nutrition Counseling"],
+    socialMedia: {
+      instagram: "fitlifegym",
+      facebook: "fitlifewellness"
+    }
+  },
+  {
+    id: "6",
+    name: "Serenity Spa & Beauty",
+    category: "Beauty",
+    rating: 4.8,
+    reviewCount: 245,
+    priceRange: "₹₹₹₹",
+    location: "Jubilee Hills, Hyderabad",
+    city: "Hyderabad",
+    distance: "2.8 km",
+    coordinates: { lat: 17.4326, lng: 78.4071 },
+    image: "https://images.unsplash.com/photo-1540555700478-4be289fbecef?ixlib=rb-4.0.3&auto=format&fit=crop&w=1770&q=80",
+    images: [
+      "https://images.unsplash.com/photo-1540555700478-4be289fbecef?ixlib=rb-4.0.3&auto=format&fit=crop&w=1770&q=80",
+      "https://images.unsplash.com/photo-1544161515-4ab6ce6db874?ixlib=rb-4.0.3&auto=format&fit=crop&w=1770&q=80"
+    ],
+    isNew: false,
+    offers: true,
+    categories: ["Spa", "Salon", "Wellness", "Massage"],
+    description: "Luxury spa offering world-class treatments and rejuvenation therapies in a tranquil environment.",
+    phone: "+91 98765 43215",
+    email: "book@serenityspa.com",
+    website: "www.serenityspa.com",
+    hours: [
+      { day: "Monday", open: "10:00", close: "21:00", isOpen: true },
+      { day: "Tuesday", open: "10:00", close: "21:00", isOpen: true },
+      { day: "Wednesday", open: "10:00", close: "21:00", isOpen: true },
+      { day: "Thursday", open: "10:00", close: "21:00", isOpen: true },
+      { day: "Friday", open: "10:00", close: "21:00", isOpen: true },
+      { day: "Saturday", open: "09:00", close: "22:00", isOpen: true },
+      { day: "Sunday", open: "09:00", close: "20:00", isOpen: true }
+    ],
+    isOpenNow: true,
+    products: [
+      {
+        id: "p10",
+        name: "Signature Spa Package",
+        price: "₹8,500",
+        description: "3-hour complete relaxation with massage, facial, and body wrap",
+        image: "https://images.unsplash.com/photo-1515377905703-c4788e51af15?ixlib=rb-4.0.3&auto=format&fit=crop&w=1770&q=80",
+        category: "Spa"
+      }
+    ],
+    reviews: [
+      {
+        id: "r9",
+        name: "Priyanka Das",
+        rating: 5,
+        comment: "Absolutely heavenly experience! The therapists are highly skilled.",
+        date: "3 days ago",
+        verified: true
+      }
+    ],
+    features: ["Aromatherapy", "Couples Rooms", "Organic Products", "Expert Therapists"],
+    socialMedia: {
+      instagram: "serenityspahyderabad"
+    }
+  },
+  {
+    id: "7",
+    name: "TechHub Electronics",
+    category: "Electronics",
+    rating: 4.4,
+    reviewCount: 178,
+    priceRange: "₹₹₹",
+    location: "Nehru Place, Delhi",
+    city: "Delhi",
+    distance: "5.1 km",
+    coordinates: { lat: 28.5494, lng: 77.2531 },
+    image: "https://images.unsplash.com/photo-1531297484001-80022131f5a1?ixlib=rb-4.0.3&auto=format&fit=crop&w=1770&q=80",
+    images: [
+      "https://images.unsplash.com/photo-1531297484001-80022131f5a1?ixlib=rb-4.0.3&auto=format&fit=crop&w=1770&q=80",
+      "https://images.unsplash.com/photo-1550009158-9ebf69173e03?ixlib=rb-4.0.3&auto=format&fit=crop&w=1770&q=80"
+    ],
+    isNew: false,
+    offers: true,
+    categories: ["Computers", "Smartphones", "Accessories", "Repairs"],
+    description: "Your one-stop destination for latest electronics, gadgets, and expert repair services.",
+    phone: "+91 98765 43216",
+    email: "sales@techhub.com",
+    website: "www.techhub.com",
+    hours: [
+      { day: "Monday", open: "10:00", close: "20:00", isOpen: true },
+      { day: "Tuesday", open: "10:00", close: "20:00", isOpen: true },
+      { day: "Wednesday", open: "10:00", close: "20:00", isOpen: true },
+      { day: "Thursday", open: "10:00", close: "20:00", isOpen: true },
+      { day: "Friday", open: "10:00", close: "20:00", isOpen: true },
+      { day: "Saturday", open: "10:00", close: "21:00", isOpen: true },
+      { day: "Sunday", open: "11:00", close: "19:00", isOpen: true }
+    ],
+    isOpenNow: true,
+    products: [
+      {
+        id: "p11",
+        name: "Gaming Laptop",
+        price: "₹85,000",
+        description: "High-performance gaming laptop with RTX graphics",
+        image: "https://images.unsplash.com/photo-1603302576837-37561b2e2302?ixlib=rb-4.0.3&auto=format&fit=crop&w=1768&q=80",
+        category: "Laptops"
+      }
+    ],
+    reviews: [
+      {
+        id: "r10",
+        name: "Rahul Kumar",
+        rating: 4,
+        comment: "Good range of products at competitive prices. Helpful staff.",
+        date: "5 days ago",
+        verified: true
+      }
+    ],
+    features: ["Genuine Products", "EMI Available", "Expert Repairs", "Exchange Offers"],
+    socialMedia: {
+      instagram: "techhubindia",
+      facebook: "techhubelectronics"
+    }
+  },
+  {
+    id: "8",
+    name: "Green Leaf Organic Store",
+    category: "Grocery",
+    rating: 4.5,
+    reviewCount: 134,
+    priceRange: "₹₹",
+    location: "Anna Nagar, Chennai",
+    city: "Chennai",
+    distance: "2.3 km",
+    coordinates: { lat: 13.0850, lng: 80.2101 },
+    image: "https://images.unsplash.com/photo-1542838132-92c53300491e?ixlib=rb-4.0.3&auto=format&fit=crop&w=1774&q=80",
+    images: [
+      "https://images.unsplash.com/photo-1542838132-92c53300491e?ixlib=rb-4.0.3&auto=format&fit=crop&w=1774&q=80",
+      "https://images.unsplash.com/photo-1488459716781-31db52582fe9?ixlib=rb-4.0.3&auto=format&fit=crop&w=1770&q=80"
+    ],
+    isNew: true,
+    offers: true,
+    categories: ["Organic", "Fresh Produce", "Health Foods", "Dairy"],
+    description: "Premium organic groceries sourced directly from certified farms. Fresh, healthy, and sustainable.",
+    phone: "+91 98765 43217",
+    email: "order@greenleaforganic.com",
+    website: "www.greenleaforganic.com",
+    hours: [
+      { day: "Monday", open: "07:00", close: "21:00", isOpen: true },
+      { day: "Tuesday", open: "07:00", close: "21:00", isOpen: true },
+      { day: "Wednesday", open: "07:00", close: "21:00", isOpen: true },
+      { day: "Thursday", open: "07:00", close: "21:00", isOpen: true },
+      { day: "Friday", open: "07:00", close: "21:00", isOpen: true },
+      { day: "Saturday", open: "07:00", close: "22:00", isOpen: true },
+      { day: "Sunday", open: "08:00", close: "20:00", isOpen: true }
+    ],
+    isOpenNow: true,
+    products: [
+      {
+        id: "p12",
+        name: "Weekly Organic Box",
+        price: "₹1,500",
+        description: "Curated box of fresh organic vegetables and fruits",
+        image: "https://images.unsplash.com/photo-1610348725531-843dff563e2c?ixlib=rb-4.0.3&auto=format&fit=crop&w=1770&q=80",
+        category: "Subscription"
+      }
+    ],
+    reviews: [
+      {
+        id: "r11",
+        name: "Lakshmi Iyer",
+        rating: 5,
+        comment: "Fresh organic produce every time! Love the quality.",
+        date: "1 day ago",
+        verified: true
+      }
+    ],
+    features: ["Farm Fresh", "Home Delivery", "Subscription Plans", "Zero Pesticides"],
+    socialMedia: {
+      instagram: "greenleafchennai"
+    }
+  },
+  {
+    id: "9",
+    name: "AutoCare Service Center",
+    category: "Automotive",
+    rating: 4.6,
+    reviewCount: 267,
+    priceRange: "₹₹",
+    location: "Viman Nagar, Pune",
+    city: "Pune",
+    distance: "3.4 km",
+    coordinates: { lat: 18.5679, lng: 73.9143 },
+    image: "https://images.unsplash.com/photo-1486262715619-67b85e0b08d3?ixlib=rb-4.0.3&auto=format&fit=crop&w=1932&q=80",
+    images: [
+      "https://images.unsplash.com/photo-1486262715619-67b85e0b08d3?ixlib=rb-4.0.3&auto=format&fit=crop&w=1932&q=80",
+      "https://images.unsplash.com/photo-1625047509248-ec889cbff17f?ixlib=rb-4.0.3&auto=format&fit=crop&w=1770&q=80"
+    ],
+    isNew: false,
+    offers: true,
+    categories: ["Car Service", "Repairs", "Detailing", "Accessories"],
+    description: "Complete automotive care with certified mechanics. From routine maintenance to complex repairs.",
+    phone: "+91 98765 43218",
+    email: "service@autocarepc.com",
+    website: "www.autocarepc.com",
+    hours: [
+      { day: "Monday", open: "08:00", close: "19:00", isOpen: true },
+      { day: "Tuesday", open: "08:00", close: "19:00", isOpen: true },
+      { day: "Wednesday", open: "08:00", close: "19:00", isOpen: true },
+      { day: "Thursday", open: "08:00", close: "19:00", isOpen: true },
+      { day: "Friday", open: "08:00", close: "19:00", isOpen: true },
+      { day: "Saturday", open: "08:00", close: "17:00", isOpen: true },
+      { day: "Sunday", open: "Closed", close: "Closed", isOpen: false }
+    ],
+    isOpenNow: true,
+    products: [
+      {
+        id: "p13",
+        name: "Full Car Service",
+        price: "₹4,500",
+        description: "Complete service including oil change, filters, and inspection",
+        image: "https://images.unsplash.com/photo-1619642751034-765dfdf7c58e?ixlib=rb-4.0.3&auto=format&fit=crop&w=1774&q=80",
+        category: "Service"
+      }
+    ],
+    reviews: [
+      {
+        id: "r12",
+        name: "Suresh Patil",
+        rating: 5,
+        comment: "Honest service at fair prices. My go-to garage for years!",
+        date: "4 days ago",
+        verified: true
+      }
+    ],
+    features: ["Certified Mechanics", "Genuine Parts", "Pickup & Drop", "90-Day Warranty"],
+    socialMedia: {
+      facebook: "autocarepune"
+    }
+  },
+  {
+    id: "10",
+    name: "BookWorm Cafe & Library",
+    category: "Cafe",
+    rating: 4.9,
+    reviewCount: 189,
+    priceRange: "₹",
+    location: "Salt Lake, Kolkata",
+    city: "Kolkata",
+    distance: "1.8 km",
+    coordinates: { lat: 22.5807, lng: 88.4140 },
+    image: "https://images.unsplash.com/photo-1521017432531-fbd92d768814?ixlib=rb-4.0.3&auto=format&fit=crop&w=1770&q=80",
+    images: [
+      "https://images.unsplash.com/photo-1521017432531-fbd92d768814?ixlib=rb-4.0.3&auto=format&fit=crop&w=1770&q=80",
+      "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=1774&q=80"
+    ],
+    isNew: true,
+    offers: false,
+    categories: ["Coffee", "Books", "Snacks", "Co-working"],
+    description: "Cozy cafe with an extensive book collection. Perfect for reading, working, or casual meetings.",
+    phone: "+91 98765 43219",
+    email: "hello@bookwormcafe.com",
+    website: "www.bookwormcafe.com",
+    hours: [
+      { day: "Monday", open: "08:00", close: "22:00", isOpen: true },
+      { day: "Tuesday", open: "08:00", close: "22:00", isOpen: true },
+      { day: "Wednesday", open: "08:00", close: "22:00", isOpen: true },
+      { day: "Thursday", open: "08:00", close: "22:00", isOpen: true },
+      { day: "Friday", open: "08:00", close: "23:00", isOpen: true },
+      { day: "Saturday", open: "09:00", close: "23:00", isOpen: true },
+      { day: "Sunday", open: "09:00", close: "21:00", isOpen: true }
+    ],
+    isOpenNow: true,
+    products: [
+      {
+        id: "p14",
+        name: "Monthly Membership",
+        price: "₹1,200",
+        description: "Unlimited coffee refills and book borrowing for a month",
+        image: "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?ixlib=rb-4.0.3&auto=format&fit=crop&w=1770&q=80",
+        category: "Membership"
+      }
+    ],
+    reviews: [
+      {
+        id: "r13",
+        name: "Ananya Bose",
+        rating: 5,
+        comment: "My favorite place in the city! Great coffee and amazing book selection.",
+        date: "2 days ago",
+        verified: true
+      }
+    ],
+    features: ["Free WiFi", "Book Exchange", "Quiet Zones", "Pet Friendly"],
+    socialMedia: {
+      instagram: "bookwormcafekolkata"
+    }
   }
 ];
 
