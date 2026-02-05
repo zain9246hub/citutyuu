@@ -1,5 +1,4 @@
-
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -14,6 +13,7 @@ import ProductServiceUploader from "./ProductServiceUploader";
 import { categoryOptions } from "@/components/filters/FilterOptions";
 import { MapPin } from "lucide-react";
 import { STATES_WITH_ALL, getCitiesForState } from "@/utils/indiaGeo";
+import { cleanupStorage, safeSetItem, getStorageUsage } from "@/utils/storageUtils";
 
 interface ProductService {
   id: string;
@@ -238,80 +238,61 @@ const BusinessUploadForm = () => {
           throw new Error('Browser does not support localStorage');
         }
 
-        // Clean up old data first to make space
-        try {
-          // Check available space by testing with current data
-          const testData = JSON.stringify([newBusiness]);
-          const testSize = testData.length;
-          console.log('🔥 [DEBUG] New business size:', (testSize / 1024).toFixed(2), 'KB');
-          
-          // Aggressive cleanup - keep only 3 most recent businesses
-          let existingBusinesses = [];
-          try {
-            const stored = localStorage.getItem('userBusinesses');
-            if (stored) {
-              const parsed = JSON.parse(stored);
-              existingBusinesses = Array.isArray(parsed) ? parsed.slice(0, 2) : []; // Keep only 2 most recent
-            }
-          } catch (parseError) {
-            console.warn('🔥 [DEBUG] Parse error, starting fresh:', parseError);
-            existingBusinesses = [];
-          }
+        // Run cleanup first to free space
+        cleanupStorage();
+        
+        const usage = getStorageUsage();
+        console.log(`🔥 [DEBUG] Storage usage: ${(usage.used / 1024).toFixed(2)}KB (${usage.percentage.toFixed(1)}%)`);
 
-          // Add new business at the beginning
-          existingBusinesses.unshift(newBusiness);
-          
-          // Try to save with reduced dataset
-          const finalData = JSON.stringify(existingBusinesses);
-          console.log('🔥 [DEBUG] Final data size:', (finalData.length / 1024).toFixed(2), 'KB');
-          
-          localStorage.setItem('userBusinesses', finalData);
-          console.log('🔥 [DEBUG] Business saved successfully with', existingBusinesses.length, 'total businesses');
-          
-          // Dispatch custom event to notify other components
+        // Get existing businesses, keep only 2 most recent
+        let existingBusinesses = [];
+        try {
+          const stored = localStorage.getItem('userBusinesses');
+          if (stored) {
+            const parsed = JSON.parse(stored);
+            existingBusinesses = Array.isArray(parsed) ? parsed.slice(0, 2) : [];
+          }
+        } catch (parseError) {
+          console.warn('🔥 [DEBUG] Parse error, starting fresh:', parseError);
+          existingBusinesses = [];
+        }
+
+        // Add new business at the beginning
+        existingBusinesses.unshift(newBusiness);
+        
+        // Try to save
+        const finalData = JSON.stringify(existingBusinesses);
+        console.log('🔥 [DEBUG] Final data size:', (finalData.length / 1024).toFixed(2), 'KB');
+        
+        const saved = safeSetItem('userBusinesses', finalData);
+        
+        if (saved) {
+          console.log('🔥 [DEBUG] Business saved successfully');
+          window.dispatchEvent(new Event('businessUpdated'));
+        } else {
+          // Last resort: save only the new business without images
+          const minimalBusiness = {
+            ...newBusiness,
+            images: ['/placeholder.svg'],
+            image: '/placeholder.svg',
+            products: [],
+          };
+          localStorage.removeItem('userBusinesses');
+          localStorage.setItem('userBusinesses', JSON.stringify([minimalBusiness]));
           window.dispatchEvent(new Event('businessUpdated'));
           
-        } catch (initialError) {
-          console.log('🔥 [DEBUG] Initial save failed, trying emergency cleanup...');
-          
-          // Emergency cleanup - clear all old data and save only new business
-          try {
-            localStorage.removeItem('userBusinesses');
-            localStorage.setItem('userBusinesses', JSON.stringify([newBusiness]));
-            console.log('🔥 [DEBUG] Emergency save successful - only new business saved');
-            
-            // Dispatch custom event to notify other components
-            window.dispatchEvent(new Event('businessUpdated'));
-            
-            toast({
-              title: "⚠️ Storage Limit Reached",
-              description: "Old business data was cleared to save your new business. Consider using a production database.",
-              variant: "default",
-            });
-            
-          } catch (emergencyError) {
-            console.error('🔥 [DEBUG] Emergency save failed:', emergencyError);
-            
-            // Final fallback - show success but don't save to localStorage
-            console.log('🔥 [DEBUG] Using fallback - business not saved to localStorage');
-            
-            toast({
-              title: "⚠️ Storage Full",
-              description: "Your business was created but not saved locally. Please clear browser data or upgrade to a database solution.",
-              variant: "destructive",
-            });
-            
-            // Still consider it a "success" for user experience
-          }
+          toast({
+            title: "⚠️ Storage Limited",
+            description: "Business saved with reduced data. Consider clearing browser storage.",
+            variant: "default",
+          });
         }
         
       } catch (storageError) {
         console.error('🔥 [DEBUG] Storage error:', storageError);
-        
-        // Don't throw error, just warn user
         toast({
           title: "Storage Warning",
-          description: "Business created but may not be saved locally. Consider clearing browser data.",
+          description: "Business created but storage is full. Clear browser data to fix.",
           variant: "default",
         });
       }

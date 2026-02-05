@@ -1,7 +1,5 @@
-
 import React, { useState, useRef } from "react";
-import { Button } from "@/components/ui/button";
-import { Image, X, Camera, Plus } from "lucide-react";
+import { Image, X, Camera } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 interface BusinessImageUploaderProps {
@@ -9,6 +7,46 @@ interface BusinessImageUploaderProps {
   setImages: React.Dispatch<React.SetStateAction<string[]>>;
   maxImages?: number;
 }
+
+// Compress image to reduce storage size
+const compressImage = (file: File, maxWidth: number = 800, quality: number = 0.6): Promise<string> => {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const img = new window.Image();
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        let width = img.width;
+        let height = img.height;
+        
+        // Scale down if larger than maxWidth
+        if (width > maxWidth) {
+          height = (height * maxWidth) / width;
+          width = maxWidth;
+        }
+        
+        canvas.width = width;
+        canvas.height = height;
+        
+        const ctx = canvas.getContext('2d');
+        if (!ctx) {
+          reject(new Error('Could not get canvas context'));
+          return;
+        }
+        
+        ctx.drawImage(img, 0, 0, width, height);
+        
+        // Convert to compressed JPEG
+        const compressedDataUrl = canvas.toDataURL('image/jpeg', quality);
+        resolve(compressedDataUrl);
+      };
+      img.onerror = () => reject(new Error('Failed to load image'));
+      img.src = e.target?.result as string;
+    };
+    reader.onerror = () => reject(new Error('Failed to read file'));
+    reader.readAsDataURL(file);
+  });
+};
 
 const BusinessImageUploader = ({
   images,
@@ -19,7 +57,7 @@ const BusinessImageUploader = ({
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [uploading, setUploading] = useState(false);
 
-  const handleImageSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageSelect = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = event.target.files;
     
     if (!files || files.length === 0) return;
@@ -35,28 +73,41 @@ const BusinessImageUploader = ({
     
     setUploading(true);
     
-    // Convert files to base64 for localStorage persistence
-    const filePromises = Array.from(files).map(file => {
-      return new Promise<string>((resolve) => {
-        const reader = new FileReader();
-        reader.onload = (e) => {
-          resolve(e.target?.result as string);
-        };
-        reader.readAsDataURL(file);
-      });
-    });
-    
-    Promise.all(filePromises).then(base64Images => {
-      setImages([...images, ...base64Images]);
-      setUploading(false);
+    try {
+      // Compress images to reduce storage size
+      const compressedImages: string[] = [];
+      for (const file of Array.from(files)) {
+        try {
+          const compressed = await compressImage(file, 600, 0.5); // Smaller size, lower quality
+          compressedImages.push(compressed);
+        } catch (err) {
+          console.error('Failed to compress image:', err);
+          // Fallback to original if compression fails
+          const reader = new FileReader();
+          const result = await new Promise<string>((resolve) => {
+            reader.onload = (e) => resolve(e.target?.result as string);
+            reader.readAsDataURL(file);
+          });
+          compressedImages.push(result);
+        }
+      }
       
-      // Reset the file input
+      setImages([...images, ...compressedImages]);
+      console.log('Images uploaded and compressed:', compressedImages.length);
+      
+    } catch (error) {
+      console.error('Error processing images:', error);
+      toast({
+        title: "Upload Error",
+        description: "Failed to process images. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setUploading(false);
       if (fileInputRef.current) {
         fileInputRef.current.value = "";
       }
-      
-      console.log('Images uploaded:', base64Images.length);
-    });
+    }
   };
 
   const removeImage = (index: number) => {
@@ -71,7 +122,7 @@ const BusinessImageUploader = ({
         {images.map((image, index) => (
           <div 
             key={index} 
-            className="relative aspect-square rounded-lg overflow-hidden bg-gray-100"
+            className="relative aspect-square rounded-lg overflow-hidden bg-muted"
           >
             <img 
               src={image} 
@@ -93,24 +144,24 @@ const BusinessImageUploader = ({
             type="button"
             onClick={() => fileInputRef.current?.click()}
             disabled={uploading}
-            className="flex flex-col items-center justify-center border-2 border-dashed border-gray-300 rounded-lg aspect-square hover:bg-gray-50"
+            className="flex flex-col items-center justify-center border-2 border-dashed border-border rounded-lg aspect-square hover:bg-muted/50"
           >
             {uploading ? (
               <div className="flex flex-col items-center">
-                <div className="w-5 h-5 border-2 border-t-blue-500 border-blue-200 rounded-full animate-spin mb-2"></div>
-                <span className="text-xs text-gray-500">Uploading...</span>
+                <div className="w-5 h-5 border-2 border-t-primary border-primary/20 rounded-full animate-spin mb-2"></div>
+                <span className="text-xs text-muted-foreground">Compressing...</span>
               </div>
             ) : (
               <>
-                <Camera className="h-6 w-6 text-gray-400 mb-1" />
-                <span className="text-xs text-gray-500">Add Photo</span>
+                <Camera className="h-6 w-6 text-muted-foreground mb-1" />
+                <span className="text-xs text-muted-foreground">Add Photo</span>
               </>
             )}
           </button>
         )}
       </div>
       
-      <div className="text-xs text-gray-500 flex items-center">
+      <div className="text-xs text-muted-foreground flex items-center">
         <Image className="h-4 w-4 mr-1" />
         {images.length} of {maxImages} images
       </div>
