@@ -28,7 +28,7 @@ const TopNavbar = memo(({
                <h1 className="text-xl md:text-2xl font-semibold tracking-tight bg-gradient-to-r from-red-500 via-yellow-500 via-green-500 via-blue-500 to-purple-500 bg-clip-text text-transparent animate-gradient-x bg-size-200">
                  City<span className="text-foreground">offers</span>
               </h1>
-              <div className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground -mt-1">finds every deals and business  </div>
+              <div className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground -mt-1">​deals and business         </div>
             </div> : <h1 className="text-lg font-medium">{title}</h1>}
         </div>
         
