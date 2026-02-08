@@ -13,9 +13,7 @@ import EnhancedProductsTab from "@/components/business/EnhancedProductsTab";
 import EnhancedReviewsTab from "@/components/business/EnhancedReviewsTab";
 import ContactTab from "@/components/business/ContactTab";
 
-// Data and Utils
 import { businesses } from "@/data/businessData";
-import { getBusinessCoordinates } from "@/utils/mapUtils";
 
 const Business = () => {
   const { id } = useParams();
@@ -128,7 +126,6 @@ const Business = () => {
             <ContactTab 
               handlePhoneClick={handlePhoneClick}
               handleAddressClick={handleAddressClick}
-              coordinates={getBusinessCoordinates(business.id)}
               address={`${business.location}, ${business.city}`}
             />
           </TabsContent>
