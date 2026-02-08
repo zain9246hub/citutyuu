@@ -1,8 +1,7 @@
-import React from "react";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import React, { useState } from "react";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { ShoppingCart, MessageCircle } from "lucide-react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Product } from "@/data/businessData";
 
 interface EnhancedProductsTabProps {
@@ -10,15 +9,7 @@ interface EnhancedProductsTabProps {
 }
 
 const EnhancedProductsTab = ({ products }: EnhancedProductsTabProps) => {
-  const handleInquiry = (productName: string) => {
-    // This would typically open a contact form or redirect to inquiry page
-    console.log(`Inquiry for: ${productName}`);
-  };
-
-  const handleAddToCart = (productId: string) => {
-    // This would typically add to cart or booking system
-    console.log(`Add to cart: ${productId}`);
-  };
+  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
 
   return (
     <div className="py-4 space-y-6">
@@ -31,7 +22,11 @@ const EnhancedProductsTab = ({ products }: EnhancedProductsTabProps) => {
       
       <div className="grid gap-4">
         {products.map((product) => (
-          <Card key={product.id} className="overflow-hidden hover:shadow-md transition-shadow">
+          <Card 
+            key={product.id} 
+            className="overflow-hidden hover:shadow-md transition-shadow cursor-pointer"
+            onClick={() => setSelectedProduct(product)}
+          >
             <div className="flex">
               {/* Product Image */}
               <div className="w-24 h-24 sm:w-32 sm:h-32 flex-shrink-0">
@@ -64,31 +59,11 @@ const EnhancedProductsTab = ({ products }: EnhancedProductsTabProps) => {
                   </div>
                 </CardHeader>
                 
-                <CardContent className="p-0 pb-3">
+                <CardContent className="p-0">
                   <CardDescription className="text-sm line-clamp-2">
                     {product.description}
                   </CardDescription>
                 </CardContent>
-                
-                <CardFooter className="p-0 flex gap-2">
-                  <Button 
-                    size="sm" 
-                    variant="outline"
-                    className="flex-1 text-xs h-8"
-                    onClick={() => handleInquiry(product.name)}
-                  >
-                    <MessageCircle className="h-3 w-3 mr-1" />
-                    Inquire
-                  </Button>
-                  <Button 
-                    size="sm" 
-                    className="flex-1 text-xs h-8"
-                    onClick={() => handleAddToCart(product.id)}
-                  >
-                    <ShoppingCart className="h-3 w-3 mr-1" />
-                    Book Now
-                  </Button>
-                </CardFooter>
               </div>
             </div>
           </Card>
@@ -102,20 +77,43 @@ const EnhancedProductsTab = ({ products }: EnhancedProductsTabProps) => {
           </div>
         </div>
       )}
-      
-      {/* Contact for custom solutions */}
-      <Card className="bg-muted/30 border-dashed">
-        <CardContent className="p-4 text-center">
-          <h3 className="font-medium text-foreground mb-2">Need something custom?</h3>
-          <p className="text-sm text-muted-foreground mb-3">
-            Contact us for personalized solutions tailored to your business needs.
-          </p>
-          <Button variant="outline" size="sm">
-            <MessageCircle className="h-4 w-4 mr-2" />
-            Get Custom Quote
-          </Button>
-        </CardContent>
-      </Card>
+
+      {/* Product Detail Dialog */}
+      <Dialog open={!!selectedProduct} onOpenChange={(open) => !open && setSelectedProduct(null)}>
+        <DialogContent className="max-w-md p-0 overflow-hidden">
+          {selectedProduct && (
+            <>
+              <div className="w-full aspect-square">
+                <img 
+                  src={selectedProduct.image} 
+                  alt={selectedProduct.name}
+                  className="w-full h-full object-cover"
+                />
+              </div>
+              <div className="p-4 space-y-3">
+                <DialogHeader className="p-0">
+                  <div className="flex items-start justify-between">
+                    <DialogTitle className="text-xl font-semibold">
+                      {selectedProduct.name}
+                    </DialogTitle>
+                    <div className="text-xl font-bold text-primary">
+                      {selectedProduct.price}
+                    </div>
+                  </div>
+                  {selectedProduct.category && (
+                    <Badge variant="outline" className="w-fit mt-2">
+                      {selectedProduct.category}
+                    </Badge>
+                  )}
+                </DialogHeader>
+                <p className="text-muted-foreground">
+                  {selectedProduct.description}
+                </p>
+              </div>
+            </>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
