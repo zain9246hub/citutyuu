@@ -38,7 +38,7 @@ const SlotSections: React.FC<SlotSectionsProps> = ({
     <div className="animate-fade-in">
       <SlotSection 
         position={2}
-        title="Limited Slots Timer"
+        title="Featured Slots"
         subtitle="Ending soon - book now"
         onViewAll={onViewAllBanners}
         onBook={onBookSlot}
@@ -48,7 +48,7 @@ const SlotSections: React.FC<SlotSectionsProps> = ({
       
       <SlotSection 
         position={1}
-        title="Anytime Slot"
+        title="Featured Slots"
         subtitle="Available 24/7"
         onViewAll={onViewAllBanners}
         onBook={onBookSlot}
