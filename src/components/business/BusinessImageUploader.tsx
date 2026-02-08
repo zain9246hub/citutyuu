@@ -51,7 +51,7 @@ const compressImage = (file: File, maxWidth: number = 800, quality: number = 0.6
 const BusinessImageUploader = ({
   images,
   setImages,
-  maxImages = 5,
+  maxImages = 15,
 }: BusinessImageUploaderProps) => {
   const { toast } = useToast();
   const fileInputRef = useRef<HTMLInputElement>(null);

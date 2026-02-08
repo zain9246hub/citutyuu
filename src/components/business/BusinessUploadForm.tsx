@@ -160,17 +160,7 @@ const BusinessUploadForm = () => {
         return;
       }
       
-      if (images.length === 0) {
-        console.log('Validation failed - no images');
-        setSubmissionStep("Image validation failed");
-        scrollToTop();
-        toast({
-          title: "Images Required",
-          description: "Please upload at least one business image",
-          variant: "destructive",
-        });
-        return;
-      }
+      // Images are now optional - no validation needed
       
       console.log('🔥 [DEBUG] Validation passed, starting submission');
       setSubmissionStep("Validation passed, preparing data...");
@@ -410,12 +400,12 @@ const BusinessUploadForm = () => {
       
       <div className="space-y-4">
         <h2 className="text-xl font-semibold">Business Images</h2>
-        <p className="text-sm text-gray-500">Upload up to 5 high-quality images of your business</p>
+        <p className="text-sm text-gray-500">Upload up to 15 images of your business (optional)</p>
         
         <BusinessImageUploader 
           images={images}
           setImages={setImages}
-          maxImages={5}
+          maxImages={15}
         />
       </div>
       
