@@ -82,6 +82,8 @@ const Business = () => {
       <BusinessHeader 
         handleSaveBusiness={handleSaveBusiness}
         handleShareBusiness={handleShareBusiness}
+        businessId={business.id}
+        businessName={business.name}
       />
 
       <div className="pt-16 max-w-md mx-auto">
