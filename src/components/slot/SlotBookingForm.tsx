@@ -180,6 +180,9 @@ const SlotBookingForm = ({ open, onClose, slotId, location, onSuccess, isRenewal
         const startDate = new Date();
         const endDate = new Date(startDate.getTime() + 30 * 24 * 60 * 60 * 1000);
         
+        // Generate businessId early if banner-business tier
+        const linkedBusinessId = selectedTier === "banner-business" ? `business-${Date.now()}` : undefined;
+        
         // Add the uploaded ad to context
         addUploadedAd({
           slotId,
@@ -198,11 +201,10 @@ const SlotBookingForm = ({ open, onClose, slotId, location, onSuccess, isRenewal
           monthlyPrice: slotPrice
         });
 
-        // If business tier, also save business data
-        if (selectedTier === "banner-business") {
-          const businessId = `business-${Date.now()}`;
+        // If business tier, also save business data and link to banner
+        if (selectedTier === "banner-business" && linkedBusinessId) {
           const newBusiness = {
-            id: businessId,
+            id: linkedBusinessId,
             name: businessData.name,
             category: businessData.category,
             rating: 0,
@@ -246,6 +248,17 @@ const SlotBookingForm = ({ open, onClose, slotId, location, onSuccess, isRenewal
             const existingBusinesses = JSON.parse(localStorage.getItem('userBusinesses') || '[]');
             existingBusinesses.unshift(newBusiness);
             localStorage.setItem('userBusinesses', JSON.stringify(existingBusinesses));
+            
+            // Also update the uploaded ad with businessId link
+            try {
+              const savedAds = JSON.parse(localStorage.getItem('uploadedAds') || '[]');
+              if (savedAds.length > 0) {
+                savedAds[0].businessId = linkedBusinessId;
+                localStorage.setItem('uploadedAds', JSON.stringify(savedAds));
+              }
+            } catch (e) {
+              console.error('Error linking business to ad:', e);
+            }
           } catch (error) {
             console.error('Error saving business:', error);
           }

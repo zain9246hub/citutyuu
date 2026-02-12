@@ -22,14 +22,34 @@ export class BusinessIdUtils {
       return businessId;
     }
 
+    // Check user-uploaded businesses by matching banner ID
+    try {
+      const userBusinesses = JSON.parse(localStorage.getItem('userBusinesses') || '[]');
+      if (businessId && userBusinesses.some((b: any) => b.id === businessId)) {
+        return businessId;
+      }
+    } catch {}
+
     // Extract from slot ID pattern (slot-position-index)
     if (bannerId.includes('slot-')) {
       const match = bannerId.match(/slot-(\d+)-(\d+)/);
       if (match) {
         const pos = parseInt(match[1]);
         const index = parseInt(match[2]);
-        // Map to existing business IDs (1, 2, 3)
-        const mappedId = ((pos + index - 1) % 3 + 1).toString();
+        const mappedId = ((pos + index - 1) % businesses.length + 1).toString();
+        if (this.isValidBusinessId(mappedId)) {
+          return mappedId;
+        }
+      }
+    }
+
+    // Extract from booked banner pattern (booked-position-city-index)
+    if (bannerId.includes('booked-')) {
+      const match = bannerId.match(/booked-(\d+)-.*-(\d+)/);
+      if (match) {
+        const pos = parseInt(match[1]);
+        const index = parseInt(match[2]);
+        const mappedId = ((pos + index - 1) % businesses.length + 1).toString();
         if (this.isValidBusinessId(mappedId)) {
           return mappedId;
         }
@@ -38,7 +58,7 @@ export class BusinessIdUtils {
 
     // Use position-based mapping
     if (position && position > 0) {
-      const mappedId = ((position - 1) % 3 + 1).toString();
+      const mappedId = ((position - 1) % businesses.length + 1).toString();
       if (this.isValidBusinessId(mappedId)) {
         return mappedId;
       }
@@ -68,6 +88,13 @@ export class BusinessIdUtils {
    */
   static validateBusinessForNavigation(businessId: string): boolean {
     const business = this.getBusinessById(businessId);
-    return !!(business && business.name && business.id);
+    if (business && business.name && business.id) return true;
+    // Also check user-uploaded businesses
+    try {
+      const userBusinesses = JSON.parse(localStorage.getItem('userBusinesses') || '[]');
+      return userBusinesses.some((b: any) => b.id === businessId && b.name);
+    } catch {
+      return false;
+    }
   }
 }
