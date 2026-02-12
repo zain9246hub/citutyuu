@@ -3,13 +3,16 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft, Heart, Share2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import SubscribeBell from "./SubscribeBell";
 
 interface BusinessHeaderProps {
   handleSaveBusiness: () => void;
   handleShareBusiness: () => void;
+  businessId?: string;
+  businessName?: string;
 }
 
-const BusinessHeader = ({ handleSaveBusiness, handleShareBusiness }: BusinessHeaderProps) => {
+const BusinessHeader = ({ handleSaveBusiness, handleShareBusiness, businessId, businessName }: BusinessHeaderProps) => {
   const navigate = useNavigate();
 
   return (
@@ -22,7 +25,10 @@ const BusinessHeader = ({ handleSaveBusiness, handleShareBusiness }: BusinessHea
         <ArrowLeft className="h-5 w-5" />
       </Button>
       
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-1">
+        {businessId && businessName && (
+          <SubscribeBell listingId={businessId} listingName={businessName} listingType="business" />
+        )}
         <Button 
           variant="ghost" 
           size="icon" 

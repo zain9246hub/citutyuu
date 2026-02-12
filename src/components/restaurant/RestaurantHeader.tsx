@@ -4,15 +4,20 @@ import { ArrowLeft, Bookmark, Share2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
+import SubscribeBell from "@/components/business/SubscribeBell";
 
 interface RestaurantHeaderProps {
   handleSaveRestaurant: () => void;
   handleShareRestaurant: () => void;
+  restaurantId?: string;
+  restaurantName?: string;
 }
 
 const RestaurantHeader = ({ 
   handleSaveRestaurant, 
-  handleShareRestaurant 
+  handleShareRestaurant,
+  restaurantId,
+  restaurantName,
 }: RestaurantHeaderProps) => {
   const navigate = useNavigate();
   
@@ -28,7 +33,10 @@ const RestaurantHeader = ({
           <ArrowLeft className="h-5 w-5" />
         </Button>
         <h1 className="text-lg font-semibold flex-1 text-center">Restaurant Details</h1>
-        <div className="flex space-x-2">
+        <div className="flex items-center space-x-1">
+          {restaurantId && restaurantName && (
+            <SubscribeBell listingId={restaurantId} listingName={restaurantName} listingType="restaurant" />
+          )}
           <Button 
             variant="ghost" 
             size="icon"

@@ -6,6 +6,7 @@ import StarRating from "@/components/ui/star-rating";
 import { useAuth } from "@/contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
 import { isBusinessExpired, isBusinessOwner } from "@/utils/businessUtils";
+import SubscribeBell from "./SubscribeBell";
 
 interface BusinessCardProps {
   business: {
@@ -102,11 +103,14 @@ const BusinessCard = ({ business, onClick }: BusinessCardProps) => {
       
       <div className="p-3">
         <div className="flex justify-between items-start">
-          <div>
+          <div className="flex-1">
             <h3 className="font-semibold text-lg text-foreground">{business.name}</h3>
             <p className="text-muted-foreground text-sm">{business.category} • {business.priceRange}</p>
           </div>
-          <ChevronRight className="h-5 w-5 text-muted-foreground" />
+          <div className="flex items-center gap-1">
+            <SubscribeBell listingId={business.id} listingName={business.name} listingType="business" size="sm" />
+            <ChevronRight className="h-5 w-5 text-muted-foreground" />
+          </div>
         </div>
         
         <div className="flex items-center mt-2 text-sm text-muted-foreground">

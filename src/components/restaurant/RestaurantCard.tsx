@@ -2,6 +2,7 @@ import React from "react";
 import { MapPin, ChevronRight } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import StarRating from "@/components/ui/star-rating";
+import SubscribeBell from "@/components/business/SubscribeBell";
 
 interface RestaurantCardProps {
   restaurant: {
@@ -61,12 +62,15 @@ const RestaurantCard = ({ restaurant, onClick }: RestaurantCardProps) => {
       
       <div className="p-4">
         <div className="flex justify-between items-start">
-          <div>
+          <div className="flex-1">
             <h3 className="font-semibold text-lg">{restaurant.name}</h3>
             <p className="text-gray-600 text-sm">{restaurant.category} • {restaurant.priceRange}</p>
           </div>
-          <div className="bg-primary/5 rounded-full p-1">
-            <ChevronRight className="h-5 w-5 text-primary" />
+          <div className="flex items-center gap-1">
+            <SubscribeBell listingId={restaurant.id} listingName={restaurant.name} listingType="restaurant" size="sm" />
+            <div className="bg-primary/5 rounded-full p-1">
+              <ChevronRight className="h-5 w-5 text-primary" />
+            </div>
           </div>
         </div>
         

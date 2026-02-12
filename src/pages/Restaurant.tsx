@@ -84,6 +84,8 @@ const Restaurant = () => {
       <RestaurantHeader 
         handleSaveRestaurant={handleSaveRestaurant}
         handleShareRestaurant={handleShareRestaurant}
+        restaurantId="la-piazza"
+        restaurantName="La Piazza"
       />
 
       <div className="pt-16 max-w-md mx-auto">
