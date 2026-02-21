@@ -16,38 +16,48 @@ export interface ReelVideo {
 
 export const useReelVideos = () => {
   const { toast } = useToast();
-  const [reels, setReels] = useState<ReelVideo[]>([
-    {
-      id: "1",
-      url: "https://storage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
-      user: "user_fashionista",
-      likes: 1245,
-      caption: "Fashion collection 🔥 #fashion #summer",
-      directionsUrl: "https://maps.google.com/?q=Fashion+District",
-      phoneNumber: "+1 (555) 123-4567",
-      isLiked: false,
-    },
-    {
-      id: "2",
-      url: "https://storage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4",
-      user: "nature_lover",
-      likes: 876,
-      caption: "Beautiful spring scenery 🌸 #nature #spring",
-      directionsUrl: "https://maps.google.com/?q=Botanical+Garden",
-      phoneNumber: "+1 (555) 987-6543",
-      isLiked: false,
-    },
-    {
-      id: "3",
-      url: "https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4",
-      user: "ocean_explorer",
-      likes: 2340,
-      caption: "Amazing ocean views 🌊 #ocean #relax",
-      directionsUrl: "https://maps.google.com/?q=Ocean+Beach",
-      phoneNumber: "+1 (555) 456-7890",
-      isLiked: false,
+  const [reels, setReels] = useState<ReelVideo[]>(() => {
+    const defaultReels: ReelVideo[] = [
+      {
+        id: "1",
+        url: "https://storage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
+        user: "user_fashionista",
+        likes: 1245,
+        caption: "Fashion collection 🔥 #fashion #summer",
+        directionsUrl: "https://maps.google.com/?q=Fashion+District",
+        phoneNumber: "+1 (555) 123-4567",
+        isLiked: false,
+      },
+      {
+        id: "2",
+        url: "https://storage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4",
+        user: "nature_lover",
+        likes: 876,
+        caption: "Beautiful spring scenery 🌸 #nature #spring",
+        directionsUrl: "https://maps.google.com/?q=Botanical+Garden",
+        phoneNumber: "+1 (555) 987-6543",
+        isLiked: false,
+      },
+      {
+        id: "3",
+        url: "https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4",
+        user: "ocean_explorer",
+        likes: 2340,
+        caption: "Amazing ocean views 🌊 #ocean #relax",
+        directionsUrl: "https://maps.google.com/?q=Ocean+Beach",
+        phoneNumber: "+1 (555) 456-7890",
+        isLiked: false,
+      }
+    ];
+    
+    // Load video deal reels from localStorage
+    try {
+      const videoReels = JSON.parse(localStorage.getItem('videoReels') || '[]');
+      return [...videoReels, ...defaultReels];
+    } catch {
+      return defaultReels;
     }
-  ]);
+  });
 
   const handleLike = (reelId: string) => {
     setReels(prevReels => 

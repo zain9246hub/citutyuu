@@ -1,5 +1,5 @@
 
-export type DealTier = 'standard' | 'highlight' | 'citywide';
+export type DealTier = 'standard' | 'highlight' | 'citywide' | 'video';
 
 export interface Deal {
   id: number;

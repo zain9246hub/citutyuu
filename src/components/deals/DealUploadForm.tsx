@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { useNavigate } from "react-router-dom";
@@ -17,7 +17,8 @@ import TierPaymentDialog from "./form-sections/TierPaymentDialog";
 import { ALL_CITIES } from "@/utils/cityData";
 import { getPricingForCity, isMetroCity, MAX_IMAGES, IMAGE_CHANGE_POLICY, ZIP_CODE_LIMITS } from "@/utils/metroCities";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { AlertCircle } from "lucide-react";
+import { AlertCircle, Video, Upload } from "lucide-react";
+import { Label } from "@/components/ui/label";
 
 const cities = ALL_CITIES;
 
@@ -48,6 +49,9 @@ const DealUploadForm = ({ initialTier = 'standard', onTierChange }: DealUploadFo
   });
   
   const [images, setImages] = useState<string[]>([]);
+  const [videoFile, setVideoFile] = useState<File | null>(null);
+  const [videoPreviewUrl, setVideoPreviewUrl] = useState<string | null>(null);
+  const videoInputRef = useRef<HTMLInputElement>(null);
   const [zipCodes, setZipCodes] = useState<string[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [tagInput, setTagInput] = useState("");
@@ -131,14 +135,40 @@ const DealUploadForm = ({ initialTier = 'standard', onTierChange }: DealUploadFo
 
   const handleTierChange = (tier: DealTier) => {
     setDealData(prev => ({ ...prev, tier }));
-    // Clear zip codes if switching to city-wide
-    if (tier === 'citywide') {
+    // Clear zip codes if switching to city-wide or video
+    if (tier === 'citywide' || tier === 'video') {
       setZipCodes([]);
+    }
+    // Clear video if switching away from video tier
+    if (tier !== 'video') {
+      setVideoFile(null);
+      setVideoPreviewUrl(null);
     }
     // Notify parent of tier change
     if (onTierChange) {
       onTierChange(tier);
     }
+  };
+
+  const handleVideoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (!file.type.startsWith('video/')) {
+      toast({ title: "Invalid file", description: "Please upload a video file", variant: "destructive" });
+      return;
+    }
+    if (file.size > 50 * 1024 * 1024) {
+      toast({ title: "File too large", description: "Video must be under 50MB", variant: "destructive" });
+      return;
+    }
+    setVideoFile(file);
+    setVideoPreviewUrl(URL.createObjectURL(file));
+  };
+
+  const removeVideo = () => {
+    setVideoFile(null);
+    setVideoPreviewUrl(null);
+    if (videoInputRef.current) videoInputRef.current.value = "";
   };
 
   const handleDiscountChange = (discountValue: number) => {
@@ -167,7 +197,18 @@ const DealUploadForm = ({ initialTier = 'standard', onTierChange }: DealUploadFo
       return;
     }
     
-    if (images.length === 0) {
+    // Video tier requires video, others require images
+    if (dealData.tier === 'video') {
+      if (!videoFile) {
+        scrollToTop();
+        toast({
+          title: "Video Required",
+          description: "Please upload a video for your video reel deal",
+          variant: "destructive",
+        });
+        return;
+      }
+    } else if (images.length === 0) {
       scrollToTop();
       toast({
         title: "Image Required",
@@ -179,7 +220,7 @@ const DealUploadForm = ({ initialTier = 'standard', onTierChange }: DealUploadFo
 
     // Validate zip codes based on tier
     const zipLimits = ZIP_CODE_LIMITS[dealData.tier];
-    if (dealData.tier !== 'citywide' && zipCodes.length < zipLimits.min) {
+    if (dealData.tier !== 'citywide' && dealData.tier !== 'video' && zipCodes.length < zipLimits.min) {
       scrollToTop();
       toast({
         title: "Zip Codes Required",
@@ -217,14 +258,14 @@ const DealUploadForm = ({ initialTier = 'standard', onTierChange }: DealUploadFo
         discount: dealData.discount || undefined,
         location: dealData.location,
         city: dealData.city,
-        zipCodes: dealData.tier !== 'citywide' ? zipCodes : undefined,
+        zipCodes: (dealData.tier !== 'citywide' && dealData.tier !== 'video') ? zipCodes : undefined,
         phone: dealData.phone || undefined,
         expiryDate: dealData.expiryDate || undefined,
         tags: dealData.tags,
-        image: images[0],
-        images: images,
+        image: dealData.tier === 'video' ? '/placeholder.svg' : images[0],
+        images: dealData.tier === 'video' ? [] : images,
         rating: 0,
-        featured: dealData.tier === 'highlight' || dealData.tier === 'citywide',
+        featured: dealData.tier === 'highlight' || dealData.tier === 'citywide' || dealData.tier === 'video',
         tier: dealData.tier,
         isMetroCity: isMetro,
         uploadedBy: currentUser?.name,
@@ -237,6 +278,49 @@ const DealUploadForm = ({ initialTier = 'standard', onTierChange }: DealUploadFo
       setTimeout(() => {
         try {
           addDeal(newDeal as Deal);
+          
+          // If video tier, save video as reel
+          if (dealData.tier === 'video' && videoPreviewUrl) {
+            const newReel = {
+              id: `deal-video-${Date.now()}`,
+              url: videoPreviewUrl,
+              user: currentUser?.name || "Business",
+              likes: 0,
+              caption: `${dealData.title} - ${dealData.description}`,
+              directionsUrl: undefined,
+              phoneNumber: dealData.phone || undefined,
+              isLiked: false,
+              city: dealData.city,
+            };
+            
+            // Save to localStorage for reels
+            try {
+              const existingReels = JSON.parse(localStorage.getItem('videoReels') || '[]');
+              existingReels.unshift(newReel);
+              localStorage.setItem('videoReels', JSON.stringify(existingReels));
+            } catch (e) {
+              console.error('Error saving reel:', e);
+            }
+            
+            // Send notification to city users
+            try {
+              const notifications = JSON.parse(localStorage.getItem('dealNotifications') || '[]');
+              notifications.unshift({
+                id: `video-notif-${Date.now()}`,
+                type: 'video_deal',
+                title: `🎬 New Video Deal in ${dealData.city}!`,
+                message: `${dealData.title} - Check it out in Reels!`,
+                city: dealData.city,
+                dealId: newDeal.id,
+                timestamp: new Date().toISOString(),
+                read: false,
+              });
+              localStorage.setItem('dealNotifications', JSON.stringify(notifications));
+            } catch (e) {
+              console.error('Error saving notification:', e);
+            }
+          }
+          
           setIsProcessingPayment(false);
           setShowPaymentDialog(false);
           setIsSubmitting(false);
@@ -244,11 +328,13 @@ const DealUploadForm = ({ initialTier = 'standard', onTierChange }: DealUploadFo
           triggerConfetti();
           
           toast({
-            title: "Deal Created Successfully!",
-            description: "Your deal has been posted and is now live",
+            title: dealData.tier === 'video' ? "Video Reel Deal Created!" : "Deal Created Successfully!",
+            description: dealData.tier === 'video' 
+              ? "Your video reel is now live and notification sent to city users" 
+              : "Your deal has been posted and is now live",
           });
           
-          navigate("/");
+          navigate(dealData.tier === 'video' ? "/reels" : "/");
         } catch (error) {
           console.error('Error adding deal:', error);
           setIsProcessingPayment(false);
@@ -288,16 +374,59 @@ const DealUploadForm = ({ initialTier = 'standard', onTierChange }: DealUploadFo
         onDiscountChange={handleDiscountChange}
       />
       
-      <div className="space-y-4">
-        <h2 className="text-xl font-semibold">Deal Images</h2>
-        <p className="text-sm text-gray-500">Upload at least one image of your deal (max 5 images)</p>
-        
-        <BusinessImageUploader 
-          images={images}
-          setImages={setImages}
-          maxImages={5}
-        />
-      </div>
+      {dealData.tier === 'video' ? (
+        <div className="space-y-4">
+          <h2 className="text-xl font-semibold">Deal Video</h2>
+          <p className="text-sm text-muted-foreground">Upload a video for your reel deal (max 50MB)</p>
+          
+          {videoPreviewUrl ? (
+            <div className="relative">
+              <video 
+                src={videoPreviewUrl} 
+                className="w-full max-h-[300px] rounded-lg object-contain bg-black" 
+                controls 
+                muted
+              />
+              <Button
+                type="button"
+                variant="destructive"
+                size="sm"
+                className="absolute top-2 right-2"
+                onClick={removeVideo}
+              >
+                Remove
+              </Button>
+            </div>
+          ) : (
+            <div 
+              className="border-2 border-dashed border-border rounded-lg p-8 text-center cursor-pointer hover:border-primary/50 transition-colors"
+              onClick={() => videoInputRef.current?.click()}
+            >
+              <Video className="w-12 h-12 mx-auto text-muted-foreground mb-3" />
+              <p className="text-sm font-medium text-foreground">Click to upload video</p>
+              <p className="text-xs text-muted-foreground mt-1">MP4, MOV, WebM supported</p>
+            </div>
+          )}
+          <input
+            ref={videoInputRef}
+            type="file"
+            accept="video/*"
+            className="hidden"
+            onChange={handleVideoUpload}
+          />
+        </div>
+      ) : (
+        <div className="space-y-4">
+          <h2 className="text-xl font-semibold">Deal Images</h2>
+          <p className="text-sm text-muted-foreground">Upload at least one image of your deal (max 5 images)</p>
+          
+          <BusinessImageUploader 
+            images={images}
+            setImages={setImages}
+            maxImages={5}
+          />
+        </div>
+      )}
       
       <LocationContact
         location={dealData.location}
@@ -310,14 +439,16 @@ const DealUploadForm = ({ initialTier = 'standard', onTierChange }: DealUploadFo
         onExpiryDateChange={handleExpiryDateChange}
       />
 
-      <div className="space-y-4">
-        <h2 className="text-xl font-semibold">Target Area (Zip Codes)</h2>
-        <ZipCodeSelector
-          tier={dealData.tier}
-          zipCodes={zipCodes}
-          onZipCodesChange={setZipCodes}
-        />
-      </div>
+      {dealData.tier !== 'video' && (
+        <div className="space-y-4">
+          <h2 className="text-xl font-semibold">Target Area (Zip Codes)</h2>
+          <ZipCodeSelector
+            tier={dealData.tier}
+            zipCodes={zipCodes}
+            onZipCodesChange={setZipCodes}
+          />
+        </div>
+      )}
       
       <TagsSection
         tags={dealData.tags}
