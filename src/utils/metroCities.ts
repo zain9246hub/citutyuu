@@ -31,18 +31,21 @@ export interface DealPricing {
   standard: number;
   highlight: number;
   citywide: number;
+  video: number;
 }
 
 export const NON_METRO_PRICING: DealPricing = {
   standard: 235,    // All taxes included
   highlight: 589,   // Featured on home page
   citywide: 1770,   // City-wide push notifications
+  video: 3000,      // Video reel deal
 };
 
 export const METRO_PRICING: DealPricing = {
   standard: 471,    // All taxes included
   highlight: 1179,  // Featured on home page
   citywide: 4130,   // City-wide push notifications
+  video: 3000,      // Video reel deal (same price)
 };
 
 export const getPricingForCity = (city: string): DealPricing => {
@@ -54,6 +57,7 @@ export const ZIP_CODE_LIMITS = {
   standard: { min: 1, max: 2 },
   highlight: { min: 4, max: 6 },
   citywide: { min: 0, max: 0 }, // City-wide doesn't use zip codes
+  video: { min: 0, max: 0 },    // Video deals target entire city
 } as const;
 
 // Image upload limit

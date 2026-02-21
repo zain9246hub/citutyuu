@@ -3,7 +3,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
-import { Check, Star, Sparkles } from 'lucide-react';
+import { Check, Star, Sparkles, Video } from 'lucide-react';
 import { DealTier } from '@/types/deal';
 import { DealPricing } from '@/utils/metroCities';
 
@@ -66,6 +66,21 @@ const DealTierSelection: React.FC<DealTierSelectionProps> = ({
       gradient: 'from-orange-500 to-red-600',
       iconBg: 'bg-orange-400/30',
     },
+    {
+      id: 'video' as DealTier,
+      name: 'Video Reel Deal',
+      price: pricing.video,
+      icon: Video,
+      features: [
+        'Upload video as Reel',
+        'City-wide push notifications',
+        'Shown in Reels section',
+        'Entire city coverage',
+        'Premium video visibility',
+      ],
+      gradient: 'from-rose-500 to-pink-600',
+      iconBg: 'bg-rose-400/30',
+    },
   ];
 
   return (
@@ -81,7 +96,7 @@ const DealTierSelection: React.FC<DealTierSelectionProps> = ({
         value={selectedTier} 
         onValueChange={(value) => onTierChange(value as DealTier)}
       >
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           {tiers.map((tier) => (
             <Card
               key={tier.id}

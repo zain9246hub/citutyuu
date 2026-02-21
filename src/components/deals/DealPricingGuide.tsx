@@ -1,6 +1,6 @@
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Check, X, MapPin, Bell, Star, Zap } from "lucide-react";
+import { Check, X, MapPin, Bell, Star, Zap, Video } from "lucide-react";
 import { isMetroCity, METRO_PRICING, NON_METRO_PRICING } from "@/utils/metroCities";
 import { DealTier } from "@/types/deal";
 import { cn } from "@/lib/utils";
@@ -75,6 +75,22 @@ const DealPricingGuide = ({ selectedCity, selectedTier, onTierSelect }: DealPric
       ],
       bestFor: "Large promotions, grand openings",
     },
+    {
+      id: "video",
+      name: "Video Reel Deal",
+      price: 3000,
+      icon: Video,
+      color: "bg-rose-500",
+      badgeColor: "bg-rose-100 text-rose-700 dark:bg-rose-900 dark:text-rose-300",
+      features: [
+        { text: "Video uploaded as Reel", included: true },
+        { text: "Entire city coverage", included: true },
+        { text: "City-wide push notifications", included: true },
+        { text: "Shown in Reels section", included: true },
+        { text: "Premium video visibility", included: true },
+      ],
+      bestFor: "Video promotions, product demos, events",
+    },
   ];
 
   const handleCardClick = (tierId: DealTier) => {
@@ -99,7 +115,7 @@ const DealPricingGuide = ({ selectedCity, selectedTier, onTierSelect }: DealPric
         </Badge>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         {tiers.map((tier, index) => {
           const IconComponent = tier.icon;
           const isSelected = selectedTier === tier.id;
