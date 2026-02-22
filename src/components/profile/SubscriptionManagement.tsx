@@ -11,7 +11,7 @@ import { Calendar, RefreshCw, AlertCircle, Tag, Image, Building, Video, Bell, Me
 import RenewalPreviewDialog from './RenewalPreviewDialog';
 import { Deal } from '@/types/deal';
 
-type RenewalType = 'banner' | 'deal' | 'business';
+type RenewalType = 'banner' | 'deal' | 'business' | 'reel';
 
 const SubscriptionManagement: React.FC = () => {
   const navigate = useNavigate();
@@ -110,6 +110,29 @@ const SubscriptionManagement: React.FC = () => {
     }
   }, [currentUser]);
 
+  // Get user video reels from localStorage
+  const userReels = useMemo(() => {
+    try {
+      const stored = localStorage.getItem('videoReels');
+      if (!stored || !currentUser) return [];
+      const reels = JSON.parse(stored);
+      if (!Array.isArray(reels)) return [];
+      return reels
+        .filter((r: any) => {
+          if (!r.user) return false;
+          return isOwnedByCurrentUser(r.user);
+        })
+        .map((r: any) => ({
+          ...r,
+          subscriptionStartDate: r.subscriptionStartDate || new Date().toISOString(),
+          subscriptionEndDate: r.subscriptionEndDate || new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
+          subscriptionPrice: r.subscriptionPrice || 3000,
+        }));
+    } catch {
+      return [];
+    }
+  }, [currentUser]);
+
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('en-IN', {
       day: '2-digit',
@@ -143,7 +166,7 @@ const SubscriptionManagement: React.FC = () => {
     setShowRenewalDialog(true);
   };
 
-  const hasAnySubscriptions = userBanners.length > 0 || userDeals.length > 0 || userBusinesses.length > 0;
+  const hasAnySubscriptions = userBanners.length > 0 || userDeals.length > 0 || userBusinesses.length > 0 || userReels.length > 0;
 
   const renderSubscriptionCard = (
     id: string,
@@ -164,6 +187,8 @@ const SubscriptionManagement: React.FC = () => {
         navigate(`/banner-analytics/${id}`);
       } else if (type === 'business') {
         navigate(`/business-analytics/${id}`);
+      } else if (type === 'reel') {
+        navigate(`/reel-analytics/${id}`);
       } else if (type === 'deal') {
         navigate(`/deal-analytics/${id}`);
       }
@@ -483,7 +508,22 @@ const SubscriptionManagement: React.FC = () => {
             </TabsContent>
 
             <TabsContent value="reels" className="space-y-4 mt-4">
-              <p className="text-muted-foreground text-center py-8">No reel subscriptions found</p>
+              {userReels.length === 0 ? (
+                <p className="text-muted-foreground text-center py-8">No reel subscriptions found</p>
+              ) : (
+                userReels.map((reel: any) => 
+                  renderSubscriptionCard(
+                    reel.id,
+                    reel.caption || 'Video Reel',
+                    reel.city || 'All Cities',
+                    reel.subscriptionStartDate,
+                    reel.subscriptionEndDate,
+                    reel.subscriptionPrice || 3000,
+                    'reel',
+                    <Video className="w-4 h-4 text-primary" />
+                  )
+                )
+              )}
             </TabsContent>
           </Tabs>
         </CardContent>

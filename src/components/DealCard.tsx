@@ -114,6 +114,8 @@ const DealCard = ({
           featured={featured}
           saved={saved}
           isExplorer={isExplorer}
+          hasVideoReel={deal.tier === 'video'}
+          videoReelId={deal.tier === 'video' ? `deal-video-${deal.id}` : undefined}
           onToggleSave={handleLike}
           onShare={handleShare}
           isLikeAnimating={isLikeAnimating}

@@ -19,7 +19,7 @@ import { useToast } from '@/hooks/use-toast';
 interface RenewalPreviewDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  type: 'banner' | 'deal' | 'business';
+  type: 'banner' | 'deal' | 'business' | 'reel';
   itemId: string;
 }
 
