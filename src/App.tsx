@@ -29,6 +29,7 @@ import DealUpload from "./pages/DealUpload";
 import DealAnalytics from "./pages/DealAnalytics";
 import BannerAnalytics from "./pages/BannerAnalytics";
 import BusinessAnalyticsPage from "./pages/BusinessAnalyticsPage";
+import ReelAnalytics from "./pages/ReelAnalytics";
 import NotFound from "./pages/NotFound";
 import DealDetail from "./pages/DealDetail";
 import AdminLocations from "./pages/AdminLocations";
@@ -97,6 +98,11 @@ const App = () => {
                     <Route path="/business-analytics/:businessId" element={
                       <ProtectedRoute>
                         <BusinessAnalyticsPage />
+                      </ProtectedRoute>
+                    } />
+                    <Route path="/reel-analytics/:reelId" element={
+                      <ProtectedRoute>
+                        <ReelAnalytics />
                       </ProtectedRoute>
                     } />
                     <Route path="/profile" element={

@@ -2,7 +2,8 @@
 import React from "react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { Heart, Share2, Sparkles } from "lucide-react";
+import { Heart, Share2, Sparkles, Play } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 interface DealImageProps {
   image: string;
@@ -11,6 +12,8 @@ interface DealImageProps {
   featured?: boolean;
   saved?: boolean;
   isExplorer?: boolean;
+  hasVideoReel?: boolean;
+  videoReelId?: string;
   onToggleSave: (e: React.MouseEvent) => void;
   onShare?: (e: React.MouseEvent) => void;
   isLikeAnimating: boolean;
@@ -24,11 +27,24 @@ const DealImage = ({
   featured,
   saved,
   isExplorer,
+  hasVideoReel,
+  videoReelId,
   onToggleSave,
   onShare,
   isLikeAnimating,
   isShareAnimating
 }: DealImageProps) => {
+  const navigate = useNavigate();
+
+  const handleVideoClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (videoReelId) {
+      navigate(`/reels?reel=${videoReelId}`);
+    } else {
+      navigate('/reels');
+    }
+  };
+
   return (
     <div className="relative md:w-1/3">
       <img 
@@ -43,6 +59,19 @@ const DealImage = ({
           <span>Featured</span>
         </div>
       )}
+      
+      {hasVideoReel && (
+        <Button
+          variant="ghost"
+          size="icon"
+          className="absolute bottom-2 right-2 h-9 w-9 rounded-full bg-primary/90 hover:bg-primary text-primary-foreground shadow-lg z-10"
+          onClick={handleVideoClick}
+          aria-label="Watch video reel"
+        >
+          <Play className="h-4 w-4 fill-current" />
+        </Button>
+      )}
+
       <div className="absolute top-2 right-2 flex gap-2">
         <Button 
           variant="ghost" 
