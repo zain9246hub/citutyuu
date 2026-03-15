@@ -1,4 +1,4 @@
-import { Trash2, Bell, MapPin, Phone, Flame } from "lucide-react";
+import { Trash2, Bell, MapPin, Phone, Flame, Play } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -93,6 +93,7 @@ const NotificationList = () => {
             }}
           >
             <div className={`absolute top-0 left-0 w-1 h-full ${
+              notification.isVideoReel ? 'bg-gradient-to-b from-purple-400 to-purple-600' :
               notification.type === 'new_deal' ? 'bg-gradient-to-b from-orange-400 to-orange-600' :
               notification.type === 'expiring_deal' ? 'bg-gradient-to-b from-red-400 to-red-600' :
               notification.type === 'price_drop' ? 'bg-gradient-to-b from-green-400 to-green-600' :
@@ -103,17 +104,22 @@ const NotificationList = () => {
               <div className="flex justify-between items-start mb-2">
                 <div className="flex items-center space-x-2">
                   <div className={`w-7 h-7 rounded-lg flex items-center justify-center ${
+                    notification.isVideoReel ? 'bg-purple-100 dark:bg-purple-900/30' :
                     notification.type === 'new_deal' ? 'bg-orange-100 dark:bg-orange-900/30' :
                     notification.type === 'expiring_deal' ? 'bg-red-100 dark:bg-red-900/30' :
                     notification.type === 'price_drop' ? 'bg-green-100 dark:bg-green-900/30' :
                     'bg-blue-100 dark:bg-blue-900/30'
                   }`}>
-                    <Flame className={`h-4 w-4 ${
-                      notification.type === 'new_deal' ? 'text-orange-600 dark:text-orange-400' :
-                      notification.type === 'expiring_deal' ? 'text-red-600 dark:text-red-400' :
-                      notification.type === 'price_drop' ? 'text-green-600 dark:text-green-400' :
-                      'text-blue-600 dark:text-blue-400'
-                    }`} />
+                    {notification.isVideoReel ? (
+                      <Play className="h-4 w-4 text-purple-600 dark:text-purple-400 fill-current" />
+                    ) : (
+                      <Flame className={`h-4 w-4 ${
+                        notification.type === 'new_deal' ? 'text-orange-600 dark:text-orange-400' :
+                        notification.type === 'expiring_deal' ? 'text-red-600 dark:text-red-400' :
+                        notification.type === 'price_drop' ? 'text-green-600 dark:text-green-400' :
+                        'text-blue-600 dark:text-blue-400'
+                      }`} />
+                    )}
                   </div>
                   {notification.city && (
                     <Badge variant="secondary" className="text-xs">

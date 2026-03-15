@@ -6,7 +6,7 @@ export const useRecording = () => {
   const [isRecording, setIsRecording] = useState(false);
   const [audioChunks, setAudioChunks] = useState<Blob[]>([]);
   const [recordingTime, setRecordingTime] = useState(0);
-  const [recordingTimer, setRecordingTimer] = useState<NodeJS.Timeout | null>(null);
+  const [recordingTimer, setRecordingTimer] = useState<ReturnType<typeof setTimeout> | null>(null);
 
   // Initialize media recorder
   useEffect(() => {

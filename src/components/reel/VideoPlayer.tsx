@@ -16,7 +16,7 @@ const VideoPlayer = ({
   videoRef,
   onVideoClick
 }: VideoPlayerProps) => {
-  const playTimeoutRef = useRef<NodeJS.Timeout>();
+  const playTimeoutRef = useRef<ReturnType<typeof setTimeout>>();
   const isPlayingRef = useRef(false);
 
   // Handle video playback when a reel becomes active

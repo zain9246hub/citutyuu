@@ -16,7 +16,7 @@ export const useHomeSearch = () => {
   });
   
   // Use refs to prevent recreation of stable values
-  const loadingTimeoutRef = useRef<NodeJS.Timeout>();
+  const loadingTimeoutRef = useRef<ReturnType<typeof setTimeout>>();
   const isInitializedRef = useRef(false);
   
   // Stable initial load effect - only run once

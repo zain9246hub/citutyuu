@@ -307,11 +307,12 @@ const DealUploadForm = ({ initialTier = 'standard', onTierChange }: DealUploadFo
               const notifications = JSON.parse(localStorage.getItem('dealNotifications') || '[]');
               notifications.unshift({
                 id: `video-notif-${Date.now()}`,
-                type: 'video_deal',
+                type: 'new_deal',
                 title: `🎬 New Video Deal in ${dealData.city}!`,
                 message: `${dealData.title} - Check it out in Reels!`,
                 city: dealData.city,
                 dealId: newDeal.id,
+                isVideoReel: true,
                 timestamp: new Date().toISOString(),
                 read: false,
               });
