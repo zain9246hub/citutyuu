@@ -74,7 +74,23 @@ const NotificationList = () => {
             className={`group relative overflow-hidden border-border/50 shadow-sm hover:shadow-md transition-all duration-200 ${
               !notification.read ? 'bg-primary/5 border-primary/20' : 'bg-background'
             }`}
-            onClick={() => markAsRead(notification.id)}
+            onClick={() => {
+              markAsRead(notification.id);
+              if (notification.type === 'new_deal' || notification.type === 'price_drop' || notification.type === 'expiring_deal') {
+                if (notification.dealId) {
+                  // Check if it's a video deal - navigate to reels
+                  const deals = JSON.parse(localStorage.getItem('uploadedDeals') || '[]');
+                  const deal = deals.find((d: any) => d.id === notification.dealId);
+                  if (deal?.tier === 'video') {
+                    navigate(`/reels?reel=deal-video-${notification.dealId}`);
+                  } else {
+                    navigate(`/deal/${notification.dealId}`);
+                  }
+                }
+              } else if (notification.type === 'saved_deal_update' && notification.dealId) {
+                navigate(`/deal/${notification.dealId}`);
+              }
+            }}
           >
             <div className={`absolute top-0 left-0 w-1 h-full ${
               notification.type === 'new_deal' ? 'bg-gradient-to-b from-orange-400 to-orange-600' :
