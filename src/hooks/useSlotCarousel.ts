@@ -46,7 +46,7 @@ export const useSlotCarousel = ({
   const autoplayPluginRef = useRef<any>(null);
   const slidesRef = useRef<SlotBanner[]>([]);
   const previousCityRef = useRef<string | null>(selectedCity);
-  const intervalRef = useRef<NodeJS.Timeout | null>(null);
+  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   
   // Enhanced autoplay plugin with better error handling
   const autoplayPlugin = useMemo(() => {

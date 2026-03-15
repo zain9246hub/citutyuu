@@ -118,7 +118,8 @@ const NotificationList = () => {
                         notification.type === 'expiring_deal' ? 'text-red-600 dark:text-red-400' :
                         notification.type === 'price_drop' ? 'text-green-600 dark:text-green-400' :
                         'text-blue-600 dark:text-blue-400'
-                    }`} />
+                      }`} />
+                    )}
                   </div>
                   {notification.city && (
                     <Badge variant="secondary" className="text-xs">
