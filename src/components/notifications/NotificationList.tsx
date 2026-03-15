@@ -4,9 +4,11 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { useNotifications } from "@/contexts/NotificationContext";
 import { formatDistanceToNow } from "date-fns";
+import { useNavigate } from "react-router-dom";
 
 const NotificationList = () => {
   const { notifications, markAsRead, markAllAsRead, clearNotifications } = useNotifications();
+  const navigate = useNavigate();
 
   const handleViewLocation = (shopLocation?: string) => {
     if (shopLocation) {
