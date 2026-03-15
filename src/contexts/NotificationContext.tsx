@@ -9,8 +9,9 @@ export interface DealNotification {
   message: string;
   city?: string;
   dealId?: number;
-  shopLocation?: string; // Shop address for map navigation
-  phoneNumber?: string; // Contact phone number
+  shopLocation?: string;
+  phoneNumber?: string;
+  isVideoReel?: boolean;
   timestamp: Date;
   read: boolean;
 }
