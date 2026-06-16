@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import NotificationBell from './notifications/NotificationBell';
+import SmartSearch from './SmartSearch';
 interface TopNavbarProps {
   title?: string;
   showBackButton?: boolean;
@@ -32,7 +33,8 @@ const TopNavbar = memo(({
             </div> : <h1 className="text-lg font-medium">{title}</h1>}
         </div>
         
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1">
+          <SmartSearch />
           {title === "Cityoffers" && <NotificationBell />}
           {actions}
         </div>
