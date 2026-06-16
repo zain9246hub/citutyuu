@@ -94,11 +94,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const signUp = async (name: string, email: string, password: string, role: UserRole, city?: string) => {
     setIsLoading(true);
-    const { data, error } = await supabase.auth.signUp({
+    // Never allow self-assigning super-admin via signup
+    const safeRole: UserRole = role === 'business' ? 'business' : 'explorer';
+    const { error } = await supabase.auth.signUp({
       email,
       password,
       options: {
-        data: { name, city },
+        data: { name, city, role: safeRole },
         emailRedirectTo: window.location.origin,
       },
     });
@@ -106,15 +108,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setIsLoading(false);
       throw new Error(error.message);
     }
-
-    // If user selected a non-default role, update it
-    if (data.user && role !== 'explorer') {
-      await supabase
-        .from('user_roles')
-        .update({ role } as any)
-        .eq('user_id', data.user.id);
-    }
-    // User will be set via onAuthStateChange
+    // User will be set via onAuthStateChange; role assigned by DB trigger from metadata
   };
 
   const logout = async () => {
