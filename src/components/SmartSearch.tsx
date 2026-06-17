@@ -186,7 +186,7 @@ const SmartSearch: React.FC = () => {
                 autoFocus
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
-                placeholder='Try "burger offer today in Adajan"'
+                placeholder={`Try "${SAMPLE_QUERIES[placeholderIdx]}"`}
                 className="pl-9 pr-9 h-11"
               />
               {query && (
