@@ -49,10 +49,37 @@ const scoreText = (text: string | undefined, tokens: string[]): number => {
   return s;
 };
 
+const SAMPLE_QUERIES = [
+  "burger offer today in Adajan",
+  "pizza deals in Mumbai",
+  "spa discount near me",
+  "cafe in Bandra",
+  "weekend offers in Pune",
+  "biryani deals tonight",
+  "salon offers in Delhi",
+  "ice cream near me",
+  "gym membership discount",
+  "best restaurant in Surat",
+  "shopping sale this week",
+  "coffee shop in Koramangala",
+];
+
 const SmartSearch: React.FC = () => {
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
+  const [placeholderIdx, setPlaceholderIdx] = useState(() =>
+    Math.floor(Math.random() * SAMPLE_QUERIES.length)
+  );
+
+  // Rotate placeholder every 2.5s while dialog is open and input is empty
+  useEffect(() => {
+    if (!open || query) return;
+    const id = setInterval(() => {
+      setPlaceholderIdx((i) => (i + 1) % SAMPLE_QUERIES.length);
+    }, 2500);
+    return () => clearInterval(id);
+  }, [open, query]);
 
   useEffect(() => {
     if (!open) setQuery("");
