@@ -207,8 +207,24 @@ const SmartSearch: React.FC = () => {
 
           <div className="max-h-[60vh] overflow-y-auto border-t">
             {query.trim() === "" ? (
-              <div className="p-6 text-center text-sm text-muted-foreground">
-                Search across deals and businesses.
+              <div className="p-4">
+                <div className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground mb-2">
+                  Try searching
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  {[...SAMPLE_QUERIES]
+                    .sort(() => Math.random() - 0.5)
+                    .slice(0, 6)
+                    .map((s) => (
+                      <button
+                        key={s}
+                        onClick={() => setQuery(s)}
+                        className="text-xs px-3 py-1.5 rounded-full border border-border bg-muted/50 hover:bg-accent text-foreground transition-colors"
+                      >
+                        {s}
+                      </button>
+                    ))}
+                </div>
               </div>
             ) : results.length === 0 ? (
               <div className="p-6 text-center text-sm text-muted-foreground">
