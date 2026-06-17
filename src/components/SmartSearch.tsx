@@ -49,10 +49,37 @@ const scoreText = (text: string | undefined, tokens: string[]): number => {
   return s;
 };
 
+const SAMPLE_QUERIES = [
+  "burger offer today in Adajan",
+  "pizza deals in Mumbai",
+  "spa discount near me",
+  "cafe in Bandra",
+  "weekend offers in Pune",
+  "biryani deals tonight",
+  "salon offers in Delhi",
+  "ice cream near me",
+  "gym membership discount",
+  "best restaurant in Surat",
+  "shopping sale this week",
+  "coffee shop in Koramangala",
+];
+
 const SmartSearch: React.FC = () => {
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
+  const [placeholderIdx, setPlaceholderIdx] = useState(() =>
+    Math.floor(Math.random() * SAMPLE_QUERIES.length)
+  );
+
+  // Rotate placeholder every 2.5s while dialog is open and input is empty
+  useEffect(() => {
+    if (!open || query) return;
+    const id = setInterval(() => {
+      setPlaceholderIdx((i) => (i + 1) % SAMPLE_QUERIES.length);
+    }, 2500);
+    return () => clearInterval(id);
+  }, [open, query]);
 
   useEffect(() => {
     if (!open) setQuery("");
@@ -159,7 +186,7 @@ const SmartSearch: React.FC = () => {
                 autoFocus
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
-                placeholder='Try "burger offer today in Adajan"'
+                placeholder={`Try "${SAMPLE_QUERIES[placeholderIdx]}"`}
                 className="pl-9 pr-9 h-11"
               />
               {query && (
@@ -180,8 +207,24 @@ const SmartSearch: React.FC = () => {
 
           <div className="max-h-[60vh] overflow-y-auto border-t">
             {query.trim() === "" ? (
-              <div className="p-6 text-center text-sm text-muted-foreground">
-                Search across deals and businesses.
+              <div className="p-4">
+                <div className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground mb-2">
+                  Try searching
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  {[...SAMPLE_QUERIES]
+                    .sort(() => Math.random() - 0.5)
+                    .slice(0, 6)
+                    .map((s) => (
+                      <button
+                        key={s}
+                        onClick={() => setQuery(s)}
+                        className="text-xs px-3 py-1.5 rounded-full border border-border bg-muted/50 hover:bg-accent text-foreground transition-colors"
+                      >
+                        {s}
+                      </button>
+                    ))}
+                </div>
               </div>
             ) : results.length === 0 ? (
               <div className="p-6 text-center text-sm text-muted-foreground">
