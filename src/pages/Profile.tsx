@@ -53,6 +53,14 @@ const Profile = () => {
         />
 
         <div className="px-4">
+          {currentUser.role === "super-admin" && (
+            <button
+              onClick={() => navigate("/admin")}
+              className="w-full mb-3 p-3 rounded-xl bg-primary text-primary-foreground font-medium flex items-center justify-center gap-2 shadow-md"
+            >
+              🛡️ Open Admin Panel
+            </button>
+          )}
           <Tabs defaultValue="profile" className="w-full" value={activeTab} onValueChange={setActiveTab}>
             {isEditing ? (
               <ProfileEditForm onCancel={() => setIsEditing(false)} />
