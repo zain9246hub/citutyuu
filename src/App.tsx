@@ -33,6 +33,7 @@ import ReelAnalytics from "./pages/ReelAnalytics";
 import NotFound from "./pages/NotFound";
 import DealDetail from "./pages/DealDetail";
 import AdminLocations from "./pages/AdminLocations";
+import Admin from "./pages/Admin";
 import { useState, useEffect } from "react";
 import { PushNotificationService } from "./services/pushNotificationService";
 
@@ -115,6 +116,11 @@ const App = () => {
                     <Route path="/admin/locations" element={
                       <ProtectedRoute requiredRole="super-admin">
                         <AdminLocations />
+                      </ProtectedRoute>
+                    } />
+                    <Route path="/admin" element={
+                      <ProtectedRoute requiredRole="super-admin">
+                        <Admin />
                       </ProtectedRoute>
                     } />
                     {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
