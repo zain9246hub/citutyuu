@@ -146,17 +146,16 @@ const NotificationSettings = () => {
             </div>
           </div>
 
-          <div className="relative overflow-hidden bg-gradient-to-br from-blue-50 via-blue-50/50 to-blue-100/30 dark:from-blue-950/30 dark:via-blue-950/20 dark:to-blue-950/10 p-6 rounded-2xl border border-blue-200/50 dark:border-blue-800/30 shadow-sm">
-            <div className="absolute inset-0 bg-gradient-to-r from-blue-500/5 to-transparent" />
+          <div className="relative overflow-hidden bg-blue-600 dark:bg-blue-700 p-6 rounded-2xl border border-blue-700 shadow-sm">
             <div className="relative flex items-start space-x-4">
-              <div className="flex-shrink-0 w-10 h-10 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center shadow-md">
+              <div className="flex-shrink-0 w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center shadow-md">
                 <span className="text-white text-sm font-bold">i</span>
               </div>
               <div>
-                <h4 className="text-base font-semibold text-blue-900 dark:text-blue-100 mb-2">
+                <h4 className="text-base font-semibold text-white mb-2">
                   Smart Notifications
                 </h4>
-                <p className="text-sm text-blue-700 dark:text-blue-200 leading-relaxed">
+                <p className="text-sm text-white/90 leading-relaxed">
                   We'll only send you relevant notifications based on your preferences and activity.
                 </p>
               </div>
