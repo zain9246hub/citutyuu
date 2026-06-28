@@ -39,7 +39,6 @@ const SlotSections: React.FC<SlotSectionsProps> = ({
       <SlotSection 
         position={2}
         title="Featured Slots"
-        subtitle="Ending soon - book now"
         onViewAll={onViewAllBanners}
         onBook={onBookSlot}
         showSparkles={true}
@@ -49,7 +48,6 @@ const SlotSections: React.FC<SlotSectionsProps> = ({
       <SlotSection 
         position={1}
         title="Featured Slots"
-        subtitle="Available 24/7"
         onViewAll={onViewAllBanners}
         onBook={onBookSlot}
         selectedCity={selectedCity}
