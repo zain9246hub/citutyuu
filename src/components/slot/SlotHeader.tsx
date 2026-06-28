@@ -24,11 +24,6 @@ const SlotHeader: React.FC<SlotHeaderProps> = ({
   return (
     <div className="flex items-center mb-1">
       <h3 className="text-sm font-medium">Position {position} Slots</h3>
-      {isBusinessUser && (
-        <span className="ml-2 text-xs bg-green-50 text-green-600 rounded-full px-2 py-0.5 animate-pulse">
-          🟢 1 slot left - Book now!
-        </span>
-      )}
       
       {showViewAll && (
         <div className="absolute right-4 top-0 z-10">
