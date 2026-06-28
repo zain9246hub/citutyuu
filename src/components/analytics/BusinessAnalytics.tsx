@@ -61,9 +61,9 @@ const BusinessAnalytics = ({ businessId }: BusinessAnalyticsProps) => {
     positive?: boolean;
     gradient?: string;
   }) => (
-    <Card className="relative overflow-hidden bg-gradient-to-br from-background via-background to-muted/20 border-border/50 shadow-lg hover:shadow-xl transition-all duration-300 group">
-      <div className="absolute top-0 right-0 w-24 h-24 opacity-10">
-        <div className={`w-full h-full rounded-full bg-gradient-to-br ${gradient} transform translate-x-8 -translate-y-8`} />
+    <Card className="relative overflow-hidden isolate bg-gradient-to-br from-background via-background to-muted/20 border-border/50 shadow-lg hover:shadow-xl transition-all duration-300 group rounded-lg">
+      <div className="pointer-events-none absolute -top-6 -right-6 w-20 h-20 rounded-full opacity-10 -z-10">
+        <div className={`w-full h-full rounded-full bg-gradient-to-br ${gradient}`} />
       </div>
       
       <CardContent className="p-5 relative">
