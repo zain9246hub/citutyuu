@@ -102,9 +102,6 @@ const AllBanners = () => {
       <div className="space-y-6 pb-16">
         <div className="bg-muted/20 py-2 rounded-lg mx-4 mb-2">
           <h2 className="text-lg font-medium px-4">Premium Ad Slots</h2>
-          <p className="text-sm text-muted-foreground px-4">
-            {position1Count} available slots in position #1
-          </p>
         </div>
         <SlotCarousel 
           position={1}
@@ -123,9 +120,6 @@ const AllBanners = () => {
         
         <div className="bg-muted/20 py-2 rounded-lg mx-4 mb-2 mt-6">
           <h2 className="text-lg font-medium px-4">Standard Ad Slots</h2>
-          <p className="text-sm text-muted-foreground px-4">
-            {position2Count} available slots in position #2
-          </p>
         </div>
         <SlotCarousel 
           position={2}
